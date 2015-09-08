@@ -12,18 +12,17 @@ public class ExpugnExtras
 		{
 			// Register Events
 			// Register Commands
-			getCommand("expugn").setExecutor(new ExpugnCommand());
-			// Other Code
-			PluginDescriptionFile pdfFile = this.getDescription();
-			getLogger().info(pdfFile.getName() + " is now loaded. Prepare yourselves!");
+			getCommand("expugn").setExecutor(new ExpugnCommand(this));
+			this.saveDefaultConfig();
 		}
 		
 		@Override
 		public void onDisable()
 		{
 			PluginDescriptionFile pdfFile = this.getDescription();
-			getLogger().info(pdfFile.getName() + " is now disabled.");
-			getLogger().info("Some features in-game may not work correctly!");
+			getLogger().info(pdfFile.getName() + " is disabled.");
+			getLogger().info("[WARNING]: Some features in-game may not work correctly!");
+			this.saveConfig();
 		}
 	}
 }

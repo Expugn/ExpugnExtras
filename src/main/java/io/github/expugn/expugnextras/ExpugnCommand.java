@@ -1,13 +1,22 @@
 package io.github.expugn.expugnextras;
 
+import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import io.github.expugn.expugnextras.ExpugnExtras.expugnextras;
+
 public class ExpugnCommand implements CommandExecutor
 {
+	public final expugnextras plugin;
+	public ExpugnCommand(expugnextras plugin)
+	{
+		this.plugin = plugin;
+	}
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
 		if (sender instanceof Player)
@@ -20,6 +29,15 @@ public class ExpugnCommand implements CommandExecutor
 			else if (args[0] == "help")
 			{
 				helpMenu(player);
+			}
+			else if (args[0] == "reload")
+			{
+				plugin.reloadConfig();
+				player.sendMessage("Reloaded Configuration.");
+			}
+			else if (args[0] == "warpinfo")
+			{
+				warpInfo(args[1], player);
 			}
 			else
 			{
@@ -39,12 +57,21 @@ public class ExpugnCommand implements CommandExecutor
 		player.sendMessage(ChatColor.GOLD + "(All Commands begin with /expugn)");
 		player.sendMessage(ChatColor.GREEN + "- General:");
 		player.sendMessage("  - help - Help Menu");
+		player.sendMessage("  - reload - Reload configuration.");
 		player.sendMessage(ChatColor.GREEN + "- Warps:");
-		player.sendMessage("  - warp [warpname] - Warp to a destination.");
 		player.sendMessage("  - warplist - Lists warps managed by ExpugnExtras.");
+		player.sendMessage("  - warpinfo [warpname] - Get details of a warp.");
 		player.sendMessage("  - warp [warpname] - Warp to a destination.");
 		player.sendMessage("  - setwarp [warpname] - Define a warp location.");
 		player.sendMessage("  - warpsetting [warpname] <cooldown|limit> - Defines a warp to use a cooldown system or a daily limit.");
 		player.sendMessage("  - warpsetting [warpname] [number] - Sets the hours for a cooldown or the daily limit.");
+	}
+	public void warpInfo(String name, Player player)
+	{
+		List<String> warpList = plugin.getConfig().getStringList("warps." + name);
+		if (warpList == null)
+		{
+			player.sendMessage("Invalid warp.");
+		}
 	}
 }
