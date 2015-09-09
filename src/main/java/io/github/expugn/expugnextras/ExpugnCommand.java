@@ -1,5 +1,6 @@
 package io.github.expugn.expugnextras;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -22,6 +23,7 @@ import org.bukkit.entity.Player;
 public class ExpugnCommand implements CommandExecutor
 {
 	private final ExpugnExtras plugin;
+	private Calendar midnight; 
 	/**
 	 * Constructor for the class
 	 * 
@@ -30,6 +32,10 @@ public class ExpugnCommand implements CommandExecutor
 	public ExpugnCommand(ExpugnExtras plugin)
 	{
 		this.plugin = plugin;
+		if(plugin.getConfig().getLong("midnighttime") == 0L)
+		{
+			resetTimer();
+		}
 	}
 	/**
 	 * Command Manager:
@@ -84,10 +90,11 @@ public class ExpugnCommand implements CommandExecutor
 							invalidParam(player);
 						break;
 					case "warpsetting":
-						if (args.length >= 2)
+						if (args.length >= 3)
 							warpSetting(player, args[1], args[2]);
 						else
 							invalidParam(player);
+						break;
 					default:
 						player.sendMessage(ChatColor.RED + "Invalid Command. Use /expugn help for a help menu.");
 						break;
@@ -129,7 +136,7 @@ public class ExpugnCommand implements CommandExecutor
 	 */
 	public void warpList(Player player)
 	{
-		List<String> warpList = plugin.getConfig().getStringList("warps");
+		List<String> warpList = plugin.getConfig().getStringList("warps.list");
 		player.sendMessage(ChatColor.GOLD + "There are currently " + warpList.size() + " warps");
 		for (String s : warpList)
 		{
@@ -151,14 +158,14 @@ public class ExpugnCommand implements CommandExecutor
 			return;
 		}
 		player.sendMessage(ChatColor.GOLD + "Information for warp " + name + ":");
-		player.sendMessage("x: " + plugin.getConfig().getInt(name + ".x"));
-		player.sendMessage("y: " + plugin.getConfig().getInt(name + ".y"));
-		player.sendMessage("z: " + plugin.getConfig().getInt(name + ".z"));
-		player.sendMessage("yaw: " + plugin.getConfig().getInt(name + ".yaw"));
-		player.sendMessage("pitch: " + plugin.getConfig().getInt(name + ".pitch"));
-		player.sendMessage("world: " + plugin.getConfig().getString(name + ".world"));
-		player.sendMessage("type: " + plugin.getConfig().getString(name + ".type"));
-		player.sendMessage("value: " + plugin.getConfig().getInt(name + ".value") + " hours/daily entry limit");
+		player.sendMessage("x: " + plugin.getConfig().getInt("warps.warp." + name + ".x"));
+		player.sendMessage("y: " + plugin.getConfig().getInt("warps.warp." + name + ".y"));
+		player.sendMessage("z: " + plugin.getConfig().getInt("warps.warp." + name + ".z"));
+		player.sendMessage("yaw: " + plugin.getConfig().getInt("warps.warp." + name + ".yaw"));
+		player.sendMessage("pitch: " + plugin.getConfig().getInt("warps.warp." + name + ".pitch"));
+		player.sendMessage("world: " + plugin.getConfig().getString("warps.warp." + name + ".world"));
+		player.sendMessage("type: " + plugin.getConfig().getString("warps.warp." + name + ".type"));
+		player.sendMessage("value: " + plugin.getConfig().getInt("warps.warp." + name + ".value") + " hours/daily entry limit");
 	}
 	/**
 	 * Warp: Teleports a player to a warp's location.
@@ -168,13 +175,70 @@ public class ExpugnCommand implements CommandExecutor
 	 */
 	public void warp(Player player, String name)
 	{
-		// TODO - Cooldown/Limit Check
-		World warpWorld = Bukkit.getWorld(plugin.getConfig().getString(name + ".world"));
-		double warpX = plugin.getConfig().getDouble(name + ".x");
-		double warpY = plugin.getConfig().getDouble(name + ".y");
-		double warpZ = plugin.getConfig().getDouble(name + ".z");
-		float warpYaw = (float) plugin.getConfig().getDouble(name + ".yaw");
-		float warpPitch = (float) plugin.getConfig().getDouble(name + ".pitch");
+		// Check if warp exists
+		// if not: quit the function.
+		if (this.checkWarp(name) == false)
+		{
+			player.sendMessage(ChatColor.RED + "Invalid warp. Use /expugn warplist for a list of warps.");
+			return;
+		}
+		// Determine if the warp is a cooldown or limit warp.
+		int value = plugin.getConfig().getInt("warps.warp." + name + ".value");
+		if (value != 0)
+		{
+			switch(plugin.getConfig().getString("warps.warp." + name + ".type"))
+			{
+				case "cooldown":
+					// Store player time till they can use again
+					long canUseAgain = plugin.getConfig().getLong("warps.data.cooldown." + player.getUniqueId() + "." + name);
+					// Check if the time they can use it again is higher than the current time.
+					// if true: inform the player and quit the function.
+					if (canUseAgain >= System.currentTimeMillis())
+					{
+						player.sendMessage(ChatColor.RED + "You cannot use this warp again just yet.");
+						convertMilliseconds(player, (canUseAgain - System.currentTimeMillis()));
+						return;
+					}
+					// Determine how many milliseconds a player has to wait until they warp again.
+					long addedTime = plugin.getConfig().getInt("warps.warp." + name + ".value") * 3600000;
+					// Store and save data.
+					plugin.getConfig().set("warps.data.cooldown." + player.getUniqueId() + "." + name, System.currentTimeMillis() + addedTime);
+					saveConfig();
+					break;
+				case "limit":
+					// Check if midnight has passed.
+					// if true: delete all player limit data
+					checkMidnight();
+					// Store amount of times a player used a warp and the max daily amount
+					int amountUsed = plugin.getConfig().getInt("warps.data.limit." + player.getUniqueId() + "." + name);
+					int maxAmount = plugin.getConfig().getInt("warps.warp." + name + ".value");
+					// if the amount they used is higher/equal to the max daily amount:
+					// inform the player and quit the function
+					if (amountUsed >= maxAmount)
+					{
+						player.sendMessage(ChatColor.RED + "You have exceeded the daily limit to use this warp.");
+						convertMilliseconds(player, (plugin.getConfig().getLong("midnighttime") - System.currentTimeMillis()));
+						return;
+					}
+					// if the limit is not zero:
+					// add 1 to the amount of times a player used the warp
+					else if (maxAmount != 0)
+					{
+						amountUsed++;
+						plugin.getConfig().set("warps.data.limit." + player.getUniqueId() + "." + name, amountUsed);
+					}
+					// Save the configuration
+					saveConfig();
+					break;
+			}
+		}
+		// Warp player to the name of the warp.
+		World warpWorld = Bukkit.getWorld(plugin.getConfig().getString("warps.warp." + name + ".world"));
+		double warpX = plugin.getConfig().getDouble("warps.warp." + name + ".x");
+		double warpY = plugin.getConfig().getDouble("warps.warp." + name + ".y");
+		double warpZ = plugin.getConfig().getDouble("warps.warp." + name + ".z");
+		float warpYaw = (float) plugin.getConfig().getDouble("warps.warp." + name + ".yaw");
+		float warpPitch = (float) plugin.getConfig().getDouble("warps.warp." + name + ".pitch");
 		Location loc = new Location(warpWorld, warpX, warpY, warpZ, warpYaw, warpPitch);
 		player.teleport(loc);
 	}
@@ -193,19 +257,19 @@ public class ExpugnCommand implements CommandExecutor
 			player.sendMessage(ChatColor.GOLD + "Warp does not exist. Creating a new warp.");
 			
 			// Setup a new path in the configuration.
-			plugin.getConfig().addDefault(name + ".x", loc.getX());
-			plugin.getConfig().addDefault(name + ".y", loc.getY());
-			plugin.getConfig().addDefault(name + ".z", loc.getZ());
-			plugin.getConfig().addDefault(name + ".yaw", loc.getYaw());
-			plugin.getConfig().addDefault(name + ".pitch", loc.getPitch());
-			plugin.getConfig().addDefault(name + ".world", player.getWorld().getName());
-			plugin.getConfig().addDefault(name + ".type", "cooldown");
-			plugin.getConfig().addDefault(name + ".value", 0);
+			plugin.getConfig().set("warps.warp." + name + ".x", loc.getX());
+			plugin.getConfig().set("warps.warp." + name + ".y", loc.getY());
+			plugin.getConfig().set("warps.warp." + name + ".z", loc.getZ());
+			plugin.getConfig().set("warps.warp." + name + ".yaw", loc.getYaw());
+			plugin.getConfig().set("warps.warp." + name + ".pitch", loc.getPitch());
+			plugin.getConfig().set("warps.warp." + name + ".world", player.getWorld().getName());
+			plugin.getConfig().set("warps.warp." + name + ".type", "cooldown");
+			plugin.getConfig().set("warps.warp." + name + ".value", 0);
 			
 			// Add warp name to the list of warps
-			List<String> warpList = plugin.getConfig().getStringList("warps");
+			List<String> warpList = plugin.getConfig().getStringList("warps.list");
 			warpList.add(name);
-			plugin.getConfig().set("warps", warpList);
+			plugin.getConfig().set("warps.list", warpList);
 			
 			// Remind player to modify settings
 			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name + " <cooldown|limit> to modify the type of warp.");
@@ -216,12 +280,12 @@ public class ExpugnCommand implements CommandExecutor
 			player.sendMessage(ChatColor.GOLD + "There is an existing warp. Defining new position.");
 			
 			// Set new values in the configuration file
-			plugin.getConfig().set(name + ".x", loc.getX());
-			plugin.getConfig().set(name + ".y", loc.getY());
-			plugin.getConfig().set(name + ".z", loc.getZ());
-			plugin.getConfig().set(name + ".yaw", loc.getYaw());
-			plugin.getConfig().set(name + ".pitch", loc.getPitch());
-			plugin.getConfig().set(name + ".world", player.getWorld().getName());
+			plugin.getConfig().set("warps.warp." + name + ".x", loc.getX());
+			plugin.getConfig().set("warps.warp." + name + ".y", loc.getY());
+			plugin.getConfig().set("warps.warp." + name + ".z", loc.getZ());
+			plugin.getConfig().set("warps.warp." + name + ".yaw", loc.getYaw());
+			plugin.getConfig().set("warps.warp." + name + ".pitch", loc.getPitch());
+			plugin.getConfig().set("warps.warp." + name + ".world", player.getWorld().getName());
 		}
 		// Save configuration file
 		this.saveConfig();
@@ -239,17 +303,16 @@ public class ExpugnCommand implements CommandExecutor
 			player.sendMessage(ChatColor.RED + "This warp does not exist. Use /expugn warplist for a list of warps.");
 		}
 		else
-		{
+		{	
+			String path = ("warps.warp." + name); 
+			
 			// Remove warp from configuration file
-			plugin.getConfig().set(name, null);
-			
+			plugin.getConfig().set(path, null);
 			// Remove warp from warp list
-			List<String> warpList = plugin.getConfig().getStringList("warps");
+			List<String> warpList = plugin.getConfig().getStringList("warps.list");
 			warpList.remove(name);
-			plugin.getConfig().set("warps", warpList);
-			
-			// Save configuration file
-			this.saveConfig();
+			plugin.getConfig().set("warps.list", warpList);
+			saveConfig();
 			
 			player.sendMessage(ChatColor.GREEN + "Warp " + name + " has been removed.");
 		}
@@ -263,15 +326,20 @@ public class ExpugnCommand implements CommandExecutor
 	 */
 	public void warpSetting(Player player, String name, String param)
 	{
+		if (this.checkWarp(name) == false)
+		{
+			player.sendMessage(ChatColor.RED + "This warp does not exist. Use /expugn warplist for a list of warps.");
+			return;
+		}
 		if (param.equals("cooldown") || param.equals("limit"))
 		{
-			plugin.getConfig().set(name + ".type", param);
+			plugin.getConfig().set("warps.warp." + name + ".type", param);
 			player.sendMessage(ChatColor.GREEN + "Warp " + name + " type modified to " + ChatColor.GOLD + param);
 		}
 		else
 		{
 			int value = Integer.parseInt(param);
-			plugin.getConfig().set(name + ".value", value);
+			plugin.getConfig().set("warps.warp." + name + ".value", value);
 			player.sendMessage(ChatColor.GREEN + "Warp " + name + " value modified to " + ChatColor.GOLD + value);
 		}
 		saveConfig();
@@ -284,7 +352,7 @@ public class ExpugnCommand implements CommandExecutor
 	 */
 	public boolean checkWarp(String name)
 	{
-		List<String> warpList = plugin.getConfig().getStringList("warps");
+		List<String> warpList = plugin.getConfig().getStringList("warps.list");
 		if (warpList.contains(name))
 			return true;
 		return false;
@@ -297,8 +365,67 @@ public class ExpugnCommand implements CommandExecutor
 		plugin.getConfig().options().copyDefaults(true);
 		plugin.saveConfig();
 	}
+	/**
+	 * Invalid Parameter: Returns a error message to the player informing them of invalid parameters.
+	 * 
+	 * @param player - The player who sent the command.
+	 */
 	public void invalidParam(Player player)
 	{
 		player.sendMessage(ChatColor.RED + "Invalid parameters. Use /expugn help to check if you typed the command correctly.");
+	}
+	/**
+	 * Check Midnight: Determines if midnight has passed. Resets the daily limits if true.
+	 */
+	public void checkMidnight()
+	{
+		if (plugin.getConfig().getLong("midnighttime") <= System.currentTimeMillis() - 1)
+		{
+			// Midnight has passed. Run Reset.
+			plugin.getConfig().set("warps.data.limit", null);
+			resetTimer();
+		}
+	}
+	/**
+	 * Reset Timer: Determines the amount of milliseconds it takes to be midnight and saves it.
+	 */
+	public void resetTimer()
+	{
+		midnight = Calendar.getInstance();
+		midnight.set(Calendar.HOUR_OF_DAY, 0);
+		midnight.set(Calendar.MINUTE, 0);
+		midnight.set(Calendar.SECOND, 0);
+		midnight.set(Calendar.MILLISECOND, 0);
+		midnight.set(Calendar.DAY_OF_YEAR, midnight.get(Calendar.DAY_OF_YEAR) + 1);
+		plugin.getConfig().set("midnighttime", midnight.getTimeInMillis());
+		saveConfig();
+	}
+	/**
+	 * Convert Milliseconds: Takes a variable of milliseconds and converts into easy to read text.
+	 * 
+	 * @param player - The player who sent the command
+	 * @param milliseconds - User inputted milliseconds.
+	 */
+	public void convertMilliseconds(Player player, long milliseconds)
+	{
+		int hours = 0;
+		int minutes = 0;
+		int seconds = 0;
+		if (milliseconds >= 3600000)
+		{
+			hours = (int) milliseconds / 3600000;
+			milliseconds = milliseconds % 3600000;
+		}
+		if (milliseconds >= 60000)
+		{
+			minutes = (int) milliseconds / 60000;
+			milliseconds = milliseconds % 60000;
+		}
+		if (milliseconds >= 1000)
+		{
+			seconds = (int) milliseconds / 1000;
+			milliseconds = milliseconds % 1000;
+		}
+		player.sendMessage(ChatColor.RED + "You can use this warp again in: " + hours + " hours " + minutes + " minutes and " + seconds + " seconds.");
 	}
 }
