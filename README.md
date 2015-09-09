@@ -1,7 +1,9 @@
 # ExpugnExtras
-For Talabrek's Ultimate Skyblock
-Manages misc. features in dungeons.
+For Talabrek's Ultimate Minecraft Network
 
 Features:
 - Warps with Cooldowns.
 - Warps with Daily Limits.
+ 
+Incoming Features:
+- Marriage
