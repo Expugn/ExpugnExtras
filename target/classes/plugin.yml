@@ -1,6 +1,6 @@
 name: ExpugnExtras
 main: io.github.expugn.expugnextras.ExpugnExtras
-version: ${version}
+version: 0.01
 commands:
   expugn:
     description: Alias for ExpugnExtras.

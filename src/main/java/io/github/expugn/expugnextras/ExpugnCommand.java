@@ -83,6 +83,11 @@ public class ExpugnCommand implements CommandExecutor
 						else
 							invalidParam(player);
 						break;
+					case "warpsetting":
+						if (args.length >= 2)
+							warpSetting(player, args[1], args[2]);
+						else
+							invalidParam(player);
 					default:
 						player.sendMessage(ChatColor.RED + "Invalid Command. Use /expugn help for a help menu.");
 						break;
@@ -105,10 +110,9 @@ public class ExpugnCommand implements CommandExecutor
 	public void helpMenu(Player player)
 	{
 		player.sendMessage(ChatColor.GOLD + "ExpugnExtras Help Menu:");
-		player.sendMessage(ChatColor.GOLD + "(All Commands begin with /expugn)");
+		player.sendMessage(ChatColor.GOLD + "(All commands begin with /expugn)");
 		player.sendMessage(ChatColor.GREEN + "- General:");
 		player.sendMessage("  - help - Help Menu");
-		player.sendMessage("  - reload - Reload configuration.");
 		player.sendMessage(ChatColor.GREEN + "- Warps:");
 		player.sendMessage("  - warplist - Lists warps managed by ExpugnExtras.");
 		player.sendMessage("  - warpinfo [warpname] - Get details of a warp.");
@@ -150,6 +154,8 @@ public class ExpugnCommand implements CommandExecutor
 		player.sendMessage("x: " + plugin.getConfig().getInt(name + ".x"));
 		player.sendMessage("y: " + plugin.getConfig().getInt(name + ".y"));
 		player.sendMessage("z: " + plugin.getConfig().getInt(name + ".z"));
+		player.sendMessage("yaw: " + plugin.getConfig().getInt(name + ".yaw"));
+		player.sendMessage("pitch: " + plugin.getConfig().getInt(name + ".pitch"));
 		player.sendMessage("world: " + plugin.getConfig().getString(name + ".world"));
 		player.sendMessage("type: " + plugin.getConfig().getString(name + ".type"));
 		player.sendMessage("value: " + plugin.getConfig().getInt(name + ".value") + " hours/daily entry limit");
@@ -162,11 +168,14 @@ public class ExpugnCommand implements CommandExecutor
 	 */
 	public void warp(Player player, String name)
 	{
+		// TODO - Cooldown/Limit Check
 		World warpWorld = Bukkit.getWorld(plugin.getConfig().getString(name + ".world"));
-		int warpX = plugin.getConfig().getInt(name + ".x");
-		int warpY = plugin.getConfig().getInt(name + ".y");
-		int warpZ = plugin.getConfig().getInt(name + ".z");
-		Location loc = new Location(warpWorld, warpX, warpY, warpZ);
+		double warpX = plugin.getConfig().getDouble(name + ".x");
+		double warpY = plugin.getConfig().getDouble(name + ".y");
+		double warpZ = plugin.getConfig().getDouble(name + ".z");
+		float warpYaw = (float) plugin.getConfig().getDouble(name + ".yaw");
+		float warpPitch = (float) plugin.getConfig().getDouble(name + ".pitch");
+		Location loc = new Location(warpWorld, warpX, warpY, warpZ, warpYaw, warpPitch);
 		player.teleport(loc);
 	}
 	/**
@@ -177,15 +186,18 @@ public class ExpugnCommand implements CommandExecutor
 	 */
 	public void setWarp(Player player, String name)
 	{
+		// Get player location
+		Location loc = player.getLocation();
 		if (this.checkWarp(name) == false)
 		{
-			Location loc = player.getLocation();
 			player.sendMessage(ChatColor.GOLD + "Warp does not exist. Creating a new warp.");
 			
 			// Setup a new path in the configuration.
 			plugin.getConfig().addDefault(name + ".x", loc.getX());
 			plugin.getConfig().addDefault(name + ".y", loc.getY());
 			plugin.getConfig().addDefault(name + ".z", loc.getZ());
+			plugin.getConfig().addDefault(name + ".yaw", loc.getYaw());
+			plugin.getConfig().addDefault(name + ".pitch", loc.getPitch());
 			plugin.getConfig().addDefault(name + ".world", player.getWorld().getName());
 			plugin.getConfig().addDefault(name + ".type", "cooldown");
 			plugin.getConfig().addDefault(name + ".value", 0);
@@ -195,23 +207,24 @@ public class ExpugnCommand implements CommandExecutor
 			warpList.add(name);
 			plugin.getConfig().set("warps", warpList);
 			
-			// Save and inform player
-			this.saveConfig();
+			// Remind player to modify settings
 			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name + " <cooldown|limit> to modify the type of warp.");
 			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name + " [number] to modify the cooldown/daily limit of the warp.");
 		}
 		else
 		{
-			Location loc = player.getLocation();
 			player.sendMessage(ChatColor.GOLD + "There is an existing warp. Defining new position.");
-		
-			plugin.getConfig().addDefault(name + ".x", loc.getX());
-			plugin.getConfig().addDefault(name + ".y", loc.getY());
-			plugin.getConfig().addDefault(name + ".z", loc.getZ());
-			plugin.getConfig().addDefault(name + ".world", player.getWorld());
 			
-			this.saveConfig();
+			// Set new values in the configuration file
+			plugin.getConfig().set(name + ".x", loc.getX());
+			plugin.getConfig().set(name + ".y", loc.getY());
+			plugin.getConfig().set(name + ".z", loc.getZ());
+			plugin.getConfig().set(name + ".yaw", loc.getYaw());
+			plugin.getConfig().set(name + ".pitch", loc.getPitch());
+			plugin.getConfig().set(name + ".world", player.getWorld().getName());
 		}
+		// Save configuration file
+		this.saveConfig();
 	}
 	/**
 	 * Delete Warp: Removes a warp from the configuration file.
@@ -227,38 +240,41 @@ public class ExpugnCommand implements CommandExecutor
 		}
 		else
 		{
+			// Remove warp from configuration file
 			plugin.getConfig().set(name, null);
 			
+			// Remove warp from warp list
 			List<String> warpList = plugin.getConfig().getStringList("warps");
 			warpList.remove(name);
 			plugin.getConfig().set("warps", warpList);
 			
+			// Save configuration file
 			this.saveConfig();
 			
 			player.sendMessage(ChatColor.GREEN + "Warp " + name + " has been removed.");
 		}
 	}
 	/**
-	 * Warp 'Type' Setting: Sets the 'type' setting of a warp.
+	 * Warp Setting: Sets the 'type' setting of a warp.
 	 * 
 	 * @param player - The player who sent the command.
 	 * @param name - The name of the warp.
-	 * @param param - 'cooldown' or 'limit'
+	 * @param param - 'cooldown' or 'limit' or a value to determine the hourly cooldown or daily limit
 	 */
 	public void warpSetting(Player player, String name, String param)
 	{
-		// TODO
-	}
-	/**
-	 * Warp 'Value' Setting: Sets the 'value' setting of a warp.
-	 * 
-	 * @param player - The player who sent the command.
-	 * @param name - The name of the warp.
-	 * @param value - The value to determine the hourly cooldown or daily limit.
-	 */
-	public void warpSetting(Player player, String name, int value)
-	{
-		// TODO
+		if (param.equals("cooldown") || param.equals("limit"))
+		{
+			plugin.getConfig().set(name + ".type", param);
+			player.sendMessage(ChatColor.GREEN + "Warp " + name + " type modified to " + ChatColor.GOLD + param);
+		}
+		else
+		{
+			int value = Integer.parseInt(param);
+			plugin.getConfig().set(name + ".value", value);
+			player.sendMessage(ChatColor.GREEN + "Warp " + name + " value modified to " + ChatColor.GOLD + value);
+		}
+		saveConfig();
 	}
 	/**
 	 * Check Warp: Determines if the warp exists in the configuration file.
