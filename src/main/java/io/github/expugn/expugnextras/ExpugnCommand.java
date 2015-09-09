@@ -60,16 +60,28 @@ public class ExpugnCommand implements CommandExecutor
 						warpList(player);
 						break;
 					case "warpinfo":
-						warpInfo(player, args[1]);
+						if (args.length >= 2)
+							warpInfo(player, args[1]);
+						else
+							invalidParam(player);
 						break;
 					case "warp":
-						warp(player, args[1]);
+						if (args.length >= 2)
+							warp(player, args[1]);
+						else
+							invalidParam(player);
 						break;
 					case "setwarp":
-						setWarp(player, args[1]);
+						if (args.length >= 2)
+							setWarp(player, args[1]);
+						else
+							invalidParam(player);
 						break;
 					case "delwarp":
-						delWarp(player, args[1]);
+						if (args.length >= 2)
+							delWarp(player, args[1]);
+						else
+							invalidParam(player);
 						break;
 					default:
 						player.sendMessage(ChatColor.RED + "Invalid Command. Use /expugn help for a help menu.");
@@ -129,12 +141,7 @@ public class ExpugnCommand implements CommandExecutor
 	 */
 	public void warpInfo(Player player, String name)
 	{
-		if (name == null)
-		{
-			player.sendMessage(ChatColor.RED + "Invalid parameter. Use /expugn warplist for a list of warps.");
-			return;
-		}
-		else if (this.checkWarp(name) == false)
+		if (this.checkWarp(name) == false)
 		{
 			player.sendMessage(ChatColor.RED + "Invalid warp. Use /expugn warplist for a list of warps.");
 			return;
@@ -155,11 +162,6 @@ public class ExpugnCommand implements CommandExecutor
 	 */
 	public void warp(Player player, String name)
 	{
-		if (name == null)
-		{
-			player.sendMessage(ChatColor.RED + "Invalid parameter. Use /expugn warplist for a list of warps.");
-			return;
-		}
 		World warpWorld = Bukkit.getWorld(plugin.getConfig().getString(name + ".world"));
 		int warpX = plugin.getConfig().getInt(name + ".x");
 		int warpY = plugin.getConfig().getInt(name + ".y");
@@ -175,11 +177,6 @@ public class ExpugnCommand implements CommandExecutor
 	 */
 	public void setWarp(Player player, String name)
 	{
-		if (name == null)
-		{
-			player.sendMessage(ChatColor.RED + "Invalid parameter. Use /expugn warplist for a list of warps.");
-			return;
-		}
 		if (this.checkWarp(name) == false)
 		{
 			Location loc = player.getLocation();
@@ -224,11 +221,6 @@ public class ExpugnCommand implements CommandExecutor
 	 */
 	public void delWarp(Player player, String name)
 	{
-		if (name == null)
-		{
-			player.sendMessage(ChatColor.RED + "Invalid parameter. Use /expugn warplist for a list of warps.");
-			return;
-		}
 		if (this.checkWarp(name) == false)
 		{
 			player.sendMessage(ChatColor.RED + "This warp does not exist. Use /expugn warplist for a list of warps.");
@@ -288,5 +280,9 @@ public class ExpugnCommand implements CommandExecutor
 	{
 		plugin.getConfig().options().copyDefaults(true);
 		plugin.saveConfig();
+	}
+	public void invalidParam(Player player)
+	{
+		player.sendMessage(ChatColor.RED + "Invalid parameters. Use /expugn help to check if you typed the command correctly.");
 	}
 }
