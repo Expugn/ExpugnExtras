@@ -1,14 +1,2 @@
-# default config.yml
-warps:
-  testwarp:
-    x: 0
-    y: 0
-    z: 0
-    type: 'cooldown'
-    value: 1
-  samplewarp:
-    x: 0
-    y: 0
-    z: 0
-    type: 'limit'
-    value: 3
+# Warp information will be inserted into this configuration
+# when the plugin is used.
