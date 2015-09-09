@@ -1,9 +1,9 @@
 # ExpugnExtras
 For Talabrek's Ultimate Minecraft Network
 
-Features:
+# Features
 - Warps with Cooldowns.
 - Warps with Daily Limits.
  
-Incoming Features:
+# Incoming Features
 - Marriage
