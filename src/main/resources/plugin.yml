@@ -1,6 +1,14 @@
 name: ExpugnExtras
-main: io.github.expugn.expugnextras.ExpugnExtras
 version: 1.0
+description: 'A plugin with miscellaneous features.'
+
+author: Expugn
+website: https://github.com/Expugn/ExpugnExtras
+
+main: io.github.expugn.expugnextras.ExpugnExtras
+database: false
+softdepend: [VariableTriggers, Vault, Essentials]
+
 commands:
   expugn:
     description: Alias for ExpugnExtras.

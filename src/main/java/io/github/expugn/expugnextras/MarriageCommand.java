@@ -1,8 +1,10 @@
 package io.github.expugn.expugnextras;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  * 'Marriage' Command
@@ -15,6 +17,8 @@ import org.bukkit.command.CommandSender;
 public class MarriageCommand implements CommandExecutor
 {
 	private final ExpugnExtras plugin;
+	private final String prefix = ChatColor.BLACK + "[" + ChatColor.GOLD + "Marriage" + ChatColor.BLACK + "]" + ChatColor.DARK_GRAY + " - ";
+	private final String miniPrefix = ChatColor.BLACK + "[" + ChatColor.GOLD + "*" + ChatColor.BLACK + "]" + ChatColor.DARK_GRAY + " - ";
 	/**
 	 * Constructor for the class
 	 * 
@@ -36,7 +40,25 @@ public class MarriageCommand implements CommandExecutor
 	 */
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
-		sender.sendMessage("hello world!");
-		return true;
+		if (sender instanceof Player)
+		{
+			Player player = (Player) sender;
+			if (args.length == 0)
+			{
+				player.sendMessage(prefix + ChatColor.GREEN + "Use " + ChatColor.GOLD + " /marriage help " + ChatColor.GREEN + "to view all commands.");
+				player.sendMessage(miniPrefix + ChatColor.GREEN + "To test: here is $10");
+				ExpugnExtras.econ.depositPlayer(player, player.getWorld().getName(), 10.0);
+			}
+			else
+			{
+				plugin.getConfig().getInt("warps.midnighttime");
+			}
+			return true;
+		}
+		else
+		{
+			sender.sendMessage(ChatColor.RED + "Only players can run this command.");
+			return false;
+		}
 	}
 }
