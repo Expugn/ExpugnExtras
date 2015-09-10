@@ -17,6 +17,7 @@ public class ExpugnExtras extends JavaPlugin
 	public void onEnable()
 	{
 		getCommand("expugn").setExecutor(new ExpugnCommand(this));
+		getCommand("marriage").setExecutor(new MarriageCommand(this));
 		this.saveDefaultConfig();
 	}
 	

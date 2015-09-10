@@ -1,9 +1,12 @@
 name: ExpugnExtras
 main: io.github.expugn.expugnextras.ExpugnExtras
-version: 0.01
+version: 1.0
 commands:
   expugn:
     description: Alias for ExpugnExtras.
     usage: '/expugn [parameter]'
     permission: expugnextras.admin
     permission-message: 'You do not have <permission>.'
+  marriage:
+    description: Alias for Marriage.
+    usage: '/marriage [parameter]'

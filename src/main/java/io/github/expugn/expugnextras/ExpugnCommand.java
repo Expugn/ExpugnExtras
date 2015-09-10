@@ -95,6 +95,9 @@ public class ExpugnCommand implements CommandExecutor
 						else
 							invalidParam(player);
 						break;
+					case "cleardata":
+						clearData(player);
+						break;
 					default:
 						player.sendMessage(ChatColor.RED + "Invalid Command. Use /expugn help for a help menu.");
 						break;
@@ -121,13 +124,14 @@ public class ExpugnCommand implements CommandExecutor
 		player.sendMessage(ChatColor.GREEN + "- General:");
 		player.sendMessage("  - help - Help Menu");
 		player.sendMessage(ChatColor.GREEN + "- Warps:");
-		player.sendMessage("  - warplist - Lists warps managed by ExpugnExtras.");
-		player.sendMessage("  - warpinfo [warpname] - Get details of a warp.");
 		player.sendMessage("  - warp [warpname] - Warp to a destination.");
 		player.sendMessage("  - setwarp [warpname] - Define a warp location.");
 		player.sendMessage("  - delwarp [warpname] - Remove a warp location.");
+		player.sendMessage("  - warplist - Lists warps managed by ExpugnExtras.");
+		player.sendMessage("  - warpinfo [warpname] - Get details of a warp.");
 		player.sendMessage("  - warpsetting [warpname] <cooldown|limit> - Defines a warp to use a cooldown system or a daily limit.");
 		player.sendMessage("  - warpsetting [warpname] [number] - Sets the hours for a cooldown or the daily limit.");
+		player.sendMessage("  - cleardata - Deletes all cooldown/limit data from the configuration file.");
 	}
 	/**
 	 * Warp List: Lists all the warps available and written onto the configuration file.
@@ -190,7 +194,7 @@ public class ExpugnCommand implements CommandExecutor
 			{
 				case "cooldown":
 					// Store player time till they can use again
-					long canUseAgain = plugin.getConfig().getLong("warps.data.cooldown." + player.getUniqueId() + "." + name);
+					long canUseAgain = plugin.getConfig().getLong("warps.data.cooldown." + name + "." + player.getUniqueId());
 					// Check if the time they can use it again is higher than the current time.
 					// if true: inform the player and quit the function.
 					if (canUseAgain >= System.currentTimeMillis())
@@ -202,7 +206,7 @@ public class ExpugnCommand implements CommandExecutor
 					// Determine how many milliseconds a player has to wait until they warp again.
 					long addedTime = plugin.getConfig().getInt("warps.warp." + name + ".value") * 3600000;
 					// Store and save data.
-					plugin.getConfig().set("warps.data.cooldown." + player.getUniqueId() + "." + name, System.currentTimeMillis() + addedTime);
+					plugin.getConfig().set("warps.data.cooldown." + name + "." + player.getUniqueId(), System.currentTimeMillis() + addedTime);
 					saveConfig();
 					break;
 				case "limit":
@@ -210,7 +214,7 @@ public class ExpugnCommand implements CommandExecutor
 					// if true: delete all player limit data
 					checkMidnight();
 					// Store amount of times a player used a warp and the max daily amount
-					int amountUsed = plugin.getConfig().getInt("warps.data.limit." + player.getUniqueId() + "." + name);
+					int amountUsed = plugin.getConfig().getInt("warps.data.limit." + name + "." + player.getUniqueId());
 					int maxAmount = plugin.getConfig().getInt("warps.warp." + name + ".value");
 					// if the amount they used is higher/equal to the max daily amount:
 					// inform the player and quit the function
@@ -225,7 +229,7 @@ public class ExpugnCommand implements CommandExecutor
 					else if (maxAmount != 0)
 					{
 						amountUsed++;
-						plugin.getConfig().set("warps.data.limit." + player.getUniqueId() + "." + name, amountUsed);
+						plugin.getConfig().set("warps.data.limit." + name + "." + player.getUniqueId(), amountUsed);
 					}
 					// Save the configuration
 					saveConfig();
@@ -304,14 +308,16 @@ public class ExpugnCommand implements CommandExecutor
 		}
 		else
 		{	
-			String path = ("warps.warp." + name); 
-			
 			// Remove warp from configuration file
-			plugin.getConfig().set(path, null);
+			plugin.getConfig().set("warps.warp." + name, null);
 			// Remove warp from warp list
 			List<String> warpList = plugin.getConfig().getStringList("warps.list");
 			warpList.remove(name);
 			plugin.getConfig().set("warps.list", warpList);
+			// Remove warp data
+			plugin.getConfig().set("warps.data.cooldown." + name, null);
+			plugin.getConfig().set("warps.data.limit." + name, null);
+			// Save configuration file
 			saveConfig();
 			
 			player.sendMessage(ChatColor.GREEN + "Warp " + name + " has been removed.");
@@ -427,5 +433,16 @@ public class ExpugnCommand implements CommandExecutor
 			milliseconds = milliseconds % 1000;
 		}
 		player.sendMessage(ChatColor.RED + "You can use this warp again in: " + hours + " hours " + minutes + " minutes and " + seconds + " seconds.");
+	}
+	/**
+	 * Clear Data - Removes all cooldown/limit data from the configuration file.
+	 * 
+	 * @param player - The player who sent the command.
+	 */
+	public void clearData(Player player)
+	{
+		plugin.getConfig().set("warps.data", null);
+		saveConfig();
+		player.sendMessage(ChatColor.GREEN + "Cooldown and limit data has been cleared.");
 	}
 }
