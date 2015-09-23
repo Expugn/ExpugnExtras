@@ -55,8 +55,6 @@ public class MarriageCommand implements CommandExecutor
 			if (args.length == 0)
 			{
 				player.sendMessage(prefix + ChatColor.GREEN + "Use " + ChatColor.GOLD + " /marriage help " + ChatColor.GREEN + "to view all commands.");
-				player.sendMessage(miniPrefix + ChatColor.GREEN + "To test: here is $10");
-				giveMoney(player, 10.0);
 			}
 			else
 			{

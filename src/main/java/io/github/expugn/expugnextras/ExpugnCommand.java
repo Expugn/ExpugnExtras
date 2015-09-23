@@ -131,6 +131,7 @@ public class ExpugnCommand implements CommandExecutor
 		player.sendMessage("  - warpinfo [warpname] - Get details of a warp.");
 		player.sendMessage("  - warpsetting [warpname] <cooldown|limit> - Defines a warp to use a cooldown system or a daily limit.");
 		player.sendMessage("  - warpsetting [warpname] [number] - Sets the hours for a cooldown or the daily limit.");
+		player.sendMessage("  - warpsetting [warpname] [warpname] - Sets an alternate warp to move the player if the player could not warp.");
 		player.sendMessage("  - cleardata - Deletes all cooldown/limit data from the configuration file.");
 	}
 	/**
@@ -170,6 +171,7 @@ public class ExpugnCommand implements CommandExecutor
 		player.sendMessage("world: " + plugin.getConfig().getString("warps.warp." + name + ".world"));
 		player.sendMessage("type: " + plugin.getConfig().getString("warps.warp." + name + ".type"));
 		player.sendMessage("value: " + plugin.getConfig().getInt("warps.warp." + name + ".value") + " hours/daily entry limit");
+		player.sendMessage("else: " + plugin.getConfig().getString("warps.warp." + name + ".else") + " alternate warp");
 	}
 	/**
 	 * Warp: Teleports a player to a warp's location.
@@ -201,6 +203,11 @@ public class ExpugnCommand implements CommandExecutor
 					{
 						player.sendMessage(ChatColor.RED + "You cannot use this warp again just yet.");
 						convertMilliseconds(player, (canUseAgain - System.currentTimeMillis()));
+						if (plugin.getConfig().getString("warps.warp." + name + ".else") != null && !plugin.getConfig().getString("warps.warp." + name + ".else").isEmpty())
+						{
+							warp(player, plugin.getConfig().getString("warps.warp." + name + ".else"));
+							player.sendMessage(ChatColor.RED + "You have been moved to a different location because you failed to warp.");
+						}
 						return;
 					}
 					// Determine how many milliseconds a player has to wait until they warp again.
@@ -222,6 +229,11 @@ public class ExpugnCommand implements CommandExecutor
 					{
 						player.sendMessage(ChatColor.RED + "You have exceeded the daily limit to use this warp.");
 						convertMilliseconds(player, (plugin.getConfig().getLong("midnighttime") - System.currentTimeMillis()));
+						if (plugin.getConfig().getString("warps.warp." + name + ".else") != null && !plugin.getConfig().getString("warps.warp." + name + ".else").isEmpty())
+						{
+							warp(player, plugin.getConfig().getString("warps.warp." + name + ".else"));
+							player.sendMessage(ChatColor.RED + "You have been moved to a different location because you failed to warp.");
+						}
 						return;
 					}
 					// if the limit is not zero:
@@ -278,6 +290,7 @@ public class ExpugnCommand implements CommandExecutor
 			// Remind player to modify settings
 			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name + " <cooldown|limit> to modify the type of warp.");
 			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name + " [number] to modify the cooldown/daily limit of the warp.");
+			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name + " [warpname] to add a alternate location to send the player if they failed to warp.");
 		}
 		else
 		{
@@ -328,11 +341,11 @@ public class ExpugnCommand implements CommandExecutor
 	 * 
 	 * @param player - The player who sent the command.
 	 * @param name - The name of the warp.
-	 * @param param - 'cooldown' or 'limit' or a value to determine the hourly cooldown or daily limit
+	 * @param param - 'cooldown' or 'limit', alternate warp, or a value to determine the hourly cooldown or daily limit
 	 */
 	public void warpSetting(Player player, String name, String param)
 	{
-		if (this.checkWarp(name) == false)
+		if (!this.checkWarp(name))
 		{
 			player.sendMessage(ChatColor.RED + "This warp does not exist. Use /expugn warplist for a list of warps.");
 			return;
@@ -341,6 +354,11 @@ public class ExpugnCommand implements CommandExecutor
 		{
 			plugin.getConfig().set("warps.warp." + name + ".type", param);
 			player.sendMessage(ChatColor.GREEN + "Warp " + name + " type modified to " + ChatColor.GOLD + param);
+		}
+		else if (checkWarp(param))
+		{
+			plugin.getConfig().set("warps.warp." + name + ".else", param);
+			player.sendMessage(ChatColor.GREEN + "Warp " + name + " alternate warp modified to " + ChatColor.GOLD + param);
 		}
 		else
 		{
