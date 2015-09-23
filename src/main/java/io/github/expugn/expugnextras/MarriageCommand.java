@@ -21,7 +21,7 @@ public class MarriageCommand implements CommandExecutor
 	private final String prefix = ChatColor.BLACK + "[" + ChatColor.GOLD + "Marriage" + ChatColor.BLACK + "]" + ChatColor.DARK_GRAY + " - ";
 	private final String miniPrefix = ChatColor.BLACK + "[" + ChatColor.GOLD + "*" + ChatColor.BLACK + "]" + ChatColor.DARK_GRAY + " - ";
 	
-	private String playerPartner = null;
+	private String playerPartner;
 	private int playerLevel = 0;
 	private long playerCooldown = 0L;
 	/**
@@ -172,27 +172,30 @@ public class MarriageCommand implements CommandExecutor
 	public void date(Player player, String[] args)
 	{
 		getPlayerData(player, args);
-		List<String> requestingList = plugin.getConfig().getStringList("marriage.requesting");
-		List<String> requestedList = plugin.getConfig().getStringList("marriage.requested");
+		
+		String requestedPlayerUUID = null;
+		String requestedPlayerPartner = null;
+		List<String> banList = plugin.getConfig().getStringList("marriage.banlist");
 		
 		if (args.length == 2)
 		{
 			String response = null;
 			try 
 			{
-				response = UUIDFetcher.getUUIDOf("Expugn").toString();
+				response = UUIDFetcher.getUUIDOf(args[1]).toString();
 			} 
 			catch (Exception e) 
 			{
-				System.out.println("Exception while running UUIDFetcher");
-				e.printStackTrace();
-				// FIXME: Remove later
-				System.out.println(requestingList);
-				System.out.println(requestedList);
-				System.out.println(playerLevel);
+				System.out.println("[ExpugnExtras] Exception while running UUIDFetcher. Abandoning Operation.");
+				player.sendMessage(prefix + ChatColor.RED + "Player does not exist or has not logged into the server at all.");
+				return;
 			}
-			String requestedPlayerPartner = plugin.getConfig().getString("marriage.players." + response + ".partner");
-			System.out.println("[debug]: done with uuid fetch. " + response + " " + requestedPlayerPartner);
+			requestedPlayerPartner = plugin.getConfig().getString("marriage.players." + response + ".partner");
+			requestedPlayerUUID = response;
+			System.out.println("[Debug]: Done with uuid and requested player data fetch.");
+			System.out.println("Player: " + args[1]);
+			System.out.println("UUID: " + requestedPlayerUUID);
+			System.out.println("Partner: " + requestedPlayerPartner);
 		}
 		if (args.length == 1)
 		{
@@ -205,7 +208,7 @@ public class MarriageCommand implements CommandExecutor
 			player.sendMessage(miniPrefix + ChatColor.GOLD + "/marriage date [playername]");
 			return;
 		}
-		else if (playerPartner.equals(null) == false)
+		else if (playerPartner != null && !playerPartner.isEmpty())
 		{
 			player.sendMessage(prefix + ChatColor.RED + "You are already in a relationship.");
 			return;
@@ -221,8 +224,44 @@ public class MarriageCommand implements CommandExecutor
 			player.sendMessage(prefix + ChatColor.RED + "You cannot date yourself.");
 			return;
 		}
+		else if (playerPartner != null && !playerPartner.isEmpty())
+		{
+			player.sendMessage(prefix + ChatColor.RED + "You already have a partner.");
+			return;
+		}
+		else if (banList.contains(requestedPlayerUUID))
+		{
+			player.sendMessage(prefix + ChatColor.RED + "This player has blocked requests.");
+			return;
+		}
+		else if (plugin.getConfig().getString("marriage.players." + requestedPlayerUUID + ".requesting") != null && !plugin.getConfig().getString("marriage.players." + requestedPlayerUUID + ".requesting").isEmpty())
+		{
+			player.sendMessage(prefix + ChatColor.RED + "This player has sent a request to someone else.");
+			return;
+		}
+		else if (plugin.getConfig().getString("marriage.players." + requestedPlayerUUID + ".requested") != null && !plugin.getConfig().getString("marriage.players." + requestedPlayerUUID + ".requested").isEmpty())
+		{
+			player.sendMessage(prefix + ChatColor.RED + "This player has a pending request already.");
+			return;
+		}
+		else if (plugin.getConfig().getString("marriage.players." + player.getUniqueId() + ".requesting") != null && !plugin.getConfig().getString("marriage.players." + player.getUniqueId() + ".requesting").isEmpty())
+		{
+			player.sendMessage(prefix + ChatColor.RED + "You are already requesting another player");
+			player.sendMessage(miniPrefix + ChatColor.RED + "You sent a request to: " + ChatColor.GOLD + plugin.getConfig().getString("marriage.players." + player.getUniqueId() + ".requesting"));
+			player.sendMessage(miniPrefix + ChatColor.RED + "You can remove a expired request with " + ChatColor.GOLD + "/marriage date" + ChatColor.RED + ".");
+			return;
+		}
+		else if (plugin.getConfig().getString("marriage.players." + player.getUniqueId() + ".requested") != null && !plugin.getConfig().getString("marriage.players." + player.getUniqueId() + ".requested").isEmpty())
+		{
+			player.sendMessage(prefix + ChatColor.RED + "You have a pending request from another player.");
+			player.sendMessage(miniPrefix + ChatColor.RED + "The following player has requested a date: " + ChatColor.GOLD + plugin.getConfig().getString("marriage.players." + player.getUniqueId() + ".requested"));
+			player.sendMessage(miniPrefix + ChatColor.RED + "Accept their request with " + ChatColor.GOLD + "/marriage accept" + ChatColor.RED + ".");
+			player.sendMessage(miniPrefix + ChatColor.RED + "Decline their request with " + ChatColor.GOLD + "/marriage decline" + ChatColor.RED + ".");
+			return;
+		}
 		else
 		{
+			// TODO Send request to player.
 			System.out.println("done.");
 		}
 	}
@@ -250,7 +289,7 @@ public class MarriageCommand implements CommandExecutor
 	}
 	public void reclaim (Player player, String[] args)
 	{
-		
+		// TODO
 	}
 	public void getPlayerData(Player player, String[] args)
 	{
@@ -260,6 +299,9 @@ public class MarriageCommand implements CommandExecutor
 		
 		if (playerCooldown == 0L)
 			playerCooldown = 0;
+		// TODO Remove.
+		if (playerLevel == 0)
+			playerLevel = 0;
 	}
 	public void invalidParam(Player player)
 	{
