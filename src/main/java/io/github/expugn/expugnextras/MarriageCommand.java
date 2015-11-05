@@ -58,6 +58,8 @@ public class MarriageCommand implements CommandExecutor
 			}
 			else
 			{
+				player.sendMessage(prefix + ChatColor.GREEN + "Work in progress! Check back eventually." + ChatColor.GRAY + " - Expugn.");
+				/* WIP
 				switch (args[0])
 				{
 					case "help":
@@ -86,6 +88,7 @@ public class MarriageCommand implements CommandExecutor
 						break;
 				}
 				plugin.getConfig().getInt("warps.midnighttime");
+				*/
 			}
 			return true;
 		}
@@ -195,68 +198,84 @@ public class MarriageCommand implements CommandExecutor
 			System.out.println("UUID: " + requestedPlayerUUID);
 			System.out.println("Partner: " + requestedPlayerPartner);
 		}
+		// If the user sent /marriage date
 		if (args.length == 1)
 		{
-			reclaim(player, args);
-			return;
+			// TODO
+			if (plugin.getConfig().getString("marriage.players." + player.getUniqueId() + ".requesting") != null && !plugin.getConfig().getString("marriage.players." + player.getUniqueId() + ".requesting").isEmpty())
+			{
+				if (System.currentTimeMillis() > plugin.getConfig().getLong("marriage.players."))
+				{
+					
+				}
+				else
+				{
+					
+				}
+			}
+			else
+			{
+				
+			}
 		}
+		// If the user sent a command length greater than 2
 		else if (args.length != 2)
 		{
 			player.sendMessage(prefix + ChatColor.RED + "Invalid Syntax.");
 			player.sendMessage(miniPrefix + ChatColor.GOLD + "/marriage date [playername]");
-			return;
 		}
+		// Check if the user is in a relationship
 		else if (playerPartner != null && !playerPartner.isEmpty())
 		{
 			player.sendMessage(prefix + ChatColor.RED + "You are already in a relationship.");
-			return;
 		}
+		// Check if the user is on cooldown
 		else if (System.currentTimeMillis() < playerCooldown)
 		{
 			player.sendMessage(prefix + ChatColor.RED + "You cannot make a request again just yet.");
 			convertMilliseconds(player, playerCooldown - System.currentTimeMillis());
-			return;
 		}
+		// Check if the user is trying to request themself
 		else if (args[1].equals(player.getName()))
 		{
 			player.sendMessage(prefix + ChatColor.RED + "You cannot date yourself.");
-			return;
 		}
-		else if (playerPartner != null && !playerPartner.isEmpty())
+		// Check if the requested player is in a relationship
+		else if (requestedPlayerPartner != null && !requestedPlayerPartner.isEmpty())
 		{
-			player.sendMessage(prefix + ChatColor.RED + "You already have a partner.");
-			return;
+			player.sendMessage(prefix + ChatColor.RED + "That player is already in a relationship.");
 		}
+		// Check if the requested player blocked requests
 		else if (banList.contains(requestedPlayerUUID))
 		{
 			player.sendMessage(prefix + ChatColor.RED + "This player has blocked requests.");
-			return;
 		}
+		// Check if the requested player is already requesting someone else
 		else if (plugin.getConfig().getString("marriage.players." + requestedPlayerUUID + ".requesting") != null && !plugin.getConfig().getString("marriage.players." + requestedPlayerUUID + ".requesting").isEmpty())
 		{
 			player.sendMessage(prefix + ChatColor.RED + "This player has sent a request to someone else.");
-			return;
 		}
+		// Check if the requested player already has a request
 		else if (plugin.getConfig().getString("marriage.players." + requestedPlayerUUID + ".requested") != null && !plugin.getConfig().getString("marriage.players." + requestedPlayerUUID + ".requested").isEmpty())
 		{
 			player.sendMessage(prefix + ChatColor.RED + "This player has a pending request already.");
-			return;
 		}
+		// Check if the user already sent a request
 		else if (plugin.getConfig().getString("marriage.players." + player.getUniqueId() + ".requesting") != null && !plugin.getConfig().getString("marriage.players." + player.getUniqueId() + ".requesting").isEmpty())
 		{
 			player.sendMessage(prefix + ChatColor.RED + "You are already requesting another player");
 			player.sendMessage(miniPrefix + ChatColor.RED + "You sent a request to: " + ChatColor.GOLD + plugin.getConfig().getString("marriage.players." + player.getUniqueId() + ".requesting"));
 			player.sendMessage(miniPrefix + ChatColor.RED + "You can remove a expired request with " + ChatColor.GOLD + "/marriage date" + ChatColor.RED + ".");
-			return;
 		}
+		// Check if the user has a pending request
 		else if (plugin.getConfig().getString("marriage.players." + player.getUniqueId() + ".requested") != null && !plugin.getConfig().getString("marriage.players." + player.getUniqueId() + ".requested").isEmpty())
 		{
 			player.sendMessage(prefix + ChatColor.RED + "You have a pending request from another player.");
 			player.sendMessage(miniPrefix + ChatColor.RED + "The following player has requested a date: " + ChatColor.GOLD + plugin.getConfig().getString("marriage.players." + player.getUniqueId() + ".requested"));
 			player.sendMessage(miniPrefix + ChatColor.RED + "Accept their request with " + ChatColor.GOLD + "/marriage accept" + ChatColor.RED + ".");
 			player.sendMessage(miniPrefix + ChatColor.RED + "Decline their request with " + ChatColor.GOLD + "/marriage decline" + ChatColor.RED + ".");
-			return;
 		}
+		// Everything looks good. Send request.
 		else
 		{
 			// TODO Send request to player.

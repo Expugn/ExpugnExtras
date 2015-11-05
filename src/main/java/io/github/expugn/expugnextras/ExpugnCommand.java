@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
  * @author Expugn
  * https://github.com/Expugn
  * 
- * @version 1.0
+ * @version 2.0
  */
 public class ExpugnCommand implements CommandExecutor
 {
@@ -98,6 +98,33 @@ public class ExpugnCommand implements CommandExecutor
 					case "cleardata":
 						clearData(player);
 						break;
+					case "setdungeon":
+						if (args.length >= 3)
+							setDungeon(player, args[1], Long.parseLong(args[2]));
+						else
+							invalidParam(player);
+						break;
+					case "settime":
+						if (args.length >= 2)
+							setTime(player, args[1]);
+						else
+							invalidParam(player);
+						break;
+					case "deldungeon":
+						if (args.length >= 2)
+							delDungeon(player, args[1]);
+						else
+							invalidParam(player);
+						break;
+					case "checktime":
+						if (args.length >= 2)
+							checkTime(player, args[1]);
+						else
+							invalidParam(player);
+						break;
+					case "listdungeon":
+						listDungeon(player);
+						break;
 					default:
 						player.sendMessage(ChatColor.RED + "Invalid Command. Use /expugn help for a help menu.");
 						break;
@@ -133,6 +160,12 @@ public class ExpugnCommand implements CommandExecutor
 		player.sendMessage("  - warpsetting [warpname] [number] - Sets the hours for a cooldown or the daily limit.");
 		player.sendMessage("  - warpsetting [warpname] [warpname] - Sets an alternate warp to move the player if the player could not warp.");
 		player.sendMessage("  - cleardata - Deletes all cooldown/limit data from the configuration file.");
+		player.sendMessage(ChatColor.GREEN + "- Dungeon Cooldown Timer:");
+		player.sendMessage("  - setdungeon [dungeon] [dungeon loot cooldown in milliseconds] - Set a new 'dungeon' to be recorded.");
+		player.sendMessage("  - settime [dungeon] - Records the current time for the user.");
+		player.sendMessage("  - deldungeon [dungeon] - Removes a dungeon from the configuration file.");
+		player.sendMessage("  - checktime [dungeon] - Displays the time remaining or if it's ready.");
+		player.sendMessage("  - listdungeon - Lists all dungeons.");
 	}
 	/**
 	 * Warp List: Lists all the warps available and written onto the configuration file.
@@ -462,5 +495,158 @@ public class ExpugnCommand implements CommandExecutor
 		plugin.getConfig().set("warps.data", null);
 		saveConfig();
 		player.sendMessage(ChatColor.GREEN + "Cooldown and limit data has been cleared.");
+	}
+	/**
+	 * Set Dungeon - Sets a new "Dungeon" in the configuration file.
+	 * @param player
+	 */
+	public void setDungeon(Player player, String name, long milliseconds)
+	{
+		if (this.checkDungeon(name) == false)
+		{
+			// Set Cooldown
+			plugin.getConfig().set("cooldowns.dungeons." + name + ".cooldown", milliseconds);
+			
+			// Add Dungeon to List
+			List<String> dungeonList = plugin.getConfig().getStringList("cooldowns.list");
+			dungeonList.add(name);
+			plugin.getConfig().set("cooldowns.list", dungeonList);
+			
+			// Save the configuration
+			saveConfig();
+			
+			player.sendMessage(ChatColor.GREEN + "Created dungeon " + ChatColor.GOLD + name);
+		}
+		else
+		{
+			// Set Cooldown
+			plugin.getConfig().set("cooldowns.dungeons." + name + ".cooldown", milliseconds);
+			
+			// Save the configuration
+			saveConfig();
+			
+			player.sendMessage(ChatColor.GREEN + "Updated dungeon " + ChatColor.GOLD + name);
+		}
+	}
+	/**
+	 * Set Time - Records the current time into the config for a player.
+	 * 
+	 * @param player - Player who sent the command
+	 * @param name - Name of the dungeon
+	 */
+	public void setTime(Player player, String name)
+	{
+		if (this.checkDungeon(name) == true)
+		{
+			long timeTilNext = System.currentTimeMillis() + plugin.getConfig().getLong("cooldowns.dungeons." + name + ".cooldown");
+			plugin.getConfig().set("cooldowns.dungeons." + name + ".players." + player.getUniqueId(), timeTilNext);
+			System.out.println("[ExpugnExtras](DungeonCooldowns): Recorded time in: \n" + "cooldowns.dungeons." + name + ".players." + player.getUniqueId());
+			// Save the configuration
+			saveConfig();
+		}
+	}
+	/**
+	 * Delete Dungeon - Deletes a dungeon from the supported list.
+	 * 
+	 * @param player - Player who sent the command
+	 * @param name - Name of the dungeon
+	 */
+	public void delDungeon(Player player, String name)
+	{
+		if (this.checkDungeon(name) == false)
+		{
+			player.sendMessage(ChatColor.RED + "This dungeon does not exist. Use /expugn listdungeon for a list of dungeons.");
+		}
+		else
+		{	
+			// Remove warp from configuration file
+			plugin.getConfig().set("cooldowns.dungeons." + name, null);
+			// Remove warp from warp list
+			List<String> dungeonList = plugin.getConfig().getStringList("cooldowns.list");
+			dungeonList.remove(name);
+			plugin.getConfig().set("cooldowns.list", dungeonList);
+			// Save configuration file
+			saveConfig();
+			
+			player.sendMessage(ChatColor.GREEN + "Dungeon " + name + " has been removed.");
+		}
+	}
+	/**
+	 * Check Time - Checks how much time a player has before they can loot a chest again.
+	 * 
+	 * @param player - Player who sent the command
+	 * @param name - Name of the dungeon
+	 */
+	public void checkTime(Player player, String name)
+	{
+		if (this.checkDungeon(name) == false)
+		{
+			player.sendMessage(ChatColor.RED + "This dungeon does not exist. Use /expugn listdungeon for a list of dungeons.");
+		}
+		else
+		{
+			long playerTime = plugin.getConfig().getLong("cooldowns.dungeons." + name + ".players." + player.getUniqueId());
+			if(playerTime <= System.currentTimeMillis())
+			{
+				player.sendMessage(ChatColor.GREEN + "You can claim the loot chest at the end of this dungeon.");
+				
+				// Delete player data
+				plugin.getConfig().set("cooldowns.dungeons." + name + ".players." + player.getUniqueId(), null);
+				
+				// Save the configuration
+				saveConfig();
+			}
+			else
+			{
+				long timeLeft = playerTime - System.currentTimeMillis();
+				int hours = 0;
+				int minutes = 0;
+				int seconds = 0;
+				if (playerTime >= 3600000)
+				{
+					hours = (int) timeLeft / 3600000;
+					timeLeft = timeLeft % 3600000;
+				}
+				if (timeLeft >= 60000)
+				{
+					minutes = (int) timeLeft / 60000;
+					timeLeft = timeLeft % 60000;
+				}
+				if (timeLeft >= 1000)
+				{
+					seconds = (int) timeLeft / 1000;
+					timeLeft = timeLeft % 1000;
+				}
+				player.sendMessage(ChatColor.RED + "You can't claim the loot chest just yet!");
+				player.sendMessage(ChatColor.RED + "You can claim it again in: " + hours + " hours " + minutes + " minutes and " + seconds + " seconds.");
+			}
+		}
+	}
+	/**
+	 * List Dungeon - Displays a list of supported dungeons to the player.
+	 * 
+	 * @param player - Player who sent the command
+	 */
+	public void listDungeon(Player player)
+	{
+		List<String> dungeonList = plugin.getConfig().getStringList("cooldowns.list");
+		player.sendMessage(ChatColor.GOLD + "There are currently " + dungeonList.size() + " dungeons");
+		for (String s : dungeonList)
+		{
+			player.sendMessage("- " + s);
+		}
+	}
+	/**
+	 * Check Dungeon - Checks if the supplied dungeon is supported.
+	 * 
+	 * @param name - Player who sent the command
+	 * @return - Returns true if the dungeon exists in the file | Returns false if the dungeon does not exist in the file.
+	 */
+	public boolean checkDungeon(String name)
+	{
+		List<String> dungeonList = plugin.getConfig().getStringList("cooldowns.list");
+		if (dungeonList.contains(name))
+			return true;
+		return false;
 	}
 }
