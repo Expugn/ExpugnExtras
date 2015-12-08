@@ -540,9 +540,13 @@ public class ExpugnCommand implements CommandExecutor
 		{
 			long timeTilNext = System.currentTimeMillis() + plugin.getConfig().getLong("cooldowns.dungeons." + name + ".cooldown");
 			plugin.getConfig().set("cooldowns.dungeons." + name + ".players." + player.getUniqueId(), timeTilNext);
-			System.out.println("[ExpugnExtras](DungeonCooldowns): Recorded time in: \n" + "cooldowns.dungeons." + name + ".players." + player.getUniqueId());
 			// Save the configuration
 			saveConfig();
+		}
+		else
+		{
+			Location loc = player.getLocation();
+			System.out.println("[ExpugnExtras]: Could not record time. \nPlayer location: " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + " | " + player.getWorld().getName());
 		}
 	}
 	/**
