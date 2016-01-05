@@ -7,7 +7,7 @@ website: https://github.com/Expugn/ExpugnExtras
 
 main: io.github.expugn.expugnextras.ExpugnExtras
 database: false
-softdepend: [VariableTriggers, Vault, Essentials]
+softdepend: [VariableTriggers, Vault, Essentials, TitleManager, PermissionsEx]
 
 commands:
   expugn:

@@ -2,7 +2,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.expugn</groupId>
   <artifactId>ExpugnExtras</artifactId>
-  <version>1.0</version>
   <repositories>
        <repository>
          <id>bukkit-repo</id>
@@ -28,4 +27,5 @@
            <scope>provided</scope>
        </dependency>
    </dependencies>
+   <version>1.0</version>
 </project>

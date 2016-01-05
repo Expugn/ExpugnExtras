@@ -1,6 +1,5 @@
 package io.github.expugn.expugnextras;
 
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -33,15 +32,13 @@ public class ExpugnExtras extends JavaPlugin
 			getLogger().info("'/marriage' command enabled.");
 		}
 		this.saveDefaultConfig();
+		this.reloadConfig();
 	}
 	
 	@Override
 	public void onDisable()
 	{
-		PluginDescriptionFile pdfFile = this.getDescription();
-		getLogger().info(pdfFile.getName() + " is disabled.");
 		getLogger().info("[WARNING]: Some features in-game may not work correctly!");
-		this.saveConfig();
 	}
 	
 	private boolean setupEconomy()

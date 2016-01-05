@@ -1,12 +1,6 @@
 package io.github.expugn.expugnextras;
 
-import java.util.Calendar;
-import java.util.List;
-
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -22,8 +16,68 @@ import org.bukkit.entity.Player;
  */
 public class ExpugnCommand implements CommandExecutor
 {
-	private final ExpugnExtras plugin;
-	private Calendar midnight; 
+	private final io.github.expugn.functions.Warps warps;
+	private final io.github.expugn.functions.DungeonTimers timers;
+	private final io.github.expugn.functions.TimeTrial trials;
+	private final io.github.expugn.functions.ListTitles listtitles;
+	
+	// System Messages
+	private static final String OPENING_MESSAGE = ChatColor.GOLD + "Welcome to ExpugnExtras. Use /expugn help for a help menu.";
+	
+	// Error Messages
+	private static final String INVALID_COMMAND_ERROR = ChatColor.RED + "Invalid Command. Use /expugn help for a help menu.";
+	private static final String INVALID_PARAMETER_ERROR = ChatColor.RED + "Invalid parameters. Use /expugn help to check if you typed the command correctly.";
+	private static final String PLAYERS_ONLY_ERROR = ChatColor.RED + "Only players can run this command.";
+	
+	// Help Menu
+	private static final String HELP_MENU = ChatColor.GOLD +  "ExpugnExtras Help Menu:\n"
+			                              +                   "(All commands begin with /expugn)\n"
+			                              + ChatColor.GREEN + "- General:\n"
+			                              + ChatColor.WHITE + "  - help - Help Menu\n"
+			                              + ChatColor.GREEN + "- Warps:\n"
+			                              + ChatColor.WHITE + "  - warp [warpname] - Warp to a destination.\n"
+			                              +                   "  - warpinfo [warpname] - Get details of a warp.\n"
+			                              +                   "  - warplist - Lists warps managed by ExpugnExtras.\n"
+			                              +                   "  - setwarp [warpname] - Define a warp location.\n"
+			                              +                   "  - delwarp [warpname] - Remove a warp location.\n"
+			                              +                   "  - warpsetting [warpname] <cooldown|limit> - Defines a warp to use a cooldown system or a daily limit.\n"
+			                              +                   "  - warpsetting [warpname] [number] - Sets the hours for a cooldown or the daily limit.\n"
+			                              +                   "  - warpsetting [warpname] [warpname] - Sets an alternate warp to move the player if the player could not warp.\n"
+			                              + ChatColor.GREEN + "- Dungeon Cooldown Timer:\n"
+			                              + ChatColor.WHITE + "  - dungeonlist - Lists all dungeons.\n"
+			                              +                   "  - setdungeon [dungeon] [dungeon loot cooldown in milliseconds] - Set a new 'dungeon' to be recorded.\n"
+			                              +                   "  - deldungeon [dungeon] - Removes a dungeon from the configuration file.\n"
+			                              +                   "  - settime [dungeon] - Records the current time for the user.\n"
+			                              +                   "  - checktime [dungeon] - Displays the time remaining or if it's ready.\n"
+			                              + ChatColor.GREEN + "- Time Trials:\n"
+			                              + ChatColor.WHITE + "  - setlocation [name] - Creates a new location.\n"
+			                              +                   "  - dellocation [name] - Deletes a location.\n"
+			                              +                   "  - locationlist - Lists all available locations.\n"
+			                              +                   "  - starttrial [name] - Begins a new time trial.\n"
+			                              +                   "  - endtrial [name] - Ends a time trial.\n"
+			                              +                   "  - getrankings [name] - Gets the rankings of a location.";
+	
+	// Command Strings
+	private static final String HELP_COMMAND = "help";
+	private static final String WARP_COMMAND = "warp";
+	private static final String WARP_INFO_COMMAND = "warpinfo";
+	private static final String WARP_LIST_COMMAND = "warplist";
+	private static final String SET_WARP_COMMAND = "setwarp";
+	private static final String DELETE_WARP_COMMAND = "delwarp";
+	private static final String WARP_SETTING_COMMAND = "warpsetting";
+	private static final String DUNGEON_LIST_COMMAND = "dungeonlist";
+	private static final String SET_DUNGEON_COMMAND = "setdungeon";
+	private static final String DELETE_DUNGEON_COMMAND = "deldungeon";
+	private static final String SET_TIME_COMMAND = "settime";
+	private static final String CHECK_TIME_COMMAND = "checktime";
+	private static final String SET_LOCATION_COMMAND = "setlocation";
+	private static final String DELETE_LOCATION_COMMAND = "dellocation";
+	private static final String LOCATION_LIST_COMMAND = "locationlist";
+	private static final String START_TRIAL_COMMAND = "starttrial";
+	private static final String END_TRIAL_COMMAND = "endtrial";
+	private static final String GET_RANKINGS_COMMAND = "getrankings";
+	private static final String LIST_TITLES_COMMAND = "listtitles";
+	
 	/**
 	 * Constructor for the class
 	 * 
@@ -31,11 +85,10 @@ public class ExpugnCommand implements CommandExecutor
 	 */
 	public ExpugnCommand(ExpugnExtras plugin)
 	{
-		this.plugin = plugin;
-		if(plugin.getConfig().getLong("midnighttime") == 0L)
-		{
-			resetTimer();
-		}
+		warps = new io.github.expugn.functions.Warps(plugin);
+		timers = new io.github.expugn.functions.DungeonTimers(plugin);
+		trials = new io.github.expugn.functions.TimeTrial(plugin);
+		listtitles = new io.github.expugn.functions.ListTitles(plugin);
 	}
 	/**
 	 * Command Manager:
@@ -51,82 +104,124 @@ public class ExpugnCommand implements CommandExecutor
 		if (sender instanceof Player)
 		{
 			Player player = (Player) sender;
+			onExecute();
 			if (args.length == 0)
 			{
-				player.sendMessage(ChatColor.GOLD + "Welcome to ExpugnExtras. Use /expugn help for a help menu.");
+				player.sendMessage(OPENING_MESSAGE);
 			}
 			else
 			{
-				switch(args[0])
+				switch(args[0].toLowerCase())
 				{ 
-					case "help": 
+					case HELP_COMMAND: 
 						helpMenu(player);
 						break;
-					case "warplist":
-						warpList(player);
+					case WARP_LIST_COMMAND:
+						warps.warpList(player);
 						break;
-					case "warpinfo":
+					case WARP_INFO_COMMAND:
 						if (args.length >= 2)
-							warpInfo(player, args[1]);
+							warps.warpInfo(player, args[1]);
 						else
-							invalidParam(player);
+							player.sendMessage(INVALID_PARAMETER_ERROR);
 						break;
-					case "warp":
+					case WARP_COMMAND:
 						if (args.length >= 2)
-							warp(player, args[1]);
+							warps.warp(player, args[1]);
 						else
-							invalidParam(player);
+							player.sendMessage(INVALID_PARAMETER_ERROR);
 						break;
-					case "setwarp":
+					case SET_WARP_COMMAND:
 						if (args.length >= 2)
-							setWarp(player, args[1]);
+							warps.setWarp(player, args[1]);
 						else
-							invalidParam(player);
+							player.sendMessage(INVALID_PARAMETER_ERROR);
 						break;
-					case "delwarp":
+					case DELETE_WARP_COMMAND:
 						if (args.length >= 2)
-							delWarp(player, args[1]);
+							warps.delWarp(player, args[1]);
 						else
-							invalidParam(player);
+							player.sendMessage(INVALID_PARAMETER_ERROR);
 						break;
-					case "warpsetting":
+					case WARP_SETTING_COMMAND:
 						if (args.length >= 3)
-							warpSetting(player, args[1], args[2]);
+							warps.warpSetting(player, args[1], args[2]);
 						else
-							invalidParam(player);
+							player.sendMessage(INVALID_PARAMETER_ERROR);
 						break;
-					case "cleardata":
-						clearData(player);
-						break;
-					case "setdungeon":
+					case SET_DUNGEON_COMMAND:
 						if (args.length >= 3)
-							setDungeon(player, args[1], Long.parseLong(args[2]));
+							timers.setDungeon(player, args[1], Long.parseLong(args[2]));
 						else
-							invalidParam(player);
+						{
+							if (args.length >= 2)
+								timers.setDungeon(player, args[1], Long.parseLong("72000000"));
+							else
+								player.sendMessage(INVALID_PARAMETER_ERROR);
+						}
 						break;
-					case "settime":
+					case SET_TIME_COMMAND:
 						if (args.length >= 2)
-							setTime(player, args[1]);
+							timers.setTime(player, args[1]);
 						else
-							invalidParam(player);
+							player.sendMessage(INVALID_PARAMETER_ERROR);
 						break;
-					case "deldungeon":
+					case DELETE_DUNGEON_COMMAND:
 						if (args.length >= 2)
-							delDungeon(player, args[1]);
+							timers.delDungeon(player, args[1]);
 						else
-							invalidParam(player);
+							player.sendMessage(INVALID_PARAMETER_ERROR);
 						break;
-					case "checktime":
+					case CHECK_TIME_COMMAND:
 						if (args.length >= 2)
-							checkTime(player, args[1]);
+							timers.checkTime(player, args[1]);
 						else
-							invalidParam(player);
+							player.sendMessage(INVALID_PARAMETER_ERROR);
 						break;
-					case "listdungeon":
-						listDungeon(player);
+					case DUNGEON_LIST_COMMAND:
+							timers.dungeonList(player);
+						break;
+					case SET_LOCATION_COMMAND:
+						if (args.length >= 2)
+							trials.setLocation(player, args[1]);
+						else
+							player.sendMessage(INVALID_PARAMETER_ERROR);
+						break;
+					case DELETE_LOCATION_COMMAND:
+						if (args.length >= 2)
+							trials.delLocation(player, args[1]);
+						else
+							player.sendMessage(INVALID_PARAMETER_ERROR);
+						break;
+					case LOCATION_LIST_COMMAND:
+						trials.locationList(player);
+						break;
+					case START_TRIAL_COMMAND:
+						if (args.length >= 2)
+							trials.startTrial(player, args[1]);
+						else
+							player.sendMessage(INVALID_PARAMETER_ERROR);
+						break;
+					case END_TRIAL_COMMAND:
+						if (args.length >= 2)
+							trials.endTrial(player, args[1]);
+						else
+							player.sendMessage(INVALID_PARAMETER_ERROR);
+						break;
+					case GET_RANKINGS_COMMAND:
+						if (args.length >= 2)
+							trials.getRankings(player, args[1]);
+						else
+							player.sendMessage(INVALID_PARAMETER_ERROR);
+						break;
+					case LIST_TITLES_COMMAND:
+						if (args.length == 1)
+							listtitles.getTitles(player);
+						else
+							player.sendMessage(INVALID_PARAMETER_ERROR);
 						break;
 					default:
-						player.sendMessage(ChatColor.RED + "Invalid Command. Use /expugn help for a help menu.");
+						player.sendMessage(INVALID_COMMAND_ERROR);
 						break;
 				}
 			}
@@ -134,7 +229,7 @@ public class ExpugnCommand implements CommandExecutor
 		}
 		else
 		{
-			sender.sendMessage(ChatColor.RED + "Only players can run this command.");
+			sender.sendMessage(PLAYERS_ONLY_ERROR);
 			return false;
 		}
 	}
@@ -146,511 +241,17 @@ public class ExpugnCommand implements CommandExecutor
 	 */
 	public void helpMenu(Player player)
 	{
-		player.sendMessage(ChatColor.GOLD + "ExpugnExtras Help Menu:");
-		player.sendMessage(ChatColor.GOLD + "(All commands begin with /expugn)");
-		player.sendMessage(ChatColor.GREEN + "- General:");
-		player.sendMessage("  - help - Help Menu");
-		player.sendMessage(ChatColor.GREEN + "- Warps:");
-		player.sendMessage("  - warp [warpname] - Warp to a destination.");
-		player.sendMessage("  - setwarp [warpname] - Define a warp location.");
-		player.sendMessage("  - delwarp [warpname] - Remove a warp location.");
-		player.sendMessage("  - warplist - Lists warps managed by ExpugnExtras.");
-		player.sendMessage("  - warpinfo [warpname] - Get details of a warp.");
-		player.sendMessage("  - warpsetting [warpname] <cooldown|limit> - Defines a warp to use a cooldown system or a daily limit.");
-		player.sendMessage("  - warpsetting [warpname] [number] - Sets the hours for a cooldown or the daily limit.");
-		player.sendMessage("  - warpsetting [warpname] [warpname] - Sets an alternate warp to move the player if the player could not warp.");
-		player.sendMessage("  - cleardata - Deletes all cooldown/limit data from the configuration file.");
-		player.sendMessage(ChatColor.GREEN + "- Dungeon Cooldown Timer:");
-		player.sendMessage("  - setdungeon [dungeon] [dungeon loot cooldown in milliseconds] - Set a new 'dungeon' to be recorded.");
-		player.sendMessage("  - settime [dungeon] - Records the current time for the user.");
-		player.sendMessage("  - deldungeon [dungeon] - Removes a dungeon from the configuration file.");
-		player.sendMessage("  - checktime [dungeon] - Displays the time remaining or if it's ready.");
-		player.sendMessage("  - listdungeon - Lists all dungeons.");
+		player.sendMessage(HELP_MENU);
 	}
+	
 	/**
-	 * Warp List: Lists all the warps available and written onto the configuration file.
-	 * 
-	 * @param player - The player who sent the command.
+	 * On Execute:
+	 * Runs these functions whenever /expugn is used.
 	 */
-	public void warpList(Player player)
+	public void onExecute()
 	{
-		List<String> warpList = plugin.getConfig().getStringList("warps.list");
-		player.sendMessage(ChatColor.GOLD + "There are currently " + warpList.size() + " warps");
-		for (String s : warpList)
-		{
-			player.sendMessage("- " + s);
-		}
-		player.sendMessage(ChatColor.GOLD + "For more info on a warp: use /expugn warpinfo [warpname].");
+		warps.checkMidnight();
+		trials.checkProgress();
 	}
-	/**
-	 * Warp Info: Reads the information of the warp in the configuration file and returns it back to the player.
-	 * 
-	 * @param player - The player who sent the command.
-	 * @param name - The name of the warp.
-	 */
-	public void warpInfo(Player player, String name)
-	{
-		if (this.checkWarp(name) == false)
-		{
-			player.sendMessage(ChatColor.RED + "Invalid warp. Use /expugn warplist for a list of warps.");
-			return;
-		}
-		player.sendMessage(ChatColor.GOLD + "Information for warp " + name + ":");
-		player.sendMessage("x: " + plugin.getConfig().getInt("warps.warp." + name + ".x"));
-		player.sendMessage("y: " + plugin.getConfig().getInt("warps.warp." + name + ".y"));
-		player.sendMessage("z: " + plugin.getConfig().getInt("warps.warp." + name + ".z"));
-		player.sendMessage("yaw: " + plugin.getConfig().getInt("warps.warp." + name + ".yaw"));
-		player.sendMessage("pitch: " + plugin.getConfig().getInt("warps.warp." + name + ".pitch"));
-		player.sendMessage("world: " + plugin.getConfig().getString("warps.warp." + name + ".world"));
-		player.sendMessage("type: " + plugin.getConfig().getString("warps.warp." + name + ".type"));
-		player.sendMessage("value: " + plugin.getConfig().getInt("warps.warp." + name + ".value") + " hours/daily entry limit");
-		player.sendMessage("else: " + plugin.getConfig().getString("warps.warp." + name + ".else") + " alternate warp");
-	}
-	/**
-	 * Warp: Teleports a player to a warp's location.
-	 * 
-	 * @param player - The player who sent the command.
-	 * @param name - The name of the warp.
-	 */
-	public void warp(Player player, String name)
-	{
-		// Check if warp exists
-		// if not: quit the function.
-		if (this.checkWarp(name) == false)
-		{
-			player.sendMessage(ChatColor.RED + "Invalid warp. Use /expugn warplist for a list of warps.");
-			return;
-		}
-		// Determine if the warp is a cooldown or limit warp.
-		int value = plugin.getConfig().getInt("warps.warp." + name + ".value");
-		if (value != 0)
-		{
-			switch(plugin.getConfig().getString("warps.warp." + name + ".type"))
-			{
-				case "cooldown":
-					// Store player time till they can use again
-					long canUseAgain = plugin.getConfig().getLong("warps.data.cooldown." + name + "." + player.getUniqueId());
-					// Check if the time they can use it again is higher than the current time.
-					// if true: inform the player and quit the function.
-					if (canUseAgain >= System.currentTimeMillis())
-					{
-						player.sendMessage(ChatColor.RED + "You cannot use this warp again just yet.");
-						convertMilliseconds(player, (canUseAgain - System.currentTimeMillis()));
-						if (plugin.getConfig().getString("warps.warp." + name + ".else") != null && !plugin.getConfig().getString("warps.warp." + name + ".else").isEmpty())
-						{
-							warp(player, plugin.getConfig().getString("warps.warp." + name + ".else"));
-							player.sendMessage(ChatColor.RED + "You have been moved to a different location because you failed to warp.");
-						}
-						return;
-					}
-					// Determine how many milliseconds a player has to wait until they warp again.
-					long addedTime = plugin.getConfig().getInt("warps.warp." + name + ".value") * 3600000;
-					// Store and save data.
-					plugin.getConfig().set("warps.data.cooldown." + name + "." + player.getUniqueId(), System.currentTimeMillis() + addedTime);
-					saveConfig();
-					break;
-				case "limit":
-					// Check if midnight has passed.
-					// if true: delete all player limit data
-					checkMidnight();
-					// Store amount of times a player used a warp and the max daily amount
-					int amountUsed = plugin.getConfig().getInt("warps.data.limit." + name + "." + player.getUniqueId());
-					int maxAmount = plugin.getConfig().getInt("warps.warp." + name + ".value");
-					// if the amount they used is higher/equal to the max daily amount:
-					// inform the player and quit the function
-					if (amountUsed >= maxAmount)
-					{
-						player.sendMessage(ChatColor.RED + "You have exceeded the daily limit to use this warp.");
-						convertMilliseconds(player, (plugin.getConfig().getLong("midnighttime") - System.currentTimeMillis()));
-						if (plugin.getConfig().getString("warps.warp." + name + ".else") != null && !plugin.getConfig().getString("warps.warp." + name + ".else").isEmpty())
-						{
-							warp(player, plugin.getConfig().getString("warps.warp." + name + ".else"));
-							player.sendMessage(ChatColor.RED + "You have been moved to a different location because you failed to warp.");
-						}
-						return;
-					}
-					// if the limit is not zero:
-					// add 1 to the amount of times a player used the warp
-					else if (maxAmount != 0)
-					{
-						amountUsed++;
-						plugin.getConfig().set("warps.data.limit." + name + "." + player.getUniqueId(), amountUsed);
-					}
-					// Save the configuration
-					saveConfig();
-					break;
-			}
-		}
-		// Warp player to the name of the warp.
-		World warpWorld = Bukkit.getWorld(plugin.getConfig().getString("warps.warp." + name + ".world"));
-		double warpX = plugin.getConfig().getDouble("warps.warp." + name + ".x");
-		double warpY = plugin.getConfig().getDouble("warps.warp." + name + ".y");
-		double warpZ = plugin.getConfig().getDouble("warps.warp." + name + ".z");
-		float warpYaw = (float) plugin.getConfig().getDouble("warps.warp." + name + ".yaw");
-		float warpPitch = (float) plugin.getConfig().getDouble("warps.warp." + name + ".pitch");
-		Location loc = new Location(warpWorld, warpX, warpY, warpZ, warpYaw, warpPitch);
-		player.teleport(loc);
-	}
-	/**
-	 * Set Warp: Gets the player's location and saves it onto the configuration file.
-	 * 
-	 * @param player - The player who sent the command.
-	 * @param name - The name of the warp.
-	 */
-	public void setWarp(Player player, String name)
-	{
-		// Get player location
-		Location loc = player.getLocation();
-		if (this.checkWarp(name) == false)
-		{
-			player.sendMessage(ChatColor.GOLD + "Warp does not exist. Creating a new warp.");
-			
-			// Setup a new path in the configuration.
-			plugin.getConfig().set("warps.warp." + name + ".x", loc.getX());
-			plugin.getConfig().set("warps.warp." + name + ".y", loc.getY());
-			plugin.getConfig().set("warps.warp." + name + ".z", loc.getZ());
-			plugin.getConfig().set("warps.warp." + name + ".yaw", loc.getYaw());
-			plugin.getConfig().set("warps.warp." + name + ".pitch", loc.getPitch());
-			plugin.getConfig().set("warps.warp." + name + ".world", player.getWorld().getName());
-			plugin.getConfig().set("warps.warp." + name + ".type", "cooldown");
-			plugin.getConfig().set("warps.warp." + name + ".value", 0);
-			
-			// Add warp name to the list of warps
-			List<String> warpList = plugin.getConfig().getStringList("warps.list");
-			warpList.add(name);
-			plugin.getConfig().set("warps.list", warpList);
-			
-			// Remind player to modify settings
-			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name + " <cooldown|limit> to modify the type of warp.");
-			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name + " [number] to modify the cooldown/daily limit of the warp.");
-			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name + " [warpname] to add a alternate location to send the player if they failed to warp.");
-		}
-		else
-		{
-			player.sendMessage(ChatColor.GOLD + "There is an existing warp. Defining new position.");
-			
-			// Set new values in the configuration file
-			plugin.getConfig().set("warps.warp." + name + ".x", loc.getX());
-			plugin.getConfig().set("warps.warp." + name + ".y", loc.getY());
-			plugin.getConfig().set("warps.warp." + name + ".z", loc.getZ());
-			plugin.getConfig().set("warps.warp." + name + ".yaw", loc.getYaw());
-			plugin.getConfig().set("warps.warp." + name + ".pitch", loc.getPitch());
-			plugin.getConfig().set("warps.warp." + name + ".world", player.getWorld().getName());
-		}
-		// Save configuration file
-		this.saveConfig();
-	}
-	/**
-	 * Delete Warp: Removes a warp from the configuration file.
-	 * 
-	 * @param player - The player who sent the command.
-	 * @param name - The name of the warp.
-	 */
-	public void delWarp(Player player, String name)
-	{
-		if (this.checkWarp(name) == false)
-		{
-			player.sendMessage(ChatColor.RED + "This warp does not exist. Use /expugn warplist for a list of warps.");
-		}
-		else
-		{	
-			// Remove warp from configuration file
-			plugin.getConfig().set("warps.warp." + name, null);
-			// Remove warp from warp list
-			List<String> warpList = plugin.getConfig().getStringList("warps.list");
-			warpList.remove(name);
-			plugin.getConfig().set("warps.list", warpList);
-			// Remove warp data
-			plugin.getConfig().set("warps.data.cooldown." + name, null);
-			plugin.getConfig().set("warps.data.limit." + name, null);
-			// Save configuration file
-			saveConfig();
-			
-			player.sendMessage(ChatColor.GREEN + "Warp " + name + " has been removed.");
-		}
-	}
-	/**
-	 * Warp Setting: Sets the 'type' setting of a warp.
-	 * 
-	 * @param player - The player who sent the command.
-	 * @param name - The name of the warp.
-	 * @param param - 'cooldown' or 'limit', alternate warp, or a value to determine the hourly cooldown or daily limit
-	 */
-	public void warpSetting(Player player, String name, String param)
-	{
-		if (!this.checkWarp(name))
-		{
-			player.sendMessage(ChatColor.RED + "This warp does not exist. Use /expugn warplist for a list of warps.");
-			return;
-		}
-		if (param.equals("cooldown") || param.equals("limit"))
-		{
-			plugin.getConfig().set("warps.warp." + name + ".type", param);
-			player.sendMessage(ChatColor.GREEN + "Warp " + name + " type modified to " + ChatColor.GOLD + param);
-		}
-		else if (checkWarp(param))
-		{
-			plugin.getConfig().set("warps.warp." + name + ".else", param);
-			player.sendMessage(ChatColor.GREEN + "Warp " + name + " alternate warp modified to " + ChatColor.GOLD + param);
-		}
-		else
-		{
-			int value = Integer.parseInt(param);
-			plugin.getConfig().set("warps.warp." + name + ".value", value);
-			player.sendMessage(ChatColor.GREEN + "Warp " + name + " value modified to " + ChatColor.GOLD + value);
-		}
-		saveConfig();
-	}
-	/**
-	 * Check Warp: Determines if the warp exists in the configuration file.
-	 * 
-	 * @param name - The name of the warp.
-	 * @return - Returns true if warp exists in the file. Returns false if warp is nonexistant.
-	 */
-	public boolean checkWarp(String name)
-	{
-		List<String> warpList = plugin.getConfig().getStringList("warps.list");
-		if (warpList.contains(name))
-			return true;
-		return false;
-	}
-	/**
-	 * Save Config: Saves the configuration file.
-	 */
-	public void saveConfig()
-	{
-		plugin.getConfig().options().copyDefaults(true);
-		plugin.saveConfig();
-	}
-	/**
-	 * Invalid Parameter: Returns a error message to the player informing them of invalid parameters.
-	 * 
-	 * @param player - The player who sent the command.
-	 */
-	public void invalidParam(Player player)
-	{
-		player.sendMessage(ChatColor.RED + "Invalid parameters. Use /expugn help to check if you typed the command correctly.");
-	}
-	/**
-	 * Check Midnight: Determines if midnight has passed. Resets the daily limits if true.
-	 */
-	public void checkMidnight()
-	{
-		if (plugin.getConfig().getLong("midnighttime") <= System.currentTimeMillis() - 1)
-		{
-			// Midnight has passed. Run Reset.
-			plugin.getConfig().set("warps.data.limit", null);
-			resetTimer();
-		}
-	}
-	/**
-	 * Reset Timer: Determines the amount of milliseconds it takes to be midnight and saves it.
-	 */
-	public void resetTimer()
-	{
-		midnight = Calendar.getInstance();
-		midnight.set(Calendar.HOUR_OF_DAY, 0);
-		midnight.set(Calendar.MINUTE, 0);
-		midnight.set(Calendar.SECOND, 0);
-		midnight.set(Calendar.MILLISECOND, 0);
-		midnight.set(Calendar.DAY_OF_YEAR, midnight.get(Calendar.DAY_OF_YEAR) + 1);
-		plugin.getConfig().set("midnighttime", midnight.getTimeInMillis());
-		saveConfig();
-	}
-	/**
-	 * Convert Milliseconds: Takes a variable of milliseconds and converts into easy to read text.
-	 * 
-	 * @param player - The player who sent the command
-	 * @param milliseconds - User inputted milliseconds.
-	 */
-	public void convertMilliseconds(Player player, long milliseconds)
-	{
-		int hours = 0;
-		int minutes = 0;
-		int seconds = 0;
-		if (milliseconds >= 3600000)
-		{
-			hours = (int) milliseconds / 3600000;
-			milliseconds = milliseconds % 3600000;
-		}
-		if (milliseconds >= 60000)
-		{
-			minutes = (int) milliseconds / 60000;
-			milliseconds = milliseconds % 60000;
-		}
-		if (milliseconds >= 1000)
-		{
-			seconds = (int) milliseconds / 1000;
-			milliseconds = milliseconds % 1000;
-		}
-		player.sendMessage(ChatColor.RED + "You can use this warp again in: " + hours + " hours " + minutes + " minutes and " + seconds + " seconds.");
-	}
-	/**
-	 * Clear Data - Removes all cooldown/limit data from the configuration file.
-	 * 
-	 * @param player - The player who sent the command.
-	 */
-	public void clearData(Player player)
-	{
-		plugin.getConfig().set("warps.data", null);
-		saveConfig();
-		player.sendMessage(ChatColor.GREEN + "Cooldown and limit data has been cleared.");
-	}
-	/**
-	 * Set Dungeon - Sets a new "Dungeon" in the configuration file.
-	 * @param player
-	 */
-	public void setDungeon(Player player, String name, long milliseconds)
-	{
-		if (this.checkDungeon(name) == false)
-		{
-			// Set Cooldown
-			plugin.getConfig().set("cooldowns.dungeons." + name + ".cooldown", milliseconds);
-			
-			// Add Dungeon to List
-			List<String> dungeonList = plugin.getConfig().getStringList("cooldowns.list");
-			dungeonList.add(name);
-			plugin.getConfig().set("cooldowns.list", dungeonList);
-			
-			// Save the configuration
-			saveConfig();
-			
-			player.sendMessage(ChatColor.GREEN + "Created dungeon " + ChatColor.GOLD + name);
-		}
-		else
-		{
-			// Set Cooldown
-			plugin.getConfig().set("cooldowns.dungeons." + name + ".cooldown", milliseconds);
-			
-			// Save the configuration
-			saveConfig();
-			
-			player.sendMessage(ChatColor.GREEN + "Updated dungeon " + ChatColor.GOLD + name);
-		}
-	}
-	/**
-	 * Set Time - Records the current time into the config for a player.
-	 * 
-	 * @param player - Player who sent the command
-	 * @param name - Name of the dungeon
-	 */
-	public void setTime(Player player, String name)
-	{
-		if (this.checkDungeon(name) == true)
-		{
-			long timeTilNext = System.currentTimeMillis() + plugin.getConfig().getLong("cooldowns.dungeons." + name + ".cooldown");
-			plugin.getConfig().set("cooldowns.dungeons." + name + ".players." + player.getUniqueId(), timeTilNext);
-			// Save the configuration
-			saveConfig();
-		}
-		else
-		{
-			Location loc = player.getLocation();
-			System.out.println("[ExpugnExtras]: Could not record time. \nPlayer location: " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + " | " + player.getWorld().getName());
-		}
-	}
-	/**
-	 * Delete Dungeon - Deletes a dungeon from the supported list.
-	 * 
-	 * @param player - Player who sent the command
-	 * @param name - Name of the dungeon
-	 */
-	public void delDungeon(Player player, String name)
-	{
-		if (this.checkDungeon(name) == false)
-		{
-			player.sendMessage(ChatColor.RED + "This dungeon does not exist. Use /expugn listdungeon for a list of dungeons.");
-		}
-		else
-		{	
-			// Remove warp from configuration file
-			plugin.getConfig().set("cooldowns.dungeons." + name, null);
-			// Remove warp from warp list
-			List<String> dungeonList = plugin.getConfig().getStringList("cooldowns.list");
-			dungeonList.remove(name);
-			plugin.getConfig().set("cooldowns.list", dungeonList);
-			// Save configuration file
-			saveConfig();
-			
-			player.sendMessage(ChatColor.GREEN + "Dungeon " + name + " has been removed.");
-		}
-	}
-	/**
-	 * Check Time - Checks how much time a player has before they can loot a chest again.
-	 * 
-	 * @param player - Player who sent the command
-	 * @param name - Name of the dungeon
-	 */
-	public void checkTime(Player player, String name)
-	{
-		if (this.checkDungeon(name) == false)
-		{
-			player.sendMessage(ChatColor.RED + "This dungeon does not exist. Use /expugn listdungeon for a list of dungeons.");
-		}
-		else
-		{
-			long playerTime = plugin.getConfig().getLong("cooldowns.dungeons." + name + ".players." + player.getUniqueId());
-			if(playerTime <= System.currentTimeMillis())
-			{
-				player.sendMessage(ChatColor.GREEN + "You can claim the loot chest at the end of this dungeon.");
-				
-				// Delete player data
-				plugin.getConfig().set("cooldowns.dungeons." + name + ".players." + player.getUniqueId(), null);
-				
-				// Save the configuration
-				saveConfig();
-			}
-			else
-			{
-				long timeLeft = playerTime - System.currentTimeMillis();
-				int hours = 0;
-				int minutes = 0;
-				int seconds = 0;
-				if (playerTime >= 3600000)
-				{
-					hours = (int) timeLeft / 3600000;
-					timeLeft = timeLeft % 3600000;
-				}
-				if (timeLeft >= 60000)
-				{
-					minutes = (int) timeLeft / 60000;
-					timeLeft = timeLeft % 60000;
-				}
-				if (timeLeft >= 1000)
-				{
-					seconds = (int) timeLeft / 1000;
-					timeLeft = timeLeft % 1000;
-				}
-				player.sendMessage(ChatColor.RED + "You can't claim the loot chest just yet!");
-				player.sendMessage(ChatColor.RED + "You can claim it again in: " + hours + " hours " + minutes + " minutes and " + seconds + " seconds.");
-			}
-		}
-	}
-	/**
-	 * List Dungeon - Displays a list of supported dungeons to the player.
-	 * 
-	 * @param player - Player who sent the command
-	 */
-	public void listDungeon(Player player)
-	{
-		List<String> dungeonList = plugin.getConfig().getStringList("cooldowns.list");
-		player.sendMessage(ChatColor.GOLD + "There are currently " + dungeonList.size() + " dungeons");
-		for (String s : dungeonList)
-		{
-			player.sendMessage("- " + s);
-		}
-	}
-	/**
-	 * Check Dungeon - Checks if the supplied dungeon is supported.
-	 * 
-	 * @param name - Player who sent the command
-	 * @return - Returns true if the dungeon exists in the file | Returns false if the dungeon does not exist in the file.
-	 */
-	public boolean checkDungeon(String name)
-	{
-		List<String> dungeonList = plugin.getConfig().getStringList("cooldowns.list");
-		if (dungeonList.contains(name))
-			return true;
-		return false;
-	}
+	
 }

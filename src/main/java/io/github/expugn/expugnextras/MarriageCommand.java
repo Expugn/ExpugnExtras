@@ -49,6 +49,11 @@ public class MarriageCommand implements CommandExecutor
 		 * TODO
 		 * - listeners
 		 */
+		if (plugin.getConfig().getBoolean("marriage") == false)
+		{
+			sender.sendMessage(prefix + ChatColor.RED + "Marriage is not enabled. Enable it through changing the config.yml file");
+			return true;
+		}
 		if (sender instanceof Player)
 		{
 			Player player = (Player) sender;
@@ -58,8 +63,6 @@ public class MarriageCommand implements CommandExecutor
 			}
 			else
 			{
-				player.sendMessage(prefix + ChatColor.GREEN + "Work in progress! Check back eventually." + ChatColor.GRAY + " - Expugn.");
-				/* WIP
 				switch (args[0])
 				{
 					case "help":
@@ -88,7 +91,6 @@ public class MarriageCommand implements CommandExecutor
 						break;
 				}
 				plugin.getConfig().getInt("warps.midnighttime");
-				*/
 			}
 			return true;
 		}

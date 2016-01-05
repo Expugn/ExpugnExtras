@@ -2,8 +2,12 @@
 For Talabrek's Ultimate Minecraft Network
 
 # Features
-- Warps with Cooldowns.
-- Warps with Daily Limits.
+- Warps
+  - Cooldown or Daily Limit
+  - Whitelist
+- Timers
+- Time Trials
+- Better /title
  
 # Incoming Features
 - Marriage
