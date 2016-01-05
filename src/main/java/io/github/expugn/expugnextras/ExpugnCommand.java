@@ -55,7 +55,9 @@ public class ExpugnCommand implements CommandExecutor
 			                              +                   "  - locationlist - Lists all available locations.\n"
 			                              +                   "  - starttrial [name] - Begins a new time trial.\n"
 			                              +                   "  - endtrial [name] - Ends a time trial.\n"
-			                              +                   "  - getrankings [name] - Gets the rankings of a location.";
+			                              +                   "  - getrankings [name] - Gets the rankings of a location.\n"
+			                              + ChatColor.GREEN + "- Miscellaneous:\n"
+			                              + ChatColor.WHITE + "  - listtitles - Displays all titles a player owns.";
 	
 	// Command Strings
 	private static final String HELP_COMMAND = "help";

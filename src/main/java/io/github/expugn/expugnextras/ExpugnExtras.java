@@ -21,6 +21,8 @@ public class ExpugnExtras extends JavaPlugin
 	{
 		getCommand("expugn").setExecutor(new ExpugnCommand(this));
 		getLogger().info("'/expugn' command enabled.");
+		getCommand("expugnfree").setExecutor(new FreeCommand(this));
+		getLogger().info("'/expugnfree' command enabled.");
 		if (!setupEconomy())
 		{
 			getLogger().info("'/marriage' command disabled.");
