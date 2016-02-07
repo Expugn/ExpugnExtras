@@ -8,6 +8,4 @@ For Talabrek's Ultimate Minecraft Network
 - Timers
 - Time Trials
 - Better /title
- 
-# Incoming Features
 - Marriage

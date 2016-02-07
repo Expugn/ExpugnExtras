@@ -1,10 +1,12 @@
-package io.github.expugn.expugnextras;
+package io.github.expugn.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import io.github.expugn.expugnextras.ExpugnExtras;
 
 /**
  * 'Expugn' Command
@@ -56,6 +58,8 @@ public class ExpugnCommand implements CommandExecutor
 			                              +                   "  - starttrial [name] - Begins a new time trial.\n"
 			                              +                   "  - endtrial [name] - Ends a time trial.\n"
 			                              +                   "  - getrankings [name] - Gets the rankings of a location.\n"
+			                              +                   "  - resettimes [name] - Resets the times of a location.\n"
+			                              +                   "  - hallofglory - Teleports the player to a ExpugnExtras warp named 'HallOfGlory'.\n"
 			                              + ChatColor.GREEN + "- Miscellaneous:\n"
 			                              + ChatColor.WHITE + "  - listtitles - Displays all titles a player owns.";
 	
@@ -78,6 +82,8 @@ public class ExpugnCommand implements CommandExecutor
 	private static final String START_TRIAL_COMMAND = "starttrial";
 	private static final String END_TRIAL_COMMAND = "endtrial";
 	private static final String GET_RANKINGS_COMMAND = "getrankings";
+	private static final String RESET_TIMES_COMMAND = "resettimes";
+	private static final String HALL_OF_GLORY_COMMAND = "hallofglory";
 	private static final String LIST_TITLES_COMMAND = "listtitles";
 	
 	/**
@@ -216,6 +222,15 @@ public class ExpugnCommand implements CommandExecutor
 						else
 							player.sendMessage(INVALID_PARAMETER_ERROR);
 						break;
+					case RESET_TIMES_COMMAND:
+						if (args.length >= 2)
+							trials.resetTimes(player, args[1]);
+						else
+							player.sendMessage(INVALID_PARAMETER_ERROR);
+						break;
+					case HALL_OF_GLORY_COMMAND:
+							trials.warpHallOfGlory(player);
+							break;
 					case LIST_TITLES_COMMAND:
 						if (args.length == 1)
 							listtitles.getTitles(player);

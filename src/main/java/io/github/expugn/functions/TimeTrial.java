@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -105,6 +108,8 @@ public class TimeTrial
 	 */
 	File ymlFile;
 	FileConfiguration config;
+	File warpYmlFile;
+	FileConfiguration warpConfig;
 	ExpugnExtras plugin;
 	private static final int DEFAULT_MAX_TIME = 3600000; // 1 Hour
 	
@@ -117,7 +122,11 @@ public class TimeTrial
 	// System Messages
 	private static final String TIME_TRIAL_BEGIN_MESSAGE = ChatColor.GREEN + "Your time trial has begun. Good luck!";
 	private static final String STARTING_NEW_TRIAL_MESSAGE = ChatColor.GOLD + "You have an existing trial in progress for another location. Deleting that trial and creating a new one.";
+	private static final String RESET_TIMES_MESSAGE = ChatColor.GOLD + "Times have been reset.";
 	private static final String NEW_RECORD_MESSAGE = ChatColor.GOLD + "A new record! Congratulations!";
+	private static final String HALL_OF_GLORY_MESSAGE = ChatColor.GRAY + "This is the " + ChatColor.GOLD + "Hall of Glory" + ChatColor.GRAY + ".\n"
+			                                                           + "Only players who have placed " + ChatColor.RED + "first " + ChatColor.GRAY + "in a time trial may enter.";
+	private static final String ENTER_HALL_OF_GLORY_MESSAGE = ChatColor.GRAY + "Now entering the " + ChatColor.GOLD + "Hall of Glory" + ChatColor.GRAY + ".";
 	// Error Messages
 	private static final String INVALID_LOCATION_ERROR = ChatColor.RED + "This location does not exist. Use /expugn locationlist for a list of locations.";
 	private static final String ALREADY_IN_PROGRESS_ERROR = ChatColor.RED + "You already have a time trial in progress. Restarting your time.";
@@ -138,6 +147,8 @@ public class TimeTrial
 	{
 		ymlFile = new File(plugin.getDataFolder() + "/timetrial.yml");
 		config = YamlConfiguration.loadConfiguration(ymlFile);
+		warpYmlFile = new File(plugin.getDataFolder() + "/warps.yml");
+		warpConfig = YamlConfiguration.loadConfiguration(warpYmlFile);
 		CONSOLE_DEBUG_MESSAGES = plugin.getConfig().getBoolean("timetrialdebugmessages");
 		checkProgress();
 	}
@@ -173,7 +184,7 @@ public class TimeTrial
 			// CONSOLE - Creating new location.
 			System.out.print(CONSOLE_DEBUG_MESSAGES ? "[ExpugnDebug](Time Trial) - Creating new location." : "");
 			
-			config.set("location." + name + ".times.key", "null");
+			config.set("location." + name + ".times.key", null);
 			config.set("location." + name + ".rankinglist.1.playername", "null");
 			config.set("location." + name + ".rankinglist.1.playeruuid", "_");
 			config.set("location." + name + ".rankinglist.1.timestring", "99:99.999");
@@ -940,6 +951,104 @@ public class TimeTrial
 					ChatColor.DARK_GRAY + "4) " + rank4PlayerName + ChatColor.DARK_GRAY + " - " + rank4TimeString + "\n" +
 					ChatColor.DARK_GRAY + "5) " + rank5PlayerName + ChatColor.DARK_GRAY + " - " + rank5TimeString + "\n" +
 					ChatColor.GREEN + "Your personal best: " + ChatColor.DARK_GRAY + playerBestTimeString);
+		}
+	}
+	
+	public void resetTimes(Player player, String name)
+	{
+		if (this.checkLocation(name))
+		{
+			// CONSOLE - Resetting times.
+			System.out.print(CONSOLE_DEBUG_MESSAGES ? "[ExpugnDebug](Time Trial) - Resetting times." : "");
+
+			config.set("location." + name + ".times", null);
+			config.set("location." + name + ".times.key", null);
+			config.set("location." + name + ".rankinglist.1.playername", "null");
+			config.set("location." + name + ".rankinglist.1.playeruuid", "_");
+			config.set("location." + name + ".rankinglist.1.timestring", "99:99.999");
+			config.set("location." + name + ".rankinglist.1.minutes", 99);
+			config.set("location." + name + ".rankinglist.1.seconds", 99);
+			config.set("location." + name + ".rankinglist.1.milliseconds", 999);
+
+			config.set("location." + name + ".rankinglist.2.playername", "null");
+			config.set("location." + name + ".rankinglist.2.playeruuid", "_");
+			config.set("location." + name + ".rankinglist.2.timestring", "99:99.999");
+			config.set("location." + name + ".rankinglist.2.minutes", 99);
+			config.set("location." + name + ".rankinglist.2.seconds", 99);
+			config.set("location." + name + ".rankinglist.2.milliseconds", 999);
+
+			config.set("location." + name + ".rankinglist.3.playername", "null");
+			config.set("location." + name + ".rankinglist.3.playeruuid", "_");
+			config.set("location." + name + ".rankinglist.3.timestring", "99:99.999");
+			config.set("location." + name + ".rankinglist.3.minutes", 99);
+			config.set("location." + name + ".rankinglist.3.seconds", 99);
+			config.set("location." + name + ".rankinglist.3.milliseconds", 999);
+
+			config.set("location." + name + ".rankinglist.4.playername", "null");
+			config.set("location." + name + ".rankinglist.4.playeruuid", "_");
+			config.set("location." + name + ".rankinglist.4.timestring", "99:99.999");
+			config.set("location." + name + ".rankinglist.4.minutes", 99);
+			config.set("location." + name + ".rankinglist.4.seconds", 99);
+			config.set("location." + name + ".rankinglist.4.milliseconds", 999);
+
+			config.set("location." + name + ".rankinglist.5.playername", "null");
+			config.set("location." + name + ".rankinglist.5.playeruuid", "_");
+			config.set("location." + name + ".rankinglist.5.timestring", "99:99.999");
+			config.set("location." + name + ".rankinglist.5.minutes", 99);
+			config.set("location." + name + ".rankinglist.5.seconds", 99);
+			config.set("location." + name + ".rankinglist.5.milliseconds", 999);
+
+			// Save the configuration
+			saveConfig();
+			
+			player.sendMessage(RESET_TIMES_MESSAGE);
+		}
+		else
+		{
+			player.sendMessage(INVALID_LOCATION_ERROR);
+		}
+	}
+	
+	/**
+	 * CheckFirstPlace - Checks all locations to see if the player has placed first in any trial.
+	 * 
+	 * @param player - The player who ran the command.
+	 * @return - true if the player has placed first in any location | false if the player has not placed first.
+	 */
+	public boolean checkFirstPlaces(String playerUUID)
+	{
+		List<String> locationList = config.getStringList("list");
+		for (String location : locationList)
+		{
+			if (config.getString("location." + location + ".rankinglist.1.playeruuid").equals(playerUUID))
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * WarpHallOfGlory - Warps a player who placed first in a time trial to a ExpugnExtras warp named HallOfGlory.
+	 * 
+	 * @param player - The player who sent the command.
+	 */
+	public void warpHallOfGlory(Player player)
+	{	
+		String playerUUID = player.getUniqueId() + "";
+		if (checkFirstPlaces(playerUUID))
+		{
+			World warpWorld = Bukkit.getWorld(warpConfig.getString("warps.HallOfGlory.world"));
+			double warpX = warpConfig.getDouble("warps.HallOfGlory.x");
+			double warpY = warpConfig.getDouble("warps.HallOfGlory.y");
+			double warpZ = warpConfig.getDouble("warps.HallOfGlory.z");
+			float warpYaw = (float) warpConfig.getDouble("warps.HallOfGlory.yaw");
+			float warpPitch = (float) warpConfig.getDouble("warps.HallOfGlory.pitch");
+			Location loc = new Location(warpWorld, warpX, warpY, warpZ, warpYaw, warpPitch);
+			player.teleport(loc);
+			player.sendMessage(ENTER_HALL_OF_GLORY_MESSAGE);
+		}
+		else
+		{
+			player.sendMessage(HALL_OF_GLORY_MESSAGE);
 		}
 	}
 	

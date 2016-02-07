@@ -27,5 +27,11 @@
            <scope>provided</scope>
        </dependency>
    </dependencies>
+   <build>
+   	<finalName>ExpugnExtras</finalName>
+   </build>
    <version>1.0</version>
+   <name>Expugn Extras</name>
+   <url>https://github.com/Expugn/ExpugnExtras</url>
+   <description>For Talabrek's Ultimate Minecraft Server.</description>
 </project>

@@ -4,7 +4,6 @@
 # Marriage -
 #   true | /marriage and it's functions will be enabled.
 #   false | /marriage and it's functions will be disabled.
-#   As of this build, Marriage is incomplete. Please enable with caution.
 # -------------------------------------------------------------------------------------------------
 # TimeTrialDebugMessages -
 #   true | Time Trial debug messages will be displayed in the console.

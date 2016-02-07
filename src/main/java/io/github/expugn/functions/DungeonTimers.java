@@ -49,6 +49,11 @@ public class DungeonTimers
 	private static final String INVALID_DUNGEON_ERROR = ChatColor.RED + "This dungeon does not exist. Use /expugn dungeonlist for a list of dungeons.";
 	private static final String NONEXISTING_DUNGEON_ERROR = ChatColor.RED + "There is an error. Please inform Expugn.";
 	
+	/**
+	 * Constructor for the class.
+	 * 
+	 * @param plugin - ExpugnExtras
+	 */
 	public DungeonTimers (ExpugnExtras plugin)
 	{
 		ymlFile = new File(plugin.getDataFolder() + "/timers.yml");
