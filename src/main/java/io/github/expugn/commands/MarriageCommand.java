@@ -105,7 +105,7 @@ public class MarriageCommand implements CommandExecutor
 	 */
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
-		if (plugin.getConfig().getBoolean("marriage") == false)
+		if (plugin.getConfig().getBoolean("marriage") == true)
 		{
 			sender.sendMessage(MARRIAGE_NOT_ENABLED_ERROR);
 			return true;

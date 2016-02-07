@@ -77,26 +77,34 @@ public class ListTitles
 		Iterator<String> titlelist = titles.keySet().iterator();
 		List<String> playerTitles = new ArrayList<String>();
 		int titleCount = 0;
-		boolean removePexAdmin = false;
-		boolean removePexMod = false;
-		boolean removeOp = false;
 		
-		if (perms.playerInGroup(player, "admin"))
+		if (perms.playerInGroup(player, "admin") || perms.playerInGroup(player, "moderator"))
 		{
-			Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "pex user " + player.getName() + " group remove admin");
-			removePexAdmin = true;
+			boolean gaveOp = false;
+			if (!player.isOp())
+			{
+				player.setOp(true);
+				gaveOp = true;
+			}
+			try
+			{
+				player.sendMessage(ChatColor.YELLOW + "- Title listing is broken for anyone with 'titlemanager.*' and hard for me to figure out how to do nicely lol.\n" +
+						"- Blame PermissionsEx for not working well with Vault. You'll have to live with this cheap title list instead." + 
+						ChatColor.RED + " - Expugn");
+			    Bukkit.getServer().dispatchCommand(player, "pex user " + player.getName() + " remove titlemanager.title.");
+			    player.sendMessage(ChatColor.YELLOW + "- Use /title <titlename> to change your title. Ex: /title member\n" +
+			    		ChatColor.YELLOW + "- The title name is after 'titlemanager.title.'.");
+			}
+			catch(Exception e)
+			{
+			    e.printStackTrace();
+			}
+			
+			if (gaveOp)
+				player.setOp(false);
+			return;
 		}
-		if (perms.playerInGroup(player, "moderator"))
-		{
-			Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "pex user " + player.getName() + " group remove moderator");
-			removePexMod = true;
-		}
-		if (player.isOp())
-		{
-			player.setOp(false);
-			removeOp = true;
-		}
-
+		
 		// Load up playerTitles with titles the player has
 		while(titlelist.hasNext())
 		{
@@ -115,14 +123,14 @@ public class ListTitles
 			
 			if (cTitle2.equals(""))
 			{
-				String title1 = "§r" + cTitle + " : " + (String)titles.get(cTitle) + "§f";
+				String title1 = ChatColor.ITALIC + cTitle + ChatColor.RESET + " : " + (String)titles.get(cTitle) + ChatColor.RESET;
 				this.fList = this.fList + title1;
 				titleCount += 1;
 			}
 			else
 			{
-				String title1 = "§r" + cTitle + " : " + (String)titles.get(cTitle) + "§f";
-				String title2 = "§r" + cTitle2 + " : " + (String)titles.get(cTitle2) + "§f";
+				String title1 = ChatColor.ITALIC + cTitle + ChatColor.RESET + " : " + (String)titles.get(cTitle) + ChatColor.WHITE;
+				String title2 = ChatColor.ITALIC + cTitle2 + ChatColor.RESET + " : " + (String)titles.get(cTitle2) + ChatColor.WHITE;
 				int spacing = 36 - (title1.length() - 4);
 				this.fList = String.format("%s%s%" + spacing + "s%s\n", this.fList, title1, "",title2);
 				titleCount += 2;
@@ -131,13 +139,6 @@ public class ListTitles
 		player.sendMessage(ChatColor.YELLOW + "You have access to the following " + ChatColor.RED + titleCount + ChatColor.YELLOW + " titles:");
 		player.sendMessage(this.fList.replace('&', '§'));
 		player.sendMessage(ChatColor.YELLOW + "Use /title <titlename> to change your title. Ex: /title member");
-
-		if (removePexAdmin)
-			Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "pex user " + player.getName() + " group add admin");
-		if (removePexMod)
-			Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "pex user " + player.getName() + " group add moderator");
-		if (removeOp)
-			player.setOp(true);
 	}
 	
 	/**

@@ -87,7 +87,7 @@ public class Marriage
 	 */
 	public Marriage(ExpugnExtras plugin)
 	{
-		enabled = plugin.getConfig().getBoolean("marriage");
+		enabled = !plugin.getConfig().getBoolean("marriage");
 		ymlFile = new File(plugin.getDataFolder() + "/marriage.yml");
 		config = YamlConfiguration.loadConfiguration(ymlFile);
 	}
@@ -685,6 +685,7 @@ public class Marriage
 			
 			if (config.getString("players." + playerUUID + ".partner") != null && !config.getString("players." + playerUUID + ".partner").isEmpty())
 			{
+				// TODO
 				playerPartnerUUID = config.getString("players." + playerUUID + ".partner");
 				playerLevel = config.getInt("players." + playerUUID + ".level");
 				effectCooldown = config.getLong("players." + playerUUID + ".effectcooldown");

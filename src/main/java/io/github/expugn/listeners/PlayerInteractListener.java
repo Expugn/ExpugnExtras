@@ -1,5 +1,6 @@
 package io.github.expugn.listeners;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -36,6 +37,9 @@ public class PlayerInteractListener implements Listener
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEntityEvent event)
 	{
-		marriage.onPlayerInteract(event);
+		if (event.getRightClicked() instanceof Player)
+		{
+			marriage.onPlayerInteract(event);
+		}
 	}
 }
