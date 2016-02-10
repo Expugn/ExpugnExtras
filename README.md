@@ -10,21 +10,25 @@ These plugins are required to be on your server to use ExpugnExtras to the fulle
   * No dependencies to run
   * Soft depends on 'VariableTriggers' so players can run commands through ClickTriggers 
     or WalkTriggers using @CMDOP. Warp commands are not properly permissioned
+
 ####Timers:
   * No dependencies to run
   * Soft depends on 'VariableTriggers' so people can run commands through ClickTriggers
     or WalkTriggers using @CMDOP. Timer commands are not properly permissioned.
+
 ####Time Trials:
   * No dependencies to run
   * Soft depends on 'VariableTriggers' so people can run commands through ClickTriggers
     or WalkTriggers using @CMDOP. TimeTrial commands are not properly permissioned.
+
 ####Title List:
   * Depends on 'TitleManager' and 'PermissionsEx' to run.
   * No soft dependencies.
+
 ####Marriage:
   * Depends on 'Vault' to run.
   * No soft dependencies.
-  
+
 ### Features and Commands
 The following are features and the commands associated to them to the plugin.
 
@@ -41,16 +45,19 @@ The following are features and the commands associated to them to the plugin.
     - An extremely improved title list built from the original /title.
     - Players can click the chat to apply whatever title they desire in their list
     - Provides a sample of how it will look on the player in a tooltip
+
 ####/marriage [args]
   * Marriage
     - A roleplay dating simulator.
     - Two players can start a relationship and get benefits as they advance in their relationship.
     - Players can see how long they have been together
+
 ####/expugnfree [args]
   * No personal features associated.
     - /expugnfree is a command that isnt restricted with permissions.
     - It currently has Title List.
     - May be removed in the future.
+
 ### Permissions
   * expugnextras.admin | Permission to use '/expugn'
   * marriage.admin | Permission to use '/marriage dev'
