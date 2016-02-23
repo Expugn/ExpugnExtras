@@ -8,36 +8,37 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import io.github.expugn.expugnextras.ExpugnExtras;
 
 /**
- * 'PlayerInteract' Listener
- * Listens for player interaction.
+ * 'PlayerInteract' Listener: Listens for player interaction.
  * 
- * @author Expugn
+ * @author Expugn 
  * https://github.com/Expugn
- * 
  * @version 1.0
  */
-public class PlayerInteractListener implements Listener
+public class PlayerInteractListener implements Listener 
 {
 	private final io.github.expugn.functions.Marriage marriage;
-	
+
+	//-----------------------------------------------------------------------
 	/**
-	 * Constructor for the class
+	 * Constructor for the {@code PlayerInteractListener} class
 	 * 
-	 * @param plugin - ExpugnExtras
+	 * @param plugin  {@link ExpugnExtras}
 	 */
-	public PlayerInteractListener(ExpugnExtras plugin)
+	public PlayerInteractListener(ExpugnExtras plugin) 
 	{
 		marriage = new io.github.expugn.functions.Marriage(plugin);
 	}
+
+	//-----------------------------------------------------------------------
 	/**
-	 * onPlayerInteract - Gets called whenever somebody right clicks an entity.
+	 * {@code onPlayerInteract}: Gets called whenever somebody right clicks an entity.
 	 * 
-	 * @param event
+	 * @param event  PlayerInteractEntityEvent
 	 */
 	@EventHandler
-	public void onPlayerInteract(PlayerInteractEntityEvent event)
+	public void onPlayerInteract(PlayerInteractEntityEvent event) 
 	{
-		if (event.getRightClicked() instanceof Player)
+		if (event.getRightClicked() instanceof Player) 
 		{
 			marriage.onPlayerInteract(event);
 		}

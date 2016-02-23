@@ -1,13 +1,11 @@
+# -------------------------------------------------------------------------------------------------
+# ExpugnExtras Configuration File
+# -------------------------------------------------------------------------------------------------
 # Warning: Modify this config with caution. Altering some values could break the plugin.
 #          Only modify this config if you know what you're doing.
 # -------------------------------------------------------------------------------------------------
-# Marriage -
+# Marriage:
 #   true | /marriage and it's functions will be enabled.
 #   false | /marriage and it's functions will be disabled.
 # -------------------------------------------------------------------------------------------------
-# TimeTrialDebugMessages -
-#   true | Time Trial debug messages will be displayed in the console.
-#   false | Time Trial debug messages will not be displayed in the console.
-# -------------------------------------------------------------------------------------------------
 marriage: true
-timetrialdebugmessages: false

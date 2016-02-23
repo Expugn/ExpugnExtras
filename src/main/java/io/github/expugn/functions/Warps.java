@@ -16,98 +16,85 @@ import org.bukkit.entity.Player;
 import io.github.expugn.expugnextras.ExpugnExtras;
 
 /**
- * 'Warp' Function
- * Manages the "warp" feature in /expugn
+ * <b>'Warps' Function</b>
  * 
- * @author Expugn
- * https://github.com/Expugn
- * 
- * @version 1.0
+ * @version 1.1
+ * @author Expugn <i>(https://github.com/Expugn)</i>
  */
 public class Warps 
 {
-	/* example warps.yml format
-	 * 
-	 * midnighttime: <long>
-	 * warps:
-	 *   <warp>:
-	 *     x: <int>
-	 *     y: <int>
-	 *     z: <int>
-	 *     yaw: <int>
-	 *     pitch: <int>
-	 *     world: <string>
-	 *     type: <string>
-	 *     value: <int>
-	 *     list: <StringList>
-	 *   <warp2>:
-	 *     x: <int>
-	 *     y: <int>
-	 *     z: <int>
-	 *     yaw: <int>
-	 *     pitch: <int>
-	 *     world: <string>
-	 *     type: <string>
-	 *     value: <int>
-	 * list:
-	 *   - <warp>
-	 *   - <warp2>
-	 * data:
-	 *   cooldown:
-	 *     <warp>:
-	 *       <uuid>: <long>
-	 *   limit:
-	 *     <warp2>:
-	 *       <uuid>: <int>
-	 */
-	private Calendar midnight; 
+	private Calendar midnight;
 	File ymlFile;
 	FileConfiguration config;
-	
-	// System Messages
-	private static final String MORE_WARP_INFO_REMINDER_MESSAGE = ChatColor.GOLD + "For more info on a warp: use /expugn warpinfo [warpname].";
-	private static final String NEW_WARP_NOT_EXISTING_MESSAGE = ChatColor.GOLD + "Warp does not exist. Creating a new warp.";
-	private static final String NEW_WARP_EXISTING_MESSAGE = ChatColor.GOLD + "There is an existing warp. Defining new position.";
-	// Error Messages
-	private static final String INVALID_WARP_ERROR = ChatColor.RED + "Invalid warp. Use /expugn warplist for a list of warps.";
+
+	/* System and error messages */
+	private static final String MORE_WARP_INFO_REMINDER_MESSAGE = ChatColor.GOLD
+			+ "For more info on a warp: use /expugn warpinfo [warpname].";
+	private static final String NEW_WARP_NOT_EXISTING_MESSAGE = ChatColor.GOLD
+			+ "Warp does not exist. Creating a new warp.";
+	private static final String NEW_WARP_EXISTING_MESSAGE = ChatColor.GOLD
+			+ "There is an existing warp. Defining new position.";
+	private static final String INVALID_WARP_ERROR = ChatColor.RED
+			+ "Invalid warp. Use /expugn warplist for a list of warps.";
 	private static final String WARP_FAILED_COOLDOWN_ERROR = ChatColor.RED + "You cannot use this warp again just yet.";
-	private static final String WARP_FAILED_SENT_ELSEWHERE_ERROR = ChatColor.RED + "You have been moved to a different location because you failed to warp.";
-	private static final String WARP_FAILED_LIMIT_EXCEEDED_ERROR = ChatColor.RED + "You have exceeded the daily limit to use this warp.";
-	
-	public Warps (ExpugnExtras plugin)
+	private static final String WARP_FAILED_SENT_ELSEWHERE_ERROR = ChatColor.RED
+			+ "You have been moved to a different location because you failed to warp.";
+	private static final String WARP_FAILED_LIMIT_EXCEEDED_ERROR = ChatColor.RED
+			+ "You have exceeded the daily limit to use this warp.";
+
+	//-----------------------------------------------------------------------
+	/**
+	 * Constructor for the {@code Warps} class
+	 * 
+	 * <ul>
+	 * <li> Links to a method 'resetTimer' on this class:
+	 * 		{@link #resetTimer}.
+	 * </ul>
+	 * 
+	 * @param plugin  Main Class: {@link ExpugnExtras}
+	 */
+	public Warps(ExpugnExtras plugin) 
 	{
 		ymlFile = new File(plugin.getDataFolder() + "/warps.yml");
 		config = YamlConfiguration.loadConfiguration(ymlFile);
-		if(config.getLong("midnighttime") == 0L)
-		{
+		if (config.getLong("midnighttime") == 0L)
 			resetTimer();
-		}
 	}
+
+	//-----------------------------------------------------------------------
 	/**
-	 * Warp List: Lists all the warps available and written onto the configuration file.
+	 * {@code warpList}: Lists all the warps available and written onto the
+	 * configuration file.
 	 * 
-	 * @param player - The player who sent the command.
+	 * @param player  The player who sent the command.
 	 */
-	public void warpList(Player player)
+	public void warpList(Player player) 
 	{
 		List<String> warpList = config.getStringList("list");
 		player.sendMessage(ChatColor.GOLD + "There are currently " + warpList.size() + " warps");
-		for (String s : warpList)
+		for (String s : warpList) 
 		{
 			player.sendMessage("- " + s);
 		}
 		player.sendMessage(MORE_WARP_INFO_REMINDER_MESSAGE);
 	}
 
+	//-----------------------------------------------------------------------
 	/**
-	 * Warp Info: Reads the information of the warp in the configuration file and returns it back to the player.
+	 * {@code warpInfo}: Reads the information of the warp in the configuration file
+	 * and returns it back to the player.
 	 * 
-	 * @param player - The player who sent the command.
-	 * @param name - The name of the warp.
+	 * <ul>
+	 * <li> Links to a method 'checkWarp' on this class:
+	 * 		{@link #checkWarp}.
+	 * </ul>
+	 * 
+	 * @param player  The player who sent the command.
+	 * @param name  The name of the warp.
 	 */
-	public void warpInfo(Player player, String name)
+	public void warpInfo(Player player, String name) 
 	{
-		if (this.checkWarp(name) == false)
+		if (this.checkWarp(name) == false) 
 		{
 			player.sendMessage(INVALID_WARP_ERROR);
 			return;
@@ -124,82 +111,80 @@ public class Warps
 		player.sendMessage("else: " + config.getString("warps." + name + ".else") + " alternate warp");
 	}
 
+	//-----------------------------------------------------------------------
 	/**
-	 * Warp: Teleports a player to a warp's location.
+	 * {@code warp}: Teleports a player to a warp's location.
 	 * 
-	 * @param player - The player who sent the command.
-	 * @param name - The name of the warp.
+	 * <ul>
+	 * <li> Links to a method 'checkWarp' on this class:
+	 * 		{@link #checkWarp}.
+	 * <li> Links to a method 'convertMilliseconds' on this class:
+	 * 		{@link #convertMilliseconds}.
+	 * <li> Links to a method 'warp' on this class:
+	 * 		{@link #warp}.
+	 * <li> Links to a method 'saveConfig' on this class:
+	 * 		{@link #saveConfig}.
+	 * </ul>
+	 * 
+	 * @param player  The player who sent the command.
+	 * @param name  The name of the warp.
 	 */
-	public void warp(Player player, String name)
+	public void warp(Player player, String name) 
 	{
-		// Check if warp exists
-		// if not: quit the function.
-		if (this.checkWarp(name) == false)
+		if (this.checkWarp(name) == false) 
 		{
 			player.sendMessage(INVALID_WARP_ERROR);
 			return;
 		}
-		// Determine if the warp is a cooldown or limit warp.
 		int value = config.getInt("warps." + name + ".value");
-		if (value != 0)
+		if (value != 0) 
 		{
-			switch(config.getString("warps." + name + ".type"))
+			switch (config.getString("warps." + name + ".type")) 
 			{
 			case "cooldown":
-				// Store player time till they can use again
 				long canUseAgain = config.getLong("data.cooldown." + name + "." + player.getUniqueId());
-				// Check if the time they can use it again is higher than the current time.
-				// if true: inform the player and quit the function.
-				if (canUseAgain >= System.currentTimeMillis())
+				if (canUseAgain >= System.currentTimeMillis()) 
 				{
 					player.sendMessage(WARP_FAILED_COOLDOWN_ERROR);
 					convertMilliseconds(player, (canUseAgain - System.currentTimeMillis()));
-					if (config.getString("warps." + name + ".else") != null && !config.getString("warps." + name + ".else").isEmpty())
+					if (config.getString("warps." + name + ".else") != null
+							&& !config.getString("warps." + name + ".else").isEmpty()) 
 					{
 						warp(player, config.getString("warps." + name + ".else"));
 						player.sendMessage(WARP_FAILED_SENT_ELSEWHERE_ERROR);
 					}
 					return;
 				}
-				// Determine how many milliseconds a player has to wait until they warp again.
 				long addedTime = config.getInt("warps." + name + ".value") * 3600000;
-				// Store and save data.
-				config.set("data.cooldown." + name + "." + player.getUniqueId(), System.currentTimeMillis() + addedTime);
+				config.set("data.cooldown." + name + "." + player.getUniqueId(),
+						System.currentTimeMillis() + addedTime);
 				saveConfig();
 				break;
 			case "limit":
-				// Check if midnight has passed.
-				// if true: delete all player limit data
 				checkMidnight();
-				// Store amount of times a player used a warp and the max daily amount
 				int amountUsed = config.getInt("data.limit." + name + "." + player.getUniqueId());
 				int maxAmount = config.getInt("warps." + name + ".value");
-				// if the amount they used is higher/equal to the max daily amount:
-				// inform the player and quit the function
-				if (amountUsed >= maxAmount)
+				if (amountUsed >= maxAmount) 
 				{
 					player.sendMessage(WARP_FAILED_LIMIT_EXCEEDED_ERROR);
 					convertMilliseconds(player, (config.getLong("midnighttime") - System.currentTimeMillis()));
-					if (config.getString("warps." + name + ".else") != null && !config.getString("warps." + name + ".else").isEmpty())
+					if (config.getString("warps." + name + ".else") != null
+							&& !config.getString("warps." + name + ".else").isEmpty()) 
 					{
 						warp(player, config.getString("warps." + name + ".else"));
 						player.sendMessage(WARP_FAILED_SENT_ELSEWHERE_ERROR);
 					}
 					return;
 				}
-				// if the limit is not zero:
-				// add 1 to the amount of times a player used the warp
-				else if (maxAmount != 0)
+				else if (maxAmount != 0) 
 				{
 					amountUsed++;
 					config.set("data.limit." + name + "." + player.getUniqueId(), amountUsed);
 				}
-				// Save the configuration
 				saveConfig();
 				break;
 			}
 		}
-		// Warp player to the name of the warp.
 		World warpWorld = Bukkit.getWorld(config.getString("warps." + name + ".world"));
 		double warpX = config.getDouble("warps." + name + ".x");
 		double warpY = config.getDouble("warps." + name + ".y");
@@ -210,21 +195,28 @@ public class Warps
 		player.teleport(loc);
 	}
 
+	//-----------------------------------------------------------------------
 	/**
-	 * Set Warp: Gets the player's location and saves it onto the configuration file.
+	 * {@code setWarp}: Gets the player's location and saves it onto the configuration
+	 * file.
 	 * 
-	 * @param player - The player who sent the command.
-	 * @param name - The name of the warp.
+	 * <ul>
+	 * <li> Links to a method 'checkWarp' on this class:
+	 * 		{@link #checkWarp}.
+	 * <li> Links to a method 'saveConfig' on this class:
+	 * 		{@link #saveConfig}.
+	 * </ul>
+	 * 
+	 * @param player  The player who sent the command.
+	 * @param name  The name of the warp.
 	 */
-	public void setWarp(Player player, String name)
+	public void setWarp(Player player, String name) 
 	{
-		// Get player location
 		Location loc = player.getLocation();
-		if (this.checkWarp(name) == false)
+		if (this.checkWarp(name) == false) 
 		{
 			player.sendMessage(NEW_WARP_NOT_EXISTING_MESSAGE);
 
-			// Setup a new path in the configuration.
 			config.set("warps." + name + ".x", loc.getX());
 			config.set("warps." + name + ".y", loc.getY());
 			config.set("warps." + name + ".z", loc.getZ());
@@ -234,21 +226,21 @@ public class Warps
 			config.set("warps." + name + ".type", "cooldown");
 			config.set("warps." + name + ".value", 0);
 
-			// Add warp name to the list of warps
 			List<String> warpList = config.getStringList("list");
 			warpList.add(name);
 			config.set("list", warpList);
 
-			// Remind player to modify settings
-			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name + " <cooldown|limit> to modify the type of warp.");
-			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name + " [number] to modify the cooldown/daily limit of the warp.");
-			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name + " [warpname] to add a alternate location to send the player if they failed to warp.");
-		}
-		else
+			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name
+					+ " <cooldown|limit> to modify the type of warp.");
+			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name
+					+ " [number] to modify the cooldown/daily limit of the warp.");
+			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name
+					+ " [warpname] to add a alternate location to send the player if they failed to warp.");
+		} 
+		else 
 		{
 			player.sendMessage(NEW_WARP_EXISTING_MESSAGE);
 
-			// Set new values in the configuration file
 			config.set("warps." + name + ".x", loc.getX());
 			config.set("warps." + name + ".y", loc.getY());
 			config.set("warps." + name + ".z", loc.getZ());
@@ -256,65 +248,77 @@ public class Warps
 			config.set("warps." + name + ".pitch", loc.getPitch());
 			config.set("warps." + name + ".world", player.getWorld().getName());
 		}
-		// Save configuration file
-		this.saveConfig();
+		saveConfig();
 	}
 
+	//-----------------------------------------------------------------------
 	/**
-	 * Delete Warp: Removes a warp from the configuration file.
+	 * {@code delWarp}: Removes a warp from the configuration file.
 	 * 
-	 * @param player - The player who sent the command.
-	 * @param name - The name of the warp.
+	 * <ul>
+	 * <li> Links to a method 'checkWarp' on this class:
+	 * 		{@link #checkWarp}.
+	 * <li> Links to a method 'saveConfig' on this class:
+	 * 		{@link #saveConfig}.
+	 * </ul>
+	 * 
+	 * @param player  The player who sent the command.
+	 * @param name  The name of the warp.
 	 */
-	public void delWarp(Player player, String name)
+	public void delWarp(Player player, String name) 
 	{
-		if (this.checkWarp(name) == false)
-		{
+		if (this.checkWarp(name) == false) 
 			player.sendMessage(INVALID_WARP_ERROR);
-		}
-		else
-		{	
-			// Remove warp from configuration file
+		else 
+		{
 			config.set("warps." + name, null);
-			// Remove warp from warp list
 			List<String> warpList = config.getStringList("list");
 			warpList.remove(name);
 			config.set("list", warpList);
-			// Remove warp data
 			config.set("data.cooldown." + name, null);
 			config.set("data.limit." + name, null);
-			// Save configuration file
 			saveConfig();
 
 			player.sendMessage(ChatColor.GREEN + "Warp " + name + " has been removed.");
 		}
 	}
 
+	//-----------------------------------------------------------------------
 	/**
-	 * Warp Setting: Sets the 'type' setting of a warp.
+	 * {@code warpSetting}: Sets the 'type' setting of a warp.
 	 * 
-	 * @param player - The player who sent the command.
-	 * @param name - The name of the warp.
-	 * @param param - 'cooldown' or 'limit', alternate warp, or a value to determine the hourly cooldown or daily limit
+	 * <ul>
+	 * <li> Links to a method 'checkWarp' on this class:
+	 * 		{@link #checkWarp}.
+	 * <li> Links to a method 'saveConfig' on this class:
+	 * 		{@link #saveConfig}.
+	 * </ul>
+	 * 
+	 * @param player  The player who sent the command.
+	 * @param name  The name of the warp.
+	 * @param param  'cooldown' or 'limit', alternate warp, or a value to
+	 *            determine the hourly cooldown or daily limit
 	 */
-	public void warpSetting(Player player, String name, String param)
+	public void warpSetting(Player player, String name, String param) 
 	{
-		if (!this.checkWarp(name))
+		if (!this.checkWarp(name)) 
 		{
 			player.sendMessage(INVALID_WARP_ERROR);
 			return;
 		}
-		if (param.equals("cooldown") || param.equals("limit"))
+		
+		if (param.equals("cooldown") || param.equals("limit")) 
 		{
 			config.set("warps." + name + ".type", param);
 			player.sendMessage(ChatColor.GREEN + "Warp " + name + " type modified to " + ChatColor.GOLD + param);
-		}
-		else if (checkWarp(param))
+		} 
+		else if (checkWarp(param)) 
 		{
 			config.set("warps." + name + ".else", param);
-			player.sendMessage(ChatColor.GREEN + "Warp " + name + " alternate warp modified to " + ChatColor.GOLD + param);
-		}
-		else
+			player.sendMessage(
+					ChatColor.GREEN + "Warp " + name + " alternate warp modified to " + ChatColor.GOLD + param);
+		} 
+		else 
 		{
 			int value = Integer.parseInt(param);
 			config.set("warps." + name + ".value", value);
@@ -323,13 +327,16 @@ public class Warps
 		saveConfig();
 	}
 
+	//-----------------------------------------------------------------------
 	/**
-	 * Check Warp: Determines if the warp exists in the configuration file.
+	 * {@code checkWarp}: Determines if the warp exists in the configuration file.
 	 * 
-	 * @param name - The name of the warp.
-	 * @return - Returns true if warp exists in the file. Returns false if warp is nonexistant.
+	 * @param name  The name of the warp.
+	 * @return
+	 * 		<li> {@code true}  if warp exists in the file.
+	 * 		<li> {@code false}  if warp is nonexistant.
 	 */
-	public boolean checkWarp(String name)
+	public boolean checkWarp(String name) 
 	{
 		List<String> warpList = config.getStringList("list");
 		if (warpList.contains(name))
@@ -337,23 +344,54 @@ public class Warps
 		return false;
 	}
 
+	//-----------------------------------------------------------------------
 	/**
-	 * Check Midnight: Determines if midnight has passed. Resets the daily limits if true.
+	 * {@code checkCanWarp}: Determines if the player has warped over the max limit
+	 * 
+	 * @param player  The player who sent the command
+	 * @param name  The name of the location
 	 */
-	public void checkMidnight()
+	public void checkCanWarp(Player player, String name) 
 	{
-		if (config.getLong("midnighttime") <= System.currentTimeMillis() - 1)
+		int amountUsed = config.getInt("data.limit." + name + "." + player.getUniqueId());
+		int maxAmount = config.getInt("warps." + name + ".value");
+
+		if (amountUsed >= maxAmount)
+			player.sendMessage(ChatColor.RED + "You cannot warp into the dungeon just yet.");
+		else
+			player.sendMessage(ChatColor.GREEN + "You can warp into the dungeon.");
+	}
+
+	//-----------------------------------------------------------------------
+	/**
+	 * {@code checkMidnight}: Determines if midnight has passed. Resets the daily
+	 * limits if true.
+	 * 
+	 * <ul>
+	 * <li> Links to a method 'resetTimer' on this class:
+	 * 		{@link #resetTimer}.
+	 * </ul>
+	 */
+	public void checkMidnight() 
+	{
+		if (config.getLong("midnighttime") <= System.currentTimeMillis() - 1) 
 		{
-			// Midnight has passed. Run Reset.
 			config.set("data.limit", null);
 			resetTimer();
 		}
 	}
 
+	//-----------------------------------------------------------------------
 	/**
-	 * Reset Timer: Determines the amount of milliseconds it takes to be midnight and saves it.
+	 * {@code resetTimer}: Determines the amount of milliseconds it takes to be
+	 * midnight and saves it.
+	 * 
+	 * <ul>
+	 * <li> Links to a method 'saveConfig' on this class:
+	 * 		{@link #saveConfig}.
+	 * </ul>
 	 */
-	public void resetTimer()
+	public void resetTimer() 
 	{
 		midnight = Calendar.getInstance();
 		midnight.set(Calendar.HOUR_OF_DAY, 0);
@@ -365,45 +403,49 @@ public class Warps
 		saveConfig();
 	}
 
+	//-----------------------------------------------------------------------
 	/**
-	 * Convert Milliseconds: Takes a variable of milliseconds and converts into easy to read text.
+	 * {@code convertMilliseconds}: Takes a variable of milliseconds and converts into
+	 * easy to read text.
 	 * 
-	 * @param player - The player who sent the command
-	 * @param milliseconds - User inputted milliseconds.
+	 * @param player  The player who sent the command
+	 * @param milliseconds  User inputted milliseconds.
 	 */
-	public void convertMilliseconds(Player player, long milliseconds)
+	public void convertMilliseconds(Player player, long milliseconds) 
 	{
 		int hours = 0;
 		int minutes = 0;
 		int seconds = 0;
-		if (milliseconds >= 3600000)
+		if (milliseconds >= 3600000) 
 		{
 			hours = (int) milliseconds / 3600000;
 			milliseconds = milliseconds % 3600000;
 		}
-		if (milliseconds >= 60000)
+		if (milliseconds >= 60000) 
 		{
 			minutes = (int) milliseconds / 60000;
 			milliseconds = milliseconds % 60000;
 		}
-		if (milliseconds >= 1000)
+		if (milliseconds >= 1000) 
 		{
 			seconds = (int) milliseconds / 1000;
 			milliseconds = milliseconds % 1000;
 		}
-		player.sendMessage(ChatColor.RED + "You can use this warp again in: " + hours + " hours " + minutes + " minutes and " + seconds + " seconds.");
+		player.sendMessage(ChatColor.RED + "You can use this warp again in: " + hours + " hours " + minutes
+				+ " minutes and " + seconds + " seconds.");
 	}
 
+	//-----------------------------------------------------------------------
 	/**
-	 * Save Config: Saves the configuration file.
+	 * {@code saveConfig}: Saves the configuration file.
 	 */
-	public void saveConfig()
+	public void saveConfig() 
 	{
-		try
+		try 
 		{
 			config.save(ymlFile);
-		}
-		catch (IOException e)
+		} 
+		catch (IOException e) 
 		{
 			e.printStackTrace();
 		}

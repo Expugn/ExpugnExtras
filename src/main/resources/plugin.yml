@@ -7,14 +7,13 @@ website: https://github.com/Expugn/ExpugnExtras
 
 main: io.github.expugn.expugnextras.ExpugnExtras
 database: false
-softdepend: [VariableTriggers, Vault, Essentials, TitleManager, PermissionsEx]
+depend: [TitleManager, PermissionsEx]
+softdepend: [VariableTriggers, Vault]
 
 commands:
   expugn:
     description: Alias for ExpugnExtras.
     usage: '/expugn [parameter]'
-    permission: expugnextras.admin
-    permission-message: 'You do not have <permission>.'
   marriage:
     description: Alias for Marriage.
     usage: '/marriage [parameter]'
