@@ -170,149 +170,126 @@ public class ExpugnCommand implements CommandExecutor
 			Player player = (Player) sender;
 			onExecute();
 			if (args.length == 0) 
-				if (player.hasPermission("expugnextras.admin"))
-					player.sendMessage(OPENING_MESSAGE);
+				player.sendMessage(OPENING_MESSAGE);
 			else 
 			{
 				switch (args[0].toLowerCase()) 
 				{
 				case HELP_COMMAND:
-					if (player.hasPermission("expugnextras.admin"))
-						helpMenu(player);
+					helpMenu(player);
 					break;
 				case WARP_LIST_COMMAND:
-					if (player.hasPermission("expugnextras.admin"))
-						warps.warpList(player);
+					warps.warpList(player);
 					break;
 				case WARP_INFO_COMMAND:
 					if (args.length >= 2)
-						if (player.hasPermission("expugnextras.admin"))
-							warps.warpInfo(player, args[1]);
+						warps.warpInfo(player, args[1]);
 					else
 						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				case WARP_COMMAND:
 					if (args.length >= 2)
-						if (player.hasPermission("expugnextras.admin"))
-							warps.warp(player, args[1]);
+						warps.warp(player, args[1]);
 					else
 						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				case SET_WARP_COMMAND:
 					if (args.length >= 2)
-						if (player.hasPermission("expugnextras.admin"))
-							warps.setWarp(player, args[1]);
+						warps.setWarp(player, args[1]);
 					else
 						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				case DELETE_WARP_COMMAND:
 					if (args.length >= 2)
-						if (player.hasPermission("expugnextras.admin"))
-							warps.delWarp(player, args[1]);
+						warps.delWarp(player, args[1]);
 					else
 						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				case WARP_SETTING_COMMAND:
 					if (args.length >= 3)
-						if (player.hasPermission("expugnextras.admin"))
-							warps.warpSetting(player, args[1], args[2]);
+						warps.warpSetting(player, args[1], args[2]);
 					else
 						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				case CHECK_CAN_WARP_COMMAND:
 					if (args.length >= 2)
-						if (player.hasPermission("expugnextras.admin"))
-							warps.checkCanWarp(player, args[1]);
+						warps.checkCanWarp(player, args[1]);
 					else
 						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				case SET_DUNGEON_COMMAND:
 					if (args.length >= 3)
-						if (player.hasPermission("expugnextras.admin"))
-							timers.setDungeon(player, args[1], Long.parseLong(args[2]));
+						timers.setDungeon(player, args[1], Long.parseLong(args[2]));
 					else 
 					{
 						if (args.length >= 2)
-							if (player.hasPermission("expugnextras.admin"))
-								timers.setDungeon(player, args[1], Long.parseLong("72000000"));
+							timers.setDungeon(player, args[1], Long.parseLong("72000000"));
 						else
 							player.sendMessage(INVALID_PARAMETER_ERROR);
 					}
 					break;
 				case SET_TIME_COMMAND:
 					if (args.length >= 2)
-						if (player.hasPermission("expugnextras.admin"))
-							timers.setTime(player, args[1]);
+						timers.setTime(player, args[1]);
 					else
 						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				case DELETE_DUNGEON_COMMAND:
 					if (args.length >= 2)
-						if (player.hasPermission("expugnextras.admin"))
-							timers.delDungeon(player, args[1]);
+						timers.delDungeon(player, args[1]);
 					else
 						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				case CHECK_TIME_COMMAND:
 					if (args.length >= 2)
-						if (player.hasPermission("expugnextras.admin"))
-							timers.checkTime(player, args[1]);
+						timers.checkTime(player, args[1]);
 					else
 						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				case DUNGEON_LIST_COMMAND:
-					if (player.hasPermission("expugnextras.admin"))
-						timers.dungeonList(player);
+					timers.dungeonList(player);
 					break;
 				case SET_LOCATION_COMMAND:
 					if (args.length >= 2)
-						if (player.hasPermission("expugnextras.admin"))
-							trials.setLocation(player, args[1]);
+						trials.setLocation(player, args[1]);
 					else
 						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				case DELETE_LOCATION_COMMAND:
 					if (args.length >= 2)
-						if (player.hasPermission("expugnextras.admin"))
-							trials.delLocation(player, args[1]);
+						trials.delLocation(player, args[1]);
 					else
 						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				case LOCATION_LIST_COMMAND:
-					if (player.hasPermission("expugnextras.admin"))
-						trials.locationList(player);
+					trials.locationList(player);
 					break;
 				case START_TRIAL_COMMAND:
 					if (args.length >= 2)
-						if (player.hasPermission("expugnextras.admin"))
-							trials.startTrial(player, args[1]);
+						trials.startTrial(player, args[1]);
 					else
 						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				case END_TRIAL_COMMAND:
 					if (args.length >= 2)
-						if (player.hasPermission("expugnextras.admin"))
-							trials.endTrial(player, args[1]);
+						trials.endTrial(player, args[1]);
 					else
 						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				case GET_RANKINGS_COMMAND:
 					if (args.length >= 2)
-						if (player.hasPermission("expugnextras.admin"))
-							trials.getRankings(player, args[1]);
+						trials.getRankings(player, args[1]);
 					else
 						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				case RESET_TIMES_COMMAND:
 					if (args.length >= 2)
-						if (player.hasPermission("expugnextras.admin"))
-							trials.resetTimes(player, args[1]);
+						trials.resetTimes(player, args[1]);
 					else
 						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				case HALL_OF_GLORY_COMMAND:
-					if (player.hasPermission("expugnextras.admin"))
-						trials.warpHallOfGlory(player);
+					trials.warpHallOfGlory(player);
 					break;
 				case LIST_TITLES_COMMAND:
 					listtitles.getTitles(player, args);

@@ -1058,7 +1058,7 @@ public class Marriage
 				} 
 				else 
 				{
-					player.sendMessage(prefix + ChatColor.GREEN + "You are now engaged with " + ChatColor.GOLD
+					player.sendMessage(prefix + ChatColor.GREEN + "You are now married with " + ChatColor.GOLD
 							+ offlinePlayerPartner.getName() + ChatColor.GREEN + "!");
 					setConfigData(offlinePlayerPartner, "level", 3);
 				}
