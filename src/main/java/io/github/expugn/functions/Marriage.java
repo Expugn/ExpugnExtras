@@ -1036,7 +1036,7 @@ public class Marriage
 	{
 		Player playerPartner = getPlayerFromUUIDString(
 				config.getString("players." + player.getUniqueId() + ".partner"));
-		OfflinePlayer offlinePlayerPartner = getPlayerFromUUIDString(
+		OfflinePlayer offlinePlayerPartner = getOfflinePlayerFromUUIDString(
 				config.getString("players." + player.getUniqueId() + ".partner"));
 		long playerCoupleSince = config.getLong("players." + player.getUniqueId() + ".couplesince");
 		long coupleFor = System.currentTimeMillis() - playerCoupleSince;

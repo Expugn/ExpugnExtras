@@ -110,7 +110,7 @@ public class ListTitles
 			{
 				FancyMessage fancyMess = new FancyMessage(ChatColor.ITALIC + title + ChatColor.RESET + " : " + (String) titles.get(title).replace('&', '§'))
 								.tooltip(ChatColor.RED + "Sample:\n" + 
-										 ((String)titles.get(title).replace('&', '§')) + ChatColor.RESET + ChatColor.WHITE + player.getDisplayName() + ChatColor.WHITE + " > Hello World!\n\n" +
+										 ((String)titles.get(title).replace('&', '§')) + ChatColor.RESET + ChatColor.WHITE + player.getName() + ChatColor.WHITE + " > Hello World!\n\n" +
 										 ChatColor.GRAY + ChatColor.ITALIC + "Click to apply this title.")
 								.command("/title " + title);
 

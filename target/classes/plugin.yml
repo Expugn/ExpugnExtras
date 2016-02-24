@@ -14,8 +14,6 @@ commands:
   expugn:
     description: Alias for ExpugnExtras.
     usage: '/expugn [parameter]'
-    permission: expugnextras.admin
-    permission-message: 'You do not have <permission>.'
   marriage:
     description: Alias for Marriage.
     usage: '/marriage [parameter]'
