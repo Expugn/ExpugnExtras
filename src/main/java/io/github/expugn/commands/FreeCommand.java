@@ -19,6 +19,7 @@ public class FreeCommand implements CommandExecutor
 {
 	private final io.github.expugn.functions.ListTitles listtitles;
 
+	//-----------------------------------------------------------------------
 	/**
 	 * Constructor for the {@code FreeCommand} class.
 	 * 

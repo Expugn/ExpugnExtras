@@ -2128,7 +2128,7 @@ public class Marriage
 	
 	//-----------------------------------------------------------------------
 	/**
-	 * Save Config: Saves the configuration file.
+	 * {@code saveConfig}: Saves the configuration file.
 	 */
 	public void saveConfig() 
 	{

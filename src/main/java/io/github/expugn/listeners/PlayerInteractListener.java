@@ -10,8 +10,7 @@ import io.github.expugn.expugnextras.ExpugnExtras;
 /**
  * 'PlayerInteract' Listener: Listens for player interaction.
  * 
- * @author Expugn 
- * https://github.com/Expugn
+ * @author Expugn <i>(https://github.com/Expugn)</i>
  * @version 1.0
  */
 public class PlayerInteractListener implements Listener 
