@@ -66,6 +66,11 @@ public class Warps
 	 * {@code warpList}: Lists all the warps available and written onto the
 	 * configuration file.
 	 * 
+	 * <ul>
+	 * <li> Links to a method 'getWarpList' on this class:
+	 * 		{@link #getWarpList}.
+	 * </ul>
+	 * 
 	 * @param player  The player who sent the command.
 	 */
 	public void warpList(Player player) 
@@ -322,6 +327,11 @@ public class Warps
 	//-----------------------------------------------------------------------
 	/**
 	 * {@code checkWarp}: Determines if the warp exists in the configuration file.
+	 * 
+	 * <ul>
+	 * <li> Links to a method 'getWarpList' on this class:
+	 * 		{@link #getWarpList}.
+	 * </ul>
 	 * 
 	 * @param name  The name of the warp.
 	 * @return
