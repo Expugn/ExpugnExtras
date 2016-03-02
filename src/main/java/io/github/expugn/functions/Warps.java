@@ -3,7 +3,7 @@ package io.github.expugn.functions;
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,7 +18,7 @@ import io.github.expugn.expugnextras.ExpugnExtras;
 /**
  * <b>'Warps' Function</b>
  * 
- * @version 1.1
+ * @version 1.2
  * @author Expugn <i>(https://github.com/Expugn)</i>
  */
 public class Warps 
@@ -70,9 +70,8 @@ public class Warps
 	 */
 	public void warpList(Player player) 
 	{
-		List<String> warpList = config.getStringList("list");
-		player.sendMessage(ChatColor.GOLD + "There are currently " + warpList.size() + " warps");
-		for (String s : warpList) 
+		player.sendMessage(ChatColor.GOLD + "There are currently " + getWarpList().size() + " warps");
+		for (String s : getWarpList()) 
 		{
 			player.sendMessage("- " + s);
 		}
@@ -226,10 +225,6 @@ public class Warps
 			config.set("warps." + name + ".type", "cooldown");
 			config.set("warps." + name + ".value", 0);
 
-			List<String> warpList = config.getStringList("list");
-			warpList.add(name);
-			config.set("list", warpList);
-
 			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name
 					+ " <cooldown|limit> to modify the type of warp.");
 			player.sendMessage(ChatColor.GREEN + "- Use /expugn warpsetting " + name
@@ -272,9 +267,6 @@ public class Warps
 		else 
 		{
 			config.set("warps." + name, null);
-			List<String> warpList = config.getStringList("list");
-			warpList.remove(name);
-			config.set("list", warpList);
 			config.set("data.cooldown." + name, null);
 			config.set("data.limit." + name, null);
 			saveConfig();
@@ -338,8 +330,7 @@ public class Warps
 	 */
 	public boolean checkWarp(String name) 
 	{
-		List<String> warpList = config.getStringList("list");
-		if (warpList.contains(name))
+		if (getWarpList().contains(name))
 			return true;
 		return false;
 	}
@@ -435,6 +426,17 @@ public class Warps
 				+ " minutes and " + seconds + " seconds.");
 	}
 
+	//-----------------------------------------------------------------------
+	/**
+	 * {@code getWarpList}: Returns all list of all warps created.
+	 * 
+	 * @return  A set of all entries under 'warps' in the config
+	 */
+	public Set<String> getWarpList()
+	{
+		return config.getConfigurationSection("warps").getKeys(false);
+	}
+	
 	//-----------------------------------------------------------------------
 	/**
 	 * {@code saveConfig}: Saves the configuration file.

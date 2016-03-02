@@ -3,6 +3,7 @@ package io.github.expugn.functions;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,14 +18,13 @@ import io.github.expugn.expugnextras.ExpugnExtras;
 /**
  * <b>'TimeTrial' Function</b>
  * 
- * @version 1.1
+ * @version 1.2
  * @author Expugn <i>(https://github.com/Expugn)</i>
  */
 public class TimeTrial 
 {
 	File ymlFile;
 	FileConfiguration config;
-	File warpYmlFile;
 	FileConfiguration warpConfig;
 	ExpugnExtras plugin;
 	private static final int DEFAULT_MAX_TIME = 3600000;
@@ -68,8 +68,7 @@ public class TimeTrial
 	{
 		ymlFile = new File(plugin.getDataFolder() + "/timetrial.yml");
 		config = YamlConfiguration.loadConfiguration(ymlFile);
-		warpYmlFile = new File(plugin.getDataFolder() + "/warps.yml");
-		warpConfig = YamlConfiguration.loadConfiguration(warpYmlFile);
+		warpConfig = plugin.readConfig("warps");
 		checkProgress();
 	}
 
@@ -127,9 +126,6 @@ public class TimeTrial
 			config.set("location." + name + ".rankinglist.5.seconds", 99);
 			config.set("location." + name + ".rankinglist.5.milliseconds", 999);
 
-			List<String> locationList = config.getStringList("list");
-			locationList.add(name);
-			config.set("list", locationList);
 			saveConfig();
 			player.sendMessage(ChatColor.GREEN + "Created location " + ChatColor.GOLD + name);
 		} 
@@ -157,9 +153,6 @@ public class TimeTrial
 		else 
 		{
 			config.set("location." + name, null);
-			List<String> locationList = config.getStringList("list");
-			locationList.remove(name);
-			config.set("list", locationList);
 			saveConfig();
 
 			player.sendMessage(ChatColor.GREEN + "Location " + name + " has been removed.");
@@ -171,13 +164,17 @@ public class TimeTrial
 	 * {@code LocationList}: Generates and tells a player the list of available
 	 * locations
 	 * 
+	 * <ul>
+	 * <li> Links to a method 'getLocationList' on this class:
+	 * 		{@link #getLocationList}.
+	 * </ul>
+	 * 
 	 * @param player  The player who sent the command.
 	 */
 	public void locationList(Player player) 
 	{
-		List<String> locationList = config.getStringList("list");
-		player.sendMessage(ChatColor.GOLD + "There are currently " + locationList.size() + " locations");
-		for (String s : locationList) 
+		player.sendMessage(ChatColor.GOLD + "There are currently " + getLocationList().size() + " locations");
+		for (String s : getLocationList()) 
 		{
 			player.sendMessage("- " + s);
 		}
@@ -187,6 +184,11 @@ public class TimeTrial
 	/**
 	 * {@code checkLocation}: Checks to see if the location exists
 	 * 
+	 * <ul>
+	 * <li> Links to a method 'getLocationList' on this class:
+	 * 		{@link #getLocationList}.
+	 * </ul>
+	 * 
 	 * @param name  The name of the location.
 	 * @return 
 	 * 		<li> {@code true}  if location exists 
@@ -194,8 +196,7 @@ public class TimeTrial
 	 */
 	public boolean checkLocation(String name) 
 	{
-		List<String> locationList = config.getStringList("list");
-		if (locationList.contains(name))
+		if (getLocationList().contains(name))
 			return true;
 		return false;
 	}
@@ -1002,6 +1003,11 @@ public class TimeTrial
 	 * CheckFirstPlace - Checks all locations to see if the player has placed
 	 * first in any trial.
 	 * 
+	 * <ul>
+	 * <li> Links to a method 'getLocationList' on this class:
+	 * 		{@link #getLocationList}.
+	 * </ul>
+	 * 
 	 * @param playerUUID  The player who ran the command's UUID.
 	 * @return
 	 * 		<li> {@code true}  if the player has placed first in any location 
@@ -1009,8 +1015,7 @@ public class TimeTrial
 	 */
 	public boolean checkFirstPlaces(String playerUUID) 
 	{
-		List<String> locationList = config.getStringList("list");
-		for (String location : locationList) 
+		for (String location : getLocationList()) 
 		{
 			if (config.getString("location." + location + ".rankinglist.1.playeruuid").equals(playerUUID))
 				return true;
@@ -1042,6 +1047,17 @@ public class TimeTrial
 		} 
 		else 
 			player.sendMessage(HALL_OF_GLORY_MESSAGE);
+	}
+	
+	//-----------------------------------------------------------------------
+	/**
+	 * {@code getLocationList}: Returns all list of all locations created.
+	 * 
+	 * @return  A set of all entries under 'location' in the config
+	 */
+	public Set<String> getLocationList()
+	{
+		return config.getConfigurationSection("location").getKeys(false);
 	}
 
 	//-----------------------------------------------------------------------

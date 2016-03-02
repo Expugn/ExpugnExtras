@@ -2,7 +2,7 @@ package io.github.expugn.functions;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,14 +14,14 @@ import io.github.expugn.expugnextras.ExpugnExtras;
 /**
  * <b>'DungeonTimers' Function</b>
  * 
- * @version 1.1
+ * @version 1.2
  * @author Expugn <i>(https://github.com/Expugn)</i>
  */
 public class DungeonTimers 
 {
 	/* Private variables */
-	File ymlFile;
-	FileConfiguration config;
+	private File ymlFile;
+	private FileConfiguration config;
 
 	/* System messages and errors */
 	private static final String CAN_LOOT_MESSAGE = ChatColor.GREEN
@@ -61,9 +61,7 @@ public class DungeonTimers
 		if (this.checkDungeon(name) == false) 
 		{
 			config.set("dungeons." + name + ".cooldown", milliseconds);
-			List<String> dungeonList = config.getStringList("list");
-			dungeonList.add(name);
-			config.set("list", dungeonList);
+			config.set("dungeons." + name + ".players.key", null);
 			saveConfig();
 
 			player.sendMessage(ChatColor.GREEN + "Created dungeon " + ChatColor.GOLD + name);
@@ -118,9 +116,6 @@ public class DungeonTimers
 		else 
 		{
 			config.set("dungeons." + name, null);
-			List<String> dungeonList = config.getStringList("list");
-			dungeonList.remove(name);
-			config.set("list", dungeonList);
 			saveConfig();
 
 			player.sendMessage(ChatColor.GREEN + "Dungeon " + name + " has been removed.");
@@ -184,13 +179,17 @@ public class DungeonTimers
 	/**
 	 * {@code dungeonList}: Displays a list of supported dungeons to the player.
 	 * 
+	 * <ul>
+	 * <li> Links to a method 'getDungeonList' on this class:
+	 * 		{@link #getDungeonList}.
+	 * </ul>
+	 * 
 	 * @param player  Player who sent the command
 	 */
 	public void dungeonList(Player player) 
 	{
-		List<String> dungeonList = config.getStringList("list");
-		player.sendMessage(ChatColor.GOLD + "There are currently " + dungeonList.size() + " dungeons");
-		for (String s : dungeonList) 
+		player.sendMessage(ChatColor.GOLD + "There are currently " + getDungeonList().size() + " dungeons");
+		for (String s : getDungeonList()) 
 		{
 			player.sendMessage("- " + s);
 		}
@@ -200,16 +199,56 @@ public class DungeonTimers
 	/**
 	 * {@code checkDungeon}: Checks if the supplied dungeon is supported.
 	 * 
+	 * <ul>
+	 * <li> Links to a method 'getDungeonList' on this class:
+	 * 		{@link #getDungeonList}.
+	 * </ul>
+	 * 
 	 * @param name  Player who sent the command
 	 * @return 
 	 * 		<li> {@code true}  if the dungeon exists in the file.
 	 * 		<li> {@code false}  if the dungeon does not exist in the file.
 	 */
-	public boolean checkDungeon(String name) {
-		List<String> dungeonList = config.getStringList("list");
-		if (dungeonList.contains(name))
+	public boolean checkDungeon(String name) 
+	{
+		if (getDungeonList().contains(name))
 			return true;
 		return false;
+	}
+	
+	//-----------------------------------------------------------------------
+	/**
+	 * {@code cleanConfig}: Removes expired entries in the config file.
+	 * 
+	 * <ul>
+	 * <li> Links to a method 'saveConfig' on this class:
+	 * 		{@link #saveConfig}.
+	 * <li> Links to a method 'getDungeonList' on this class:
+	 * 		{@link #getDungeonList}.
+	 * </ul>
+	 */
+	public void cleanConfig()
+	{
+		for (String dungeonName : getDungeonList()) 
+		{
+			for (String key : config.getConfigurationSection("dungeons." + dungeonName + ".players").getKeys(false))
+			{
+				if (System.currentTimeMillis() > config.getLong("dungeons." + dungeonName + ".players." + key))
+					config.set("dungeons." + dungeonName + ".players." + key, null);
+			}
+		}
+		saveConfig();
+	}
+	
+	//-----------------------------------------------------------------------
+	/**
+	 * {@code getDungeonList}: Returns all list of all dungeons created.
+	 * 
+	 * @return  A set of all entries under 'dungeons' in the config
+	 */
+	public Set<String> getDungeonList()
+	{
+		return config.getConfigurationSection("dungeons").getKeys(false);
 	}
 
 	//-----------------------------------------------------------------------

@@ -332,6 +332,7 @@ public class ExpugnCommand implements CommandExecutor
 	{
 		warps.checkMidnight();
 		trials.checkProgress();
+		timers.cleanConfig();
 	}
 
 }

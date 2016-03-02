@@ -1,6 +1,10 @@
 package io.github.expugn.expugnextras;
 
+import java.io.File;
+
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -20,6 +24,7 @@ public class ExpugnExtras extends JavaPlugin
 {
 	public static Economy econ = null;
 
+	//-----------------------------------------------------------------------
 	/**
 	 * onEnable: Runs when the plugin starts up.
 	 * <p><ul>
@@ -51,6 +56,7 @@ public class ExpugnExtras extends JavaPlugin
 		this.reloadConfig();
 	}
 
+	//-----------------------------------------------------------------------
 	/**
 	 * setupEconomy: Sets up Vault's economy system.
 	 * 
@@ -70,5 +76,11 @@ public class ExpugnExtras extends JavaPlugin
 		
 		econ = rsp.getProvider();
 		return econ != null;
+	}
+	
+	public FileConfiguration readConfig(String file)
+	{
+		File ymlFile = new File(getDataFolder() + "/" + file + ".yml");
+		return YamlConfiguration.loadConfiguration(ymlFile);
 	}
 }

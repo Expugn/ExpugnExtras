@@ -3,6 +3,7 @@ package io.github.expugn.functions;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -1966,21 +1967,6 @@ public class Marriage
 
 	//-----------------------------------------------------------------------
 	/**
-	 * {@code checkCooldown}: Checks the player's cooldowns and deletes them if they're
-	 * past due.
-	 * 
-	 * @param player  The player who sent the command
-	 */
-	public void checkCooldown(Player player) 
-	{
-		if (System.currentTimeMillis() > config.getLong("players." + player.getUniqueId() + ".cooldown"))
-			deleteConfigData(player, "cooldown");
-		if (System.currentTimeMillis() > config.getLong("players." + player.getUniqueId() + ".effectcooldown"))
-			deleteConfigData(player, "effectcooldown");
-	}
-
-	//-----------------------------------------------------------------------
-	/**
 	 * {@code checkPlayerOnline}: Checks if the player is currently online the server.
 	 * 
 	 * @param playerName  A player's display name
@@ -2111,6 +2097,35 @@ public class Marriage
 		saveConfig();
 	}
 
+	//-----------------------------------------------------------------------
+	/**
+	 * {@code cleanConfig}: Removes empty player entries and expired cooldowns in the config file.
+	 * 
+	 * <ul>
+	 * <li> Links to a method 'saveConfig' on this class:
+	 * 		{@link #saveConfig}.
+	 * </ul>
+	 */
+	public void cleanConfig()
+	{
+		Set<String> playerList = config.getConfigurationSection("players").getKeys(false);
+		for (String playerUUID : playerList) 
+		{
+			if (config.getConfigurationSection("players." + playerUUID).getKeys(false).isEmpty())
+				config.set("players." + playerUUID, null);
+		}
+		
+		playerList = config.getConfigurationSection("players").getKeys(false);
+		for (String playerUUID : playerList) 
+		{
+			if (System.currentTimeMillis() > config.getLong("players." + playerUUID + ".cooldown"))
+				config.set("players." + playerUUID + ".cooldown", null);
+			if (System.currentTimeMillis() > config.getLong("players." + playerUUID + ".effectcooldown"))
+				config.set("players." + playerUUID + ".effectcooldown", null);
+		}
+		saveConfig();
+	}
+	
 	//-----------------------------------------------------------------------
 	/**
 	 * Save Config: Saves the configuration file.

@@ -255,7 +255,7 @@ public class MarriageCommand implements CommandExecutor
 	 */
 	public void onExecute(Player player) 
 	{
-		marriage.checkCooldown(player);
 		marriage.refundIfOffline(player);
+		marriage.cleanConfig();
 	}
 }
