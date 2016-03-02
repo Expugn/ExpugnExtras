@@ -18,7 +18,6 @@ import io.github.expugn.fanciful.FancyMessage;
 public class FreeCommand implements CommandExecutor 
 {
 	private final io.github.expugn.functions.ListTitles listtitles;
-	private final io.github.expugn.functions.DungeonTimers timers;
 
 	/**
 	 * Constructor for the {@code FreeCommand} class.
@@ -33,7 +32,6 @@ public class FreeCommand implements CommandExecutor
 	public FreeCommand(ExpugnExtras plugin) 
 	{
 		listtitles = new io.github.expugn.functions.ListTitles(plugin);
-		timers = new io.github.expugn.functions.DungeonTimers(plugin);
 	}
 
 	//-----------------------------------------------------------------------
@@ -67,9 +65,6 @@ public class FreeCommand implements CommandExecutor
 				{
 				case "listtitles":
 					listtitles.getTitles(player, args);
-					break;
-				case "settime":
-					timers.setTime(player, args[1]);
 					break;
 				default:
 					defaultMessage().send(player);
