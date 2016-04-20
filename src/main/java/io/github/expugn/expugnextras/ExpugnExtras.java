@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import io.github.expugn.commands.ConsoleCommand;
 import io.github.expugn.commands.ExpugnCommand;
 import io.github.expugn.commands.FreeCommand;
 import io.github.expugn.commands.GollemCommand;
@@ -55,8 +56,8 @@ public class ExpugnExtras extends JavaPlugin
 	private void setupCommands()
 	{
 		getCommand("expugn").setExecutor(new ExpugnCommand(this));
-		
-		getCommand("expugnfree").setExecutor(new FreeCommand(this));	
+		getCommand("expugnfree").setExecutor(new FreeCommand(this));
+		getCommand("expugnconsole").setExecutor(new ConsoleCommand(this));
 		
 		if (!setupEconomy()) 
 			getLogger().info("'/marriage' command failed to be enabled.");

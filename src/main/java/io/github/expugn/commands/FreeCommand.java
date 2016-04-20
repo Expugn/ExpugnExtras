@@ -1,6 +1,7 @@
 package io.github.expugn.commands;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -8,6 +9,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import io.github.expugn.expugnextras.ExpugnExtras;
@@ -21,6 +24,8 @@ import io.github.expugn.fanciful.FancyMessage;
  */
 public class FreeCommand implements CommandExecutor 
 {
+	private File ymlFile;
+	private static FileConfiguration config;
 	private final io.github.expugn.functions.ListTitles listtitles;
 	private final io.github.expugn.functions.DungeonTimers timers;
 
@@ -39,6 +44,8 @@ public class FreeCommand implements CommandExecutor
 	{
 		listtitles = new io.github.expugn.functions.ListTitles(plugin);
 		timers = new io.github.expugn.functions.DungeonTimers(plugin);
+		ymlFile = new File(plugin.getDataFolder() + "/extras.yml");
+		config = YamlConfiguration.loadConfiguration(ymlFile);
 	}
 
 	//-----------------------------------------------------------------------
@@ -81,13 +88,16 @@ public class FreeCommand implements CommandExecutor
 				case "help":
 					helpMenu(player);
 					break;
+				case "realhelp":
+					realHelpMenu(player);
+					break;
 				case "name":
 					if (args.length >= 2)
 					{
 						Player[] onlinePlayers = Bukkit.getOnlinePlayers();
 						for (Player currentPlayer : onlinePlayers) 
 						{
-							if (currentPlayer.getName().equals(args[1]))
+							if (currentPlayer.getName().equals(args[1]) || args[1].equals("Expugn"))
 							{
 								defaultMessage(args[1]).send(player);
 								return true;
@@ -99,7 +109,7 @@ public class FreeCommand implements CommandExecutor
 						player.sendMessage(ChatColor.RED + "Invalid Arguments. /expugnfree name [name]");
 					break;
 				default:
-					defaultMessage("Expugn").send(player);
+					player.sendMessage(ChatColor.RED + "Unknown Command. Use '" + ChatColor.GOLD + "/expugnfree help" + ChatColor.RED + "' for a help menu.");
 					break;
 				}
 			}
@@ -115,14 +125,39 @@ public class FreeCommand implements CommandExecutor
 	 */
 	public void helpMenu(Player player)
 	{
-		player.sendMessage(ChatColor.GRAY + "Huh? You want help? Well okay...\n"
+		new FancyMessage(ChatColor.GRAY + "Huh? You want help? Well okay...\n"
 				+ ChatColor.GOLD + "USA Suicide Hotline: " + ChatColor.WHITE + "1-800-784-2433\n"
 				+ ChatColor.GOLD + "SparkNotes: " + ChatColor.WHITE + "www.sparknotes.com\n"
 				+ ChatColor.GOLD + "Google: " + ChatColor.WHITE + "www.google.com\n"
 				+ ChatColor.GOLD + "AllRecipes: " + ChatColor.WHITE + "www.allrecipes.com\n"
 				+ ChatColor.GOLD + "Minecraft Wiki: " + ChatColor.WHITE + "www.minecraft.gamepedia.com\n"
 				+ ChatColor.GOLD + "Server Forums: " + ChatColor.WHITE + "www.ultimate-mc.net\n"
-				+ ChatColor.GRAY + "If you need more help then look it up on Google or something.");
+				+ ChatColor.GRAY + "If you need more help then look it up on Google or something.\n")
+		.then("[But... This isn't the type of help I wanted..]")
+		.color(ChatColor.DARK_AQUA)
+		.command("/expugnfree realhelp")
+		.tooltip("Click me.")
+		.send(player);
+	}
+	
+	//-----------------------------------------------------------------------
+	/**
+	 * {@code realHelpMenu}: Gives real help unlike the other help menu.
+	 */
+	public void realHelpMenu(Player player)
+	{
+		new FancyMessage(ChatColor.GRAY + "Okay, okay... Here's a 'real' help menu.\n")
+				.then(ChatColor.GOLD + "/expugnfree\n")
+				.tooltip("???")
+				.suggest("/expugnfree")
+				.then(ChatColor.GOLD + "/expugnfree name [playername]\n")
+				.tooltip("Compliment someone!")
+				.suggest("/expugnfree name [playername]")
+				.then(ChatColor.GOLD + "/expugnfree help\n")
+				.tooltip("You're looking at the help menu already you silly goose.")
+				.suggest("/expugnfree help")
+				.then(ChatColor.GRAY + "You can click on a command to have it typed out for ya.")
+				.send(player);
 	}
 	
 	//-----------------------------------------------------------------------
@@ -130,8 +165,8 @@ public class FreeCommand implements CommandExecutor
 	 * {@code defaultMessage}: Returns a JSON based message where it says "[Click Me.]" 
 	 * 
 	 * <p>
-	 * If the player clicks the message they will say "<name> is a pretty <adj>
-	 * <noun>." in game.
+	 * If the player clicks the message they will say "[name] is a [adverb] [adjective]
+	 * [noun]." in game.
 	 * 
 	 * <ul>
 	 * <li> Links to a method 'getMessage' on this class:
@@ -140,13 +175,18 @@ public class FreeCommand implements CommandExecutor
 	 * 		{@link #getRandomColor}.
 	 * <ul>
 	 * 
+	 * @param name  Player name
 	 * @return  FancyMessage, not null
 	 */
 	public static FancyMessage defaultMessage(String name)
 	{
 		return new FancyMessage(getRandomColor() + "[Click Me.]")
-			.tooltip("C'mon, I double dog dare you to click this.")
-			.command(getMessage(name));
+			.tooltip("Give it a shot!")
+			.command(getMessage(name))
+			.then(" | ")
+			.then(getRandomColor() + "[Generate another?]")
+			.tooltip("Want another message?")
+			.command("/expugnfree name " + name);
 	}
 	
 	//-----------------------------------------------------------------------
@@ -159,48 +199,16 @@ public class FreeCommand implements CommandExecutor
 	{
 		Random randomNum = new Random();
 		
-		ArrayList<String> adj = new ArrayList<String>();
-		adj.add("cool");
-		adj.add("alright");
-		adj.add("satisfactory");
-		adj.add("acceptable");
-		adj.add("adequate");
-		adj.add("good");
-		adj.add("passable");
-		adj.add("OK");
-		adj.add("funky");
-		adj.add("groovy");
-		adj.add("swanky");
-		adj.add("fine");
-		adj.add("decent");
-		adj.add("average");
-		adj.add("remarkable");
-		adj.add("average");
-		adj.add("swell");
-		adj.add("trendy");
-		adj.add("fantastic");
-		adj.add("great");
-		adj.add("rad");
-		adj.add("nifty");
-		adj.add("excellent");
+		List<String> adverb = config.getStringList("words.adverbs");
+		int adverbNum = randomNum.nextInt(adverb.size());
+		
+		List<String> adj = config.getStringList("words.adjectives");
 		int adjNum = randomNum.nextInt(adj.size());
 		
-		ArrayList<String> noun = new ArrayList<String>();
-		noun.add("guy");
-		noun.add("lad");
-		noun.add("person");
-		noun.add("dude");
-		noun.add("fellow");
-		noun.add("chap");
-		noun.add("individual");
-		noun.add("creature");
-		noun.add("being");
-		noun.add("whippersnapper");
-		noun.add("brat");
-		noun.add("character");
+		List<String> noun = config.getStringList("words.nouns");
 		int nounNum = randomNum.nextInt(noun.size());
 		
-		return name + " is a pretty " + adj.get(adjNum) + " " + noun.get(nounNum) + ".";
+		return name + " is a " + adverb.get(adverbNum) + " " + adj.get(adjNum) + " " + noun.get(nounNum) + ".";
 	}
 	
 	//-----------------------------------------------------------------------
@@ -211,24 +219,9 @@ public class FreeCommand implements CommandExecutor
 	 */
 	public static String getRandomColor()
 	{
-		ArrayList<String> colors = new ArrayList<String>();
 		Random randomNum = new Random();
 		
-		colors.add("§2");
-		colors.add("§3");
-		colors.add("§4");
-		colors.add("§5");
-		colors.add("§6");
-		colors.add("§7");
-		colors.add("§8");
-		colors.add("§9");
-		colors.add("§a");
-		colors.add("§b");
-		colors.add("§c");
-		colors.add("§d");
-		colors.add("§e");
-		colors.add("§f");		
-		
+		List<String> colors = config.getStringList("words.colors");
 		int index = randomNum.nextInt(colors.size());
 		
 		return colors.get(index);

@@ -11,7 +11,7 @@ import io.github.expugn.expugnextras.ExpugnExtras;
 /**
  * <b>'Expugn' Command</b>
  * 
- * @version 2.1
+ * @version 2.2
  * @author Expugn  <i>(https://github.com/Expugn)</i>
  */
 public class ExpugnCommand implements CommandExecutor 
@@ -21,6 +21,7 @@ public class ExpugnCommand implements CommandExecutor
 	private final io.github.expugn.functions.DungeonTimers timers;
 	private final io.github.expugn.functions.TimeTrial trials;
 	private final io.github.expugn.functions.ListTitles listtitles;
+	private final io.github.expugn.functions.ItemDrop itemdrop;
 
 	/* System messages and errors */
 	private static final String OPENING_MESSAGE = ChatColor.GOLD
@@ -47,14 +48,24 @@ public class ExpugnCommand implements CommandExecutor
 			+ "  - setdungeon [dungeon] [dungeon loot cooldown in milliseconds] - Set a new 'dungeon' to be recorded.\n"
 			+ "  - deldungeon [dungeon] - Removes a dungeon from the configuration file.\n"
 			+ "  - settime [dungeon] - Records the current time for the user.\n"
-			+ "  - checktime [dungeon] - Displays the time remaining or if it's ready.\n" + ChatColor.GREEN
-			+ "- Time Trials:\n" + ChatColor.WHITE + "  - setlocation [name] - Creates a new location.\n"
+			+ "  - checktime [dungeon] - Displays the time remaining or if it's ready.\n" 
+			+ ChatColor.GREEN + "- Time Trials:\n" 
+			+ ChatColor.WHITE + "  - setlocation [name] - Creates a new location.\n"
 			+ "  - dellocation [name] - Deletes a location.\n" + "  - locationlist - Lists all available locations.\n"
 			+ "  - starttrial [name] - Begins a new time trial.\n" + "  - endtrial [name] - Ends a time trial.\n"
 			+ "  - getrankings [name] - Gets the rankings of a location.\n"
 			+ "  - resettimes [name] - Resets the times of a location.\n"
-			+ "  - hallofglory - Teleports the player to a ExpugnExtras warp named 'HallOfGlory'.\n" + ChatColor.GREEN
-			+ "- Miscellaneous:\n" + ChatColor.WHITE + "  - listtitles - Displays all titles a player owns.";
+			+ "  - hallofglory - Teleports the player to a ExpugnExtras warp named 'HallOfGlory'.\n" 
+			+ ChatColor.GREEN + "- Item Drop:\n"
+			+ ChatColor.WHITE + "  - createitemset [name] - Creates a new ItemSet\n"
+			+ "  - deleteitemset [name] - Deletes an ItemSet\n"
+			+ "  - additem [name] [item_name] - Adds an item to an ItemSet\n"
+			+ "  - removeitem [name] [item_name] - Removes an item from an ItemSet\n"
+			+ "  - listitemset - Lists all ItemSets created\n"
+			+ "  - itemsetinfo [name] - Gets the info of an ItemSet\n"
+			+ "  - runitemdrop [name] [item_count] - Runs ItemDrop with an ItemSet\n"
+			+ ChatColor.GREEN + "- Miscellaneous:\n" 
+			+ ChatColor.WHITE + "  - listtitles - Displays all titles a player owns.";
 
 	/* Command strings */
 	private static final String HELP_COMMAND = "help";
@@ -79,6 +90,13 @@ public class ExpugnCommand implements CommandExecutor
 	private static final String RESET_TIMES_COMMAND = "resettimes";
 	private static final String HALL_OF_GLORY_COMMAND = "hallofglory";
 	private static final String LIST_TITLES_COMMAND = "listtitles";
+	private static final String ITEMDROP_CREATE_COMMAND = "createitemset";
+	private static final String ITEMDROP_DELETE_COMMAND = "deleteitemset";
+	private static final String ITEMDROP_ADDITEM_COMMAND = "additem";
+	private static final String ITEMDROP_REMOVEITEM_COMMAND = "removeitem";
+	private static final String ITEMDROP_LIST_COMMAND = "listitemset";
+	private static final String ITEMDROP_INFO_COMMAND = "itemsetinfo";
+	private static final String ITEMDROP_RUN_COMMAND = "runitemdrop";
 
 	//-----------------------------------------------------------------------
 	/**
@@ -103,6 +121,7 @@ public class ExpugnCommand implements CommandExecutor
 		timers = new io.github.expugn.functions.DungeonTimers(plugin);
 		trials = new io.github.expugn.functions.TimeTrial(plugin);
 		listtitles = new io.github.expugn.functions.ListTitles(plugin);
+		itemdrop = new io.github.expugn.functions.ItemDrop(plugin);
 	}
 
 	//-----------------------------------------------------------------------
@@ -293,6 +312,45 @@ public class ExpugnCommand implements CommandExecutor
 					break;
 				case LIST_TITLES_COMMAND:
 					listtitles.getTitles(player, args);
+					break;
+				case ITEMDROP_CREATE_COMMAND:
+					if (args.length >= 2)
+						itemdrop.create(player, args);
+					else
+						player.sendMessage(INVALID_PARAMETER_ERROR);
+					break;
+				case ITEMDROP_DELETE_COMMAND:
+					if (args.length >= 2)
+						itemdrop.delete(player, args);
+					else
+						player.sendMessage(INVALID_PARAMETER_ERROR);
+					break;
+				case ITEMDROP_ADDITEM_COMMAND:
+					if (args.length >= 2)
+						itemdrop.addItem(player, args);
+					else
+						player.sendMessage(INVALID_PARAMETER_ERROR);
+					break;
+				case ITEMDROP_REMOVEITEM_COMMAND:
+					if (args.length >= 2)
+						itemdrop.removeItem(player, args);
+					else
+						player.sendMessage(INVALID_PARAMETER_ERROR);
+					break;
+				case ITEMDROP_LIST_COMMAND:
+					itemdrop.list(player);
+					break;
+				case ITEMDROP_INFO_COMMAND:
+					if (args.length >= 2)
+						itemdrop.info(player, args);
+					else
+						player.sendMessage(INVALID_PARAMETER_ERROR);
+					break;
+				case ITEMDROP_RUN_COMMAND:
+					if (args.length >= 3)
+						itemdrop.run(args);
+					else
+						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				default:
 					player.sendMessage(INVALID_COMMAND_ERROR);

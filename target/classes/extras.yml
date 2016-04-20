@@ -1,0 +1,84 @@
+# -------------------------------------------------------------------------------------------------
+# ExpugnExtras /expugnfree Configuration File
+# -------------------------------------------------------------------------------------------------
+# Warning: Modify this config with caution. Altering some values could break the plugin.
+#          Only modify this config if you know what you're doing.
+# -------------------------------------------------------------------------------------------------
+# words: The data used for '/expugnfree name [playername]'
+# words.adverbs: The adverbs used for '/expugnfree name [playername]'
+# words.adjectives: The adjectives used for '/expugnfree name [playername]'
+# words.nouns: The nouns used for '/expugnfree name [playername]'
+# words.colors: The colors used for '/expugnfree name [playername]'s [Click Me.]
+# -------------------------------------------------------------------------------------------------
+words:
+  adverbs:
+    - pretty
+    - rather
+    - slightly
+    - reasonably
+    - comparatively
+    - relatively
+    - quite
+    - moderately
+    - marginally
+    - slightly
+    - somewhat
+  adjectives:
+    - cool
+    - alright
+    - satisfactory
+    - acceptable
+    - adequate
+    - good
+    - passable
+    - OK
+    - funky
+    - groovy
+    - swanky
+    - fine
+    - decent
+    - average
+    - swell
+    - trendy
+    - fantastic
+    - great
+    - rad
+    - nifty
+    - excellent
+    - competent
+    - all right
+    - moderate
+    - reasonable
+  nouns:
+    - guy/gal
+    - lad
+    - person
+    - dude(ette)
+    - fellow
+    - chap
+    - individual
+    - creature
+    - being
+    - whippersnapper
+    - brat
+    - character
+    - joe
+    - hombre
+    - peer
+    - speciman
+    - soul
+  colors:
+    - §2
+    - §3
+    - §4
+    - §5
+    - §6
+    - §7
+    - §8
+    - §9
+    - §a
+    - §b
+    - §c
+    - §d
+    - §e
+    - §f

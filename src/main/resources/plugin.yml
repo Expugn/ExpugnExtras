@@ -22,6 +22,11 @@ commands:
   expugnfree:
     description: Alias for ExpugnFree.
     usage: '/expugnfree [parameter]'
+  expugnconsole:
+    description: Alias for ExpugnConsole.
+    usage: '/expugnconsole [parameter]'
+    permission: expugnextras.admin
+    permission-message: 'You do not have <permission>'
   gollem:
     description: Alias for Gollem.
     uasge: '/gollem [parameter]'
