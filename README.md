@@ -36,6 +36,10 @@ These plugins are required to be on your server to use ExpugnExtras to the fulle
 ####expugnfree name:
   * No dependencies to run.
   * No soft dependencies.
+ 
+####Gollem:
+  * No dependencies to run.
+  * Soft depends on 'VariableTriggers' to manage.
 
 ### Features and Commands
 The following are features and the commands associated to them to the plugin.
@@ -64,21 +68,25 @@ The following are features and the commands associated to them to the plugin.
     - Players can see how long they have been together
 
 ####/expugnfree [args]
-  * A command with no permissions attached.
+  * A command with no permissions attached. The features attached to this command are similar to those in /expugn but any player can run this command while /expugn requires expugnextras.admin to use.
   * /expugnfree name [playername]
     - Give someone a compliment!
     - Using /expugnfree name [playername] will generate a random phrase that a player will say if they click on the [Click Me.]
     - Words are stored in extras.yml (See resources for a default configuration file)
     - "[playername] is a [adverb] [adjective] [noun]"
   * /expugnfree listtitles
-    - A branch from /expugn listtitles. They're the same thing but /expugnfree has no permissions.
+    - A branch from /expugn listtitles.
   * /expugnfree settime
-    - A branch from /expugn settime. They're the same thing but /expugnfree has no permission.
+    - A branch from /expugn settime.
+ 
+####/gollem [args]
+  * A personal boss-battle project. Please ignore.
+    - A party of players fight a giant rock monster by going through his trials.
  
 ####/expugnconsole [args]
-  * A command that only the console can use.
+  * A command that only the console can use. The features attached to this command are similar to those in /expugn but only the console can use this command while /expugn is player only.
   * /expugnconsole runitemdrop [itemset_name] [count]
-    - A branch from /expugn runitemdrop [itemset_name] [count]. They're the same thing but /expugnconsole is console only and /expugn is player only.
+    - A branch from /expugn runitemdrop [itemset_name] [count].
 
 ### Permissions
   * expugnextras.admin | Permission to use '/expugn', '/expugnconsole', '/gollem'
