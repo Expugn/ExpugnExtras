@@ -91,6 +91,12 @@ public class FreeCommand implements CommandExecutor
 				case "realhelp":
 					realHelpMenu(player);
 					break;
+				case "rpc":
+					if (args.length == 1)
+						rockPaperScissors(player);
+					else if (args.length >= 2)
+						rockPaperScissors(player, Integer.parseInt(args[1]));
+					break;
 				case "name":
 					if (args.length >= 2)
 					{
@@ -156,6 +162,9 @@ public class FreeCommand implements CommandExecutor
 				.then(ChatColor.GOLD + "/expugnfree help\n")
 				.tooltip("You're looking at the help menu already you silly goose.")
 				.suggest("/expugnfree help")
+				.then(ChatColor.GOLD + "/expugnfree rpc\n")
+				.tooltip("Fancy a game of Rock, Paper, Scissors?")
+				.suggest("/expugnfree rpc")
 				.then(ChatColor.GRAY + "You can click on a command to have it typed out for ya.")
 				.send(player);
 	}
@@ -225,5 +234,56 @@ public class FreeCommand implements CommandExecutor
 		int index = randomNum.nextInt(colors.size());
 		
 		return colors.get(index);
+	}
+	
+	public void rockPaperScissors(Player player)
+	{
+		new FancyMessage(ChatColor.GRAY + "Rock, Paper, or Scissors?\n")
+			.then(ChatColor.DARK_GRAY + "[Rock]")
+				.tooltip("Click Me: [Rock]")
+				.command("/expugnfree rpc 0")
+			.then("  ")
+			.then(ChatColor.WHITE + "[Paper]")
+				.tooltip("Click Me: [Paper]")
+				.command("/expugnfree rpc 1")
+			.then("  ")
+			.then(ChatColor.RED + "[Scissors]")
+				.tooltip("Click Me: [Scissors]")
+				.command("/expugnfree rpc 2")
+			.send(player);
+	}
+	
+	public void rockPaperScissors(Player player, int command)
+	{
+		Random r = new Random();
+		int rpc = r.nextInt(3);
+		if (command == 0) // Rock
+		{
+			if(rpc == 0)
+				player.sendMessage("§8Rock§7!... Looks like it's a tie.");
+			else if (rpc == 1)
+				player.sendMessage("§fPaper§7!... Better luck next time.");
+			else if (rpc == 2)
+				player.sendMessage("§cScissors§7!... You win this round.");
+		}
+		else if (command == 1) // Paper
+		{
+			if(rpc == 0)
+				player.sendMessage("§8Rock§7!... You win this round.");
+			else if (rpc == 1)
+				player.sendMessage("§fPaper§7!... Looks like it's a tie.");
+			else if (rpc == 2)
+				player.sendMessage("§cScissors§7!... Better luck next time.");
+		}
+		else if (command == 2) // Scissors
+		{
+			if(rpc == 0)
+				player.sendMessage("§8Rock§7!... Better luck next time.");
+			else if (rpc == 1)
+				player.sendMessage("§fPaper§7!... You win this round.");
+			else if (rpc == 2)
+				player.sendMessage("§cScissors§7!... Looks like it's a tie.");
+		}
+		rockPaperScissors(player);
 	}
 }

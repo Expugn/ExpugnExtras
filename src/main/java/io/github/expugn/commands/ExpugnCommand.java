@@ -57,13 +57,13 @@ public class ExpugnCommand implements CommandExecutor
 			+ "  - resettimes [name] - Resets the times of a location.\n"
 			+ "  - hallofglory - Teleports the player to a ExpugnExtras warp named 'HallOfGlory'.\n" 
 			+ ChatColor.GREEN + "- Item Drop:\n"
-			+ ChatColor.WHITE + "  - createitemset [name] - Creates a new ItemSet\n"
-			+ "  - deleteitemset [name] - Deletes an ItemSet\n"
-			+ "  - additem [name] [item_name] - Adds an item to an ItemSet\n"
-			+ "  - removeitem [name] [item_name] - Removes an item from an ItemSet\n"
-			+ "  - listitemset - Lists all ItemSets created\n"
-			+ "  - itemsetinfo [name] - Gets the info of an ItemSet\n"
-			+ "  - runitemdrop [name] [item_count] - Runs ItemDrop with an ItemSet\n"
+			+ ChatColor.WHITE + "  - createitemset [name] - Creates a new ItemSet.\n"
+			+ "  - deleteitemset [name] - Deletes an ItemSet.\n"
+			+ "  - additem [name] - Adds the item in your hand to an ItemSet.\n"
+			+ "  - removeitem [name] [index] - Removes the item assigned to the index from an ItemSet.\n"
+			+ "  - listitemset - Lists all ItemSets created.\n"
+			+ "  - itemsetinfo [name] - Gets the info of an ItemSet.\n"
+			+ "  - runitemdrop [name] [item_count] - Runs ItemDrop with an ItemSet.\n"
 			+ ChatColor.GREEN + "- Miscellaneous:\n" 
 			+ ChatColor.WHITE + "  - listtitles - Displays all titles a player owns.";
 
@@ -174,6 +174,20 @@ public class ExpugnCommand implements CommandExecutor
 	 * 		{@link io.github.expugn.functions.TimeTrial#warpHallOfGlory}. 
 	 * <li> Links to a method 'getTitles' on a class named 'ListTitles' in the 'functions' package:
 	 * 		{@link io.github.expugn.functions.ListTitles#getTitles}.
+	 * <li> Links to a method 'create' on a class named 'ItemDrop' in the 'functions' package:
+	 * 		{@link io.github.expugn.functions.ItemDrop#create}.
+	 * <li> Links to a method 'delete' on a class named 'ItemDrop' in the 'functions' package:
+	 * 		{@link io.github.expugn.functions.ItemDrop#delete}.
+	 * <li> Links to a method 'addItem' on a class named 'ItemDrop' in the 'functions' package:
+	 * 		{@link io.github.expugn.functions.ItemDrop#addItem}.
+	 * <li> Links to a method 'removeItem' on a class named 'ItemDrop' in the 'functions' package:
+	 * 		{@link io.github.expugn.functions.ItemDrop#removeItem}.
+	 * <li> Links to a method 'list' on a class named 'ItemDrop' in the 'functions' package:
+	 * 		{@link io.github.expugn.functions.ItemDrop#list}.
+	 * <li> Links to a method 'info' on a class named 'ItemDrop' in the 'functions' package:
+	 * 		{@link io.github.expugn.functions.ItemDrop#info}.
+	 * <li> Links to a method 'run' on a class named 'ItemDrop' in the 'functions' package:
+	 * 		{@link io.github.expugn.functions.ItemDrop#run}.
 	 * </ul>
 	 * 
 	 * @param sender  Whoever sent the command
@@ -332,7 +346,7 @@ public class ExpugnCommand implements CommandExecutor
 						player.sendMessage(INVALID_PARAMETER_ERROR);
 					break;
 				case ITEMDROP_REMOVEITEM_COMMAND:
-					if (args.length >= 2)
+					if (args.length >= 3)
 						itemdrop.removeItem(player, args);
 					else
 						player.sendMessage(INVALID_PARAMETER_ERROR);

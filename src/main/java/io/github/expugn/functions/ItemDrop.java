@@ -8,13 +8,18 @@ import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.google.common.collect.Lists;
+
 import io.github.expugn.expugnextras.ExpugnExtras;
+import io.github.expugn.fanciful.FancyMessage;
 import io.github.expugn.runnable.ItemDropRunnable;
 
 /**
@@ -58,7 +63,7 @@ public class ItemDrop
 		{
 			player.sendMessage("§aCreating new ItemSet: §6" + itemSetName);
 			config.set("itemsets." + itemSetName + ".location", player.getLocation());
-			List<String> itemList = config.getStringList("itemsets." + itemSetName + ".items");
+			List<ItemStack> itemList = Lists.newArrayList();
 			config.set("itemsets." + itemSetName + ".items", itemList);
 		}
 		else
@@ -102,11 +107,25 @@ public class ItemDrop
 	public void addItem(Player player, String[] args)
 	{
 		String itemSetName = args[1];
-		String itemName = args[2].toUpperCase();
+		//String itemName = args[2].toUpperCase();
 		
 		if(checkItemSet(itemSetName))
 		{
-			List<String> itemList = config.getStringList("itemsets." + itemSetName + ".items");
+			@SuppressWarnings("unchecked")
+			List<ItemStack> itemList = (List<ItemStack>) config.get("itemsets." + itemSetName + ".items");
+			ItemStack item = player.getItemInHand().clone();
+			if (item == null || item.getType() == Material.AIR)
+			{
+				player.sendMessage("§cYour hand is empty.");
+			}
+			else
+			{
+				player.sendMessage("§aAdding Item §6" + item.getType() + "§a to ItemSet: §6" + itemSetName);
+				itemList.add(item);
+				config.set("itemsets." + itemSetName + ".items", itemList);
+				saveConfig();
+			}
+			/*
 			if (!itemList.contains(itemName))
 			{
 				player.sendMessage("§aAdding Item §6" + itemName + "§a to ItemSet: §6" + itemSetName);
@@ -118,6 +137,8 @@ public class ItemDrop
 			{
 				player.sendMessage("§cItem already exists in this ItemSet.");
 			}
+			*/
+			
 		}
 		else
 		{
@@ -135,11 +156,25 @@ public class ItemDrop
 	public void removeItem(Player player, String[] args)
 	{
 		String itemSetName = args[1];
-		String itemName = args[2].toUpperCase();
+		int value = Integer.parseInt(args[2]);
+		//String itemName = args[2].toUpperCase();
 				
 		if(checkItemSet(itemSetName))
 		{
-			List<String> itemList = config.getStringList("itemsets." + itemSetName + ".items");
+			@SuppressWarnings("unchecked")
+			List<ItemStack> itemList = (List<ItemStack>) config.get("itemsets." + itemSetName + ".items");
+			if (value <= itemList.size() && value > 0)
+			{
+				player.sendMessage("§cRemoving Item §6" + itemList.get(value - 1).getType() + "§c from ItemSet: §6" + itemSetName);
+				itemList.remove(value - 1);
+				config.set("itemsets." + itemSetName + ".items", itemList);
+				saveConfig();
+			}
+			else
+			{
+				player.sendMessage("§cUnable to remove item, value was not assigned to any item.");
+			}
+			/*
 			if (itemList.contains(itemName))
 			{
 				player.sendMessage("§cRemoving Item §6" + itemName + "§c from ItemSet: §6" + itemSetName);
@@ -151,6 +186,7 @@ public class ItemDrop
 			{
 				player.sendMessage("§cItem does not exist in this ItemSet.");
 			}
+			*/
 		}
 		else
 		{
@@ -169,7 +205,10 @@ public class ItemDrop
 		player.sendMessage(ChatColor.GOLD + "There are currently §4" + getItemSetList().size() + " §6ItemSets");
 		for (String s : getItemSetList()) 
 		{
-			player.sendMessage("§3- §f" + s);
+			new FancyMessage("§3- §f" + s)
+				.tooltip("Click to see more info about " + ChatColor.GOLD + s)
+				.command("/expugn itemsetinfo " + s)
+				.send(player);
 		}
 	}
 	
@@ -187,18 +226,21 @@ public class ItemDrop
 		if(checkItemSet(itemSetName))
 		{
 			Location loc = (Location) config.get("itemsets." + itemSetName + ".location");
-			List<String> itemList = config.getStringList("itemsets." + itemSetName + ".items");
+			@SuppressWarnings("unchecked")
+			List<ItemStack> itemList = (List<ItemStack>) config.get("itemsets." + itemSetName + ".items");
 			int count = 0;
 			
 			player.sendMessage("§3ItemSet " + ChatColor.GOLD + itemSetName + "\n" + ChatColor.WHITE
-					+ "§dWorld: §7" + loc.getWorld() + "\n"
+					+ "§dWorld: §7" + loc.getWorld().getName() + "\n"
 					+ "§dX: §7" + loc.getX() + "\n"
 					+ "§dY: §7" + loc.getY() + "\n"
 					+ "§dZ: §7" + loc.getZ() + "\n"
 					+ ChatColor.DARK_AQUA + "Items:");
-			for (String s : itemList)
+			for (ItemStack item : itemList)
 			{
-				player.sendMessage((count + 1) + ") " + ChatColor.GOLD + s);
+				new FancyMessage((count + 1) + ") §d" + item.getAmount() + "x §6" + item.getType() + (item.getItemMeta().getDisplayName() != null && !item.getItemMeta().getDisplayName().isEmpty() ? " §8| §f" + item.getItemMeta().getDisplayName() : ""))
+					.itemTooltip(item)
+					.send(player);
 				count++;
 			}
 		}
@@ -226,7 +268,8 @@ public class ItemDrop
 		
 		Location loc = (Location) config.get("itemsets." + itemSetName + ".location");
 		World world = loc.getWorld();
-		List<String> itemSet = config.getStringList("itemsets." + itemSetName + ".items");
+		@SuppressWarnings("unchecked")
+		List<ItemStack> itemSet = (List<ItemStack>) config.get("itemsets." + itemSetName + ".items");
 		
 		if(itemSet.isEmpty())
 			return;
