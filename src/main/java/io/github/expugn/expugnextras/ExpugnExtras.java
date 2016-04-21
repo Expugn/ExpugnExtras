@@ -8,12 +8,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import io.github.expugn.commands.ConsoleCommand;
-import io.github.expugn.commands.ExpugnCommand;
-import io.github.expugn.commands.FreeCommand;
-import io.github.expugn.commands.GollemCommand;
-import io.github.expugn.commands.MarriageCommand;
-import io.github.expugn.listeners.PlayerInteractListener;
+import io.github.expugn.expugnextras.commands.ConsoleCommand;
+import io.github.expugn.expugnextras.commands.ExpugnCommand;
+import io.github.expugn.expugnextras.commands.FreeCommand;
+import io.github.expugn.expugnextras.commands.GollemCommand;
+import io.github.expugn.expugnextras.commands.MarriageCommand;
+import io.github.expugn.expugnextras.listeners.PlayerInteractListener;
 import net.milkbowl.vault.economy.Economy;
 
 /**
