@@ -8,75 +8,66 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import io.github.expugn.expugnextras.commands.ConsoleCommand;
-import io.github.expugn.expugnextras.commands.ExpugnCommand;
-import io.github.expugn.expugnextras.commands.FreeCommand;
-import io.github.expugn.expugnextras.commands.GollemCommand;
-import io.github.expugn.expugnextras.commands.MarriageCommand;
-import io.github.expugn.expugnextras.listeners.PlayerInteractListener;
+import io.github.expugn.expugnextras.Marriage.MarriageCommand;
+import io.github.expugn.expugnextras.Marriage.PlayerInteractListener;
+import io.github.expugn.expugnextras.expugn.ExpugnCommand;
 import net.milkbowl.vault.economy.Economy;
 
 /**
  * <b>ExpugnExtras</b>
  * 
  * @author Expugn  <i>(https://github.com/Expugn)</i>
- * @version 1.2
+ * @version 1.3
  */
 public class ExpugnExtras extends JavaPlugin 
 {
 	public static Economy econ = null;
+	private io.github.expugn.expugnextras.Configs.MainConfig config;
+	
+	private boolean expugnEnabled = false;
+	private boolean marriageEnabled = false;
 
 	//-----------------------------------------------------------------------
 	/**
-	 * {@code onEnable}: Runs when the plugin starts up.
-	 * <ul>
-	 * <li> Links to a method named 'setupCommands' on this class: {@link #setupCommands}.
-	 * </ul>
+	 * Runs whenever the plugin starts up.
 	 */
 	@Override
 	public void onEnable() 
 	{
-		setupCommands();
+		config = new io.github.expugn.expugnextras.Configs.MainConfig(this);
 		
-		this.saveDefaultConfig();
-		this.reloadConfig();
+		expugnEnabled = config.getBoolean("expugn");
+		marriageEnabled = config.getBoolean("marriage");
+		
+		setupCommands();
 	}
 
 	//-----------------------------------------------------------------------
 	/**
-	 * {@code setupCommands}: Setup ExpugnExtra commands.
-	 * <ul>
-	 * <li> Sets up ExpugnCommand {@link ExpugnCommand}.
-	 * <li> Sets up FreeCommand {@link FreeCommand}.
-	 * <li> Sets up MarriageCommand {@link MarriageCommand}.
-	 * <li> Sets up GollemCommand {@link GollemCommand}.
-	 * <li> Links to a method named 'setupEconomy' on this class: {@link #setupEconomy}.
-	 * </ul>
+	 * Sets up ExpugnExtra commands.
 	 */
 	private void setupCommands()
 	{
-		getCommand("expugn").setExecutor(new ExpugnCommand(this));
-		getCommand("expugnfree").setExecutor(new FreeCommand(this));
-		getCommand("expugnconsole").setExecutor(new ConsoleCommand(this));
-		
-		if (!setupEconomy()) 
-			getLogger().info("'/marriage' command failed to be enabled.");
-		else 
+		if (expugnEnabled)
+			getCommand("expugn").setExecutor(new ExpugnCommand(this));
+
+		if (marriageEnabled)
 		{
-			getCommand("marriage").setExecutor(new MarriageCommand(this));
-			Bukkit.getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
-		}		
-		
-		getCommand("gollem").setExecutor(new GollemCommand(this));
+			if (!setupEconomy()) 
+				getLogger().info("'/marriage' command failed to be enabled.");
+			else 
+			{
+				getCommand("marriage").setExecutor(new MarriageCommand(this));
+				Bukkit.getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
+			}	
+		}
 	}
 	
 	//-----------------------------------------------------------------------
 	/**
-	 * {@code setupEconomy}: Sets up Vault's economy system.
+	 * Sets up Vault's economy system.
 	 * 
-	 * @return 
-	 * 		<li> true: economy setup is successful
-	 * 		<li> false: economy setup has failed
+	 * @return  true if economy setup is successful, else false.
 	 */
 	private boolean setupEconomy() 
 	{
@@ -94,10 +85,10 @@ public class ExpugnExtras extends JavaPlugin
 	
 	//-----------------------------------------------------------------------
 	/**
-	 * {@code readConfig}: Returns a read-only file data.
+	 * Returns a read-only file data.
 	 * 
-	 * @param file  File name
-	 * @return  File data from data folder
+	 * @param file  File name.
+	 * @return  File data from data folder.
 	 */
 	public FileConfiguration readConfig(String file)
 	{

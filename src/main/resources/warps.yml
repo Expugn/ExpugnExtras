@@ -1,0 +1,27 @@
+# -------------------------------------------------------------------------------------------------
+# ExpugnExtras 'Warps' Configuration File
+# -------------------------------------------------------------------------------------------------
+# Warning: Modify this config with caution. Altering some values could break the plugin.
+#          Only modify this config if you know what you're doing.
+# -------------------------------------------------------------------------------------------------
+# midnighttime: The time in milliseconds of when midnight will happen on the server.
+# warps: All warp data.
+# warps.<Warp_Name>: Specific warp data.
+# warps.<Warp_Name>.x: X coordinate of a warp.
+# warps.<Warp_Name>.y: Y coordinate of a warp.
+# warps.<Warp_Name>.z: Z coordinate of a warp.
+# warps.<Warp_Name>.yaw: Yaw of a warp.
+# warps.<Warp_Name>.pitch: Pitch of a warp.
+# warps.<Warp_Name>.world: World that the warp is in.
+# warps.<Warp_Name>.type: The type of warp. Can be 'limit' or 'cooldown'
+# warps.<Warp_Name>.value: The amount of times a player can enter or the amount of hours a player has to wait.
+# warps.<Warp_Name>.else: The name of the warp a player will be sent to if they could not use this warp.
+# data: All warp usage data.
+# data.cooldown: Cooldown warp data.
+# data.cooldown.<UUID>: The time in which a player can use the warp again.
+# data.limit: Limit warp data.
+# data.limit.<UUID>: The amount of times the player has used the warp today.
+# -------------------------------------------------------------------------------------------------
+midnighttime: 0L
+warps: {}
+data: {}

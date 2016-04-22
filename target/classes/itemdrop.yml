@@ -1,0 +1,12 @@
+# -------------------------------------------------------------------------------------------------
+# ExpugnExtras 'ItemDrop' Configuration File
+# -------------------------------------------------------------------------------------------------
+# Warning: Modify this config with caution. Altering some values could break the plugin.
+#          Only modify this config if you know what you're doing.
+# -------------------------------------------------------------------------------------------------
+# itemsets: All ItemSets will be under this path.
+# itemsets.<ItemSet_Name>: All data of a ItemSet will be under this path.
+# itemsets.<ItemSet_Name>.location: Location of where the ItemSet will be run.
+# itemsets.<ItemSet_Name>.items: A List<ItemStack> of items to be dropped when run.
+# -------------------------------------------------------------------------------------------------
+itemsets: {}

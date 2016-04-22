@@ -1,5 +1,5 @@
 name: ExpugnExtras
-version: 3.4.2
+version: 4.0_SNAPSHOT
 description: 'A plugin with miscellaneous features.'
 
 author: Expugn
@@ -14,21 +14,6 @@ commands:
   expugn:
     description: Alias for ExpugnExtras.
     usage: '/expugn [parameter]'
-    permission: expugnextras.admin
-    permission-message: 'You do not have <permission>.'
   marriage:
     description: Alias for Marriage.
     usage: '/marriage [parameter]'
-  expugnfree:
-    description: Alias for ExpugnFree.
-    usage: '/expugnfree [parameter]'
-  expugnconsole:
-    description: Alias for ExpugnConsole.
-    usage: '/expugnconsole [parameter]'
-    permission: expugnextras.admin
-    permission-message: 'You do not have <permission>'
-  gollem:
-    description: Alias for Gollem.
-    uasge: '/gollem [parameter]'
-    permission: expugnextras.admin
-    permission-message: 'You do not have <permission>'

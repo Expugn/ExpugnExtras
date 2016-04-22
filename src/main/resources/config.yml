@@ -4,8 +4,8 @@
 # Warning: Modify this config with caution. Altering some values could break the plugin.
 #          Only modify this config if you know what you're doing.
 # -------------------------------------------------------------------------------------------------
-# Marriage:
-#   true | /marriage and it's functions will be enabled.
-#   false | /marriage and it's functions will be disabled.
+# expugn: Determines if '/expugn' is enabled or not. Entire plugin must be reset for this to take effect.
+# marriage: Determines if '/marriage' is enabled or not. Entire plugin must be reset for this to take effect.
 # -------------------------------------------------------------------------------------------------
+expugn: true
 marriage: true

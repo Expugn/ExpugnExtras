@@ -1,0 +1,31 @@
+# -------------------------------------------------------------------------------------------------
+# ExpugnExtras 'TimeTrial' Configuration File
+# -------------------------------------------------------------------------------------------------
+# Warning: Modify this config with caution. Altering some values could break the plugin.
+#          Only modify this config if you know what you're doing.
+# -------------------------------------------------------------------------------------------------
+# location: The data for all locations.
+# location.<Location_Name>: The data for a specific location.
+# location.<Location_Name>.times: The time data for a specific location.
+# location.<Location_Name>.times.<UUID>: The time data for a player at a specific location.
+# location.<Location_Name>.times.<UUID>.timestring: A string of the time a player got.
+# location.<Location_Name>.times.<UUID>.minutes: The minutes of the time a player got.
+# location.<Location_Name>.times.<UUID>.seconds: The seconds of the time a player got.
+# location.<Location_Name>.times.<UUID>.milliseconds: The milliseconds of the time a player got.
+# location.<Location_Name>.rankinglist: The data for the top five times ever made.
+# location.<Location_Name>.rankinglist.<1-5>: The time data for one of the top five times ever made.
+# location.<Location_Name>.rankinglist.<1-5>.playername: Name of the player who is at that position.
+# location.<Location_Name>.rankinglist.<1-5>.playeruuid: UUID of the player who is in that position.
+# location.<Location_Name>.rankinglist.<1-5>.timestring: A string of the time the player got who is in that position.
+# location.<Location_Name>.rankinglist.<1-5>.minutes: The minutes of the time the player got who is in that position.
+# location.<Location_Name>.rankinglist.<1-5>.seconds: The seconds of the time the player got who is in that position.
+# location.<Location_Name>.rankinglist.<1-5>.milliseconds: The milliseconds of the time the player got who is in that position.
+# inprogresslist: The list of dungeons that have active TimeTrials in progress.
+# inprogress: Data of players who are doing a TimeTrial.
+# inprogress.<UUID>: Data of a player who is doing a TimeTrial.
+# inprogress.<UUID>.location: The location of a player's TimeTrial.
+# inprogress.<UUID>.time: The time in milliseconds of when the player started the TimeTrial.
+# -------------------------------------------------------------------------------------------------
+location: {}
+inprogress: {}
+inprogresslist: {}

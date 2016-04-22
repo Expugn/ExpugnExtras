@@ -1,0 +1,13 @@
+# -------------------------------------------------------------------------------------------------
+# ExpugnExtras 'Timers' Configuration File
+# -------------------------------------------------------------------------------------------------
+# Warning: Modify this config with caution. Altering some values could break the plugin.
+#          Only modify this config if you know what you're doing.
+# -------------------------------------------------------------------------------------------------
+# dungeons: All dungeons that have timer data.
+# dungeons.<Dungeon_Name>: Specific dungeon data.
+# dungeons.<Dungeon_Name>.cooldown: Long of when the timer will end.
+# dungeons.<Dungeon_Name>.players: Players who have started the timer.
+# dungeons.<Dungeon_Name>.players.<UUID>: Long of when the timer will end.
+# -------------------------------------------------------------------------------------------------
+dungeons: {}
