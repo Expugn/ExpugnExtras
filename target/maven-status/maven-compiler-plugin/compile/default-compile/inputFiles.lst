@@ -1,5 +1,6 @@
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/Configs/MainConfig.java
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/Configs/Timers.java
+/Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/expugn/Timers/DungeonTimers.java
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/ExpugnExtras.java
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/expugn/ItemDrop/ItemDrop.java
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/imports/Fanciful/TextualComponent.java
@@ -10,7 +11,6 @@
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/Marriage/MarriageCommand.java
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/imports/ParticleEffect/ReflectionUtils.java
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/Configs/TimeTrial.java
-/Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/expugn/DungeonTimers/DungeonTimers.java
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/Configs/Extras.java
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/imports/Fanciful/JsonRepresentedObject.java
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/Marriage/Marriage.java

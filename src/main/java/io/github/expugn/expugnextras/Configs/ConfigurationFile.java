@@ -23,8 +23,8 @@ import io.github.expugn.expugnextras.ExpugnExtras;
 public class ConfigurationFile 
 {
 	private String configName;
-	private static File ymlFile;
-	private static FileConfiguration config;
+	private File ymlFile;
+	private FileConfiguration config;
 	private ExpugnExtras plugin;
 	
 	//-----------------------------------------------------------------------
@@ -97,10 +97,22 @@ public class ConfigurationFile
 	
 	//-----------------------------------------------------------------------
 	/**
+	 * Gets a Double object from the configuration file in the defined path.
+	 * 
+	 * @param path  The path in the configuration file.
+	 * @return  Double stored in the path; 0 if empty.
+	 */
+	public double getDouble(String path)
+	{
+		return config.getDouble(path);
+	}
+	
+	//-----------------------------------------------------------------------
+	/**
 	 * Gets a Long object from the configuration file in the defined path.
 	 * 
 	 * @param path  The path in the configuration file.
-	 * @return  Long stored in the path; 0 if empty.
+	 * @return  Long stored in the path; 0L if empty.
 	 */
 	public long getLong(String path)
 	{

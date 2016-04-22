@@ -1,7 +1,5 @@
 package io.github.expugn.expugnextras.expugn.ItemDrop;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -14,15 +12,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
-import com.google.common.collect.Lists;
-
 import io.github.expugn.expugnextras.ExpugnExtras;
 import io.github.expugn.expugnextras.imports.Fanciful.FancyMessage;
 
 /**
  * <b>'ItemDrop' Function</b>
  * 
- * @version 1.3
+ * @version 1.3.1
  * @author Expugn <i>(https://github.com/Expugn)</i>
  */
 public class ItemDrop 
@@ -54,21 +50,16 @@ public class ItemDrop
 	public void create(Player player, String[] args)
 	{
 		String itemSetName = args[1];
-		String locationPath = "itemsets." + itemSetName + ".location";
-		String itemsPath = "itemsets." + itemSetName + ".items";
 		
-		if (!checkItemSet(itemSetName))
-		{
-			List<ItemStack> itemList = Lists.newArrayList();
-			
+		if (!config.checkItemSet(itemSetName))
+		{	
 			player.sendMessage("§aCreating new ItemSet: §6" + itemSetName);
-			config.set(locationPath, player.getLocation());
-			config.set(itemsPath, itemList);
+			config.createItemSet(itemSetName, player.getLocation());
 		}
 		else
 		{
 			player.sendMessage("§aItemSet §6" + itemSetName + "§a already exists. Changing location.");
-			config.set(locationPath, player.getLocation());
+			config.changeItemSetLocation(itemSetName, player.getLocation());
 		}
 	}
 	
@@ -82,12 +73,11 @@ public class ItemDrop
 	public void delete(Player player, String[] args)
 	{
 		String itemSetName = args[1];
-		String itemSetPath = "itemsets." + itemSetName;
 	
-		if(checkItemSet(itemSetName))
+		if(config.checkItemSet(itemSetName))
 		{
 			player.sendMessage("§cDeleting ItemSet: §6" + itemSetName);
-			config.set(itemSetPath, null);
+			config.deleteItemSet(itemSetName);
 		}
 		else
 			player.sendMessage("§cThis ItemSet does not exist.");
@@ -105,20 +95,17 @@ public class ItemDrop
 	public void addItem(Player player, String[] args)
 	{
 		String itemSetName = args[1];
-		String itemsPath = "itemsets." + itemSetName + ".items";
 		
-		if(checkItemSet(itemSetName))
+		if(config.checkItemSet(itemSetName))
 		{
-			@SuppressWarnings("unchecked")
-			List<ItemStack> itemList = (List<ItemStack>) config.get(itemsPath);
 			ItemStack item = player.getItemInHand().clone();
+			
 			if (item == null || item.getType() == Material.AIR)
 				player.sendMessage("§cYour hand is empty.");
 			else
 			{
 				player.sendMessage("§aAdding Item §6" + item.getType() + "§a to ItemSet: §6" + itemSetName);
-				itemList.add(item);
-				config.set(itemsPath, itemList);
+				config.addItem(itemSetName, item);
 			}
 		}
 		else
@@ -136,18 +123,15 @@ public class ItemDrop
 	{
 		String itemSetName = args[1];
 		int value = Integer.parseInt(args[2]);
-		String itemsPath = "itemsets." + itemSetName + ".items";
 				
-		if (checkItemSet(itemSetName))
+		if (config.checkItemSet(itemSetName))
 		{
-			@SuppressWarnings("unchecked")
-			List<ItemStack> itemList = (List<ItemStack>) config.get(itemsPath);
-			if (value <= itemList.size() && value > 0)
+			if (value <= config.getItemList(itemSetName).size() && value > 0)
 			{
-				player.sendMessage("§cRemoving Item §6" + itemList.get(value - 1).getType() + "§c from ItemSet: §6" 
-						+ itemSetName);
-				itemList.remove(value - 1);
-				config.set(itemsPath, itemList);
+				player.sendMessage("§cRemoving Item §6" 
+						+ config.getItem(itemSetName, (value - 1)).getType() 
+						+ "§c from ItemSet: §6" + itemSetName);
+				config.removeItem(itemSetName, (value - 1));
 			}
 			else
 				player.sendMessage("§cUnable to remove item, value was not assigned to any item.");
@@ -167,15 +151,13 @@ public class ItemDrop
 	{
 		String itemSetName = args[1];
 		int value = Integer.parseInt(args[2]);
-		String itemsPath = "itemsets." + itemSetName + ".items";
 				
-		if(checkItemSet(itemSetName))
+		if(config.checkItemSet(itemSetName))
 		{
-			@SuppressWarnings("unchecked")
-			List<ItemStack> itemList = (List<ItemStack>) config.get(itemsPath);
-			if (value <= itemList.size() && value > 0)
+			if (value <= config.getItemList(itemSetName).size() && value > 0)
 			{
-				ItemStack item = itemList.get(value - 1);
+				ItemStack item = config.getItem(itemSetName, (value - 1));
+				
 				new FancyMessage("§aSpawning: §d" + item.getAmount() + "x ")
 				.then("§6" + item.getType() 
 					+ (item.getItemMeta().getDisplayName() != null 
@@ -201,12 +183,12 @@ public class ItemDrop
 	 */
 	public void list(Player player)
 	{
-		Set<String> itemSetList = getItemSetList();
+		Set<String> itemSetList = config.getItemSetList();
 		player.sendMessage("§3There are currently §c" + itemSetList.size() + " §3ItemSets");
 		for (String s : itemSetList) 
 		{
 			new FancyMessage("§3- §f" + s)
-			.tooltip("Click to see more info about §6 " + s)
+			.tooltip("Click to see more info about §6" + s)
 			.command("/expugn itemsetinfo " + s)
 			.send(player);
 		}
@@ -226,23 +208,20 @@ public class ItemDrop
 	public void info(Player player, String[] args)
 	{
 		String itemSetName = args[1];
-		String locationPath = "itemsets." + itemSetName + ".location";
-		String itemsPath = "itemsets." + itemSetName + ".items";
 		int page = 1;
 		int maxPages;
 		SortedMap<Integer, FancyMessage> itemSetItems = new TreeMap<Integer, FancyMessage>();
 		
-		if(checkItemSet(itemSetName))
+		if(config.checkItemSet(itemSetName))
 		{
-			Location loc = (Location) config.get(locationPath);
-			@SuppressWarnings("unchecked")
-			List<ItemStack> itemList = (List<ItemStack>) config.get(itemsPath);
+			Location loc = config.getItemSet_Location(itemSetName);
+			
 			int count = 0;
 			
 			player.sendMessage("§3ItemSet: §6" + itemSetName + "\n"
 					+ "§dWorld: §7" + loc.getWorld().getName() + "\n"
 					+ "§dCoordinates: §8[§7" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + "§8]\n");
-			for (ItemStack item : itemList)
+			for (ItemStack item : config.getItemList(itemSetName))
 			{
 				FancyMessage message = new FancyMessage((count + 1) + ") §d" + item.getAmount() + "x §6" 
 							+ item.getType() 
@@ -319,48 +298,16 @@ public class ItemDrop
 	public void run(String args[])
 	{
 		String itemSetName = args[1];
-		String locationPath = "itemsets." + itemSetName + ".location";
-		String itemsPath = "itemsets." + itemSetName + ".items";
 		int count = Integer.parseInt(args[2]);
 		
-		Location loc = (Location) config.get(locationPath);
+		Location loc = config.getItemSet_Location(itemSetName);
 		World world = loc.getWorld();
-		@SuppressWarnings("unchecked")
-		List<ItemStack> itemSet = (List<ItemStack>) config.get(itemsPath);
 		
-		if(itemSet.isEmpty())
+		if(config.getItemList(itemSetName).isEmpty())
 			return;
 		
 		@SuppressWarnings("unused")
-		BukkitTask task = new ItemDropRunnable(plugin, count, world, loc, itemSet).runTaskTimer(plugin, 5, 10);
-	}
-	
-	//-----------------------------------------------------------------------
-	/**
-	 * Returns a {@code Set<String>} of all ItemSets created.
-	 * 
-	 * @return  A set of all entries under 'itemsets' in the config.
-	 */
-	public Set<String> getItemSetList()
-	{
-		if (config.isConfigurationSection("itemsets"))
-			return config.getConfigurationSectionKeys("itemsets");
-		Set<String> emptySet = new HashSet<String>();
-		return emptySet;
-	}
-	
-	//-----------------------------------------------------------------------
-	/**
-	 * Checks if the ItemSet exists or not.
-	 * 
-	 * @param name  Player who sent the command.
-	 * @return  true if the ItemSet exists, else false.
-	 */
-	public boolean checkItemSet(String name) 
-	{
-		if (getItemSetList().contains(name))
-			return true;
-		return false;
+		BukkitTask task = new ItemDropRunnable(plugin, count, world, loc, config.getItemList(itemSetName)).runTaskTimer(plugin, 5, 10);
 	}
 	
 	//-----------------------------------------------------------------------

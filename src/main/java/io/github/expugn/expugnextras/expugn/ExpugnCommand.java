@@ -22,7 +22,7 @@ public class ExpugnCommand implements CommandExecutor
 {
 	/* Private Variables */
 	private final io.github.expugn.expugnextras.expugn.Warps.Warps warps;
-	private final io.github.expugn.expugnextras.expugn.DungeonTimers.DungeonTimers timers;
+	private final io.github.expugn.expugnextras.expugn.Timers.DungeonTimers timers;
 	private final io.github.expugn.expugnextras.expugn.TimeTrial.TimeTrial trials;
 	private final io.github.expugn.expugnextras.expugn.ListTitles.ListTitles listtitles;
 	private final io.github.expugn.expugnextras.expugn.ItemDrop.ItemDrop itemdrop;
@@ -41,7 +41,7 @@ public class ExpugnCommand implements CommandExecutor
 	public ExpugnCommand(ExpugnExtras plugin) 
 	{
 		warps = new io.github.expugn.expugnextras.expugn.Warps.Warps(plugin);
-		timers = new io.github.expugn.expugnextras.expugn.DungeonTimers.DungeonTimers(plugin);
+		timers = new io.github.expugn.expugnextras.expugn.Timers.DungeonTimers(plugin);
 		trials = new io.github.expugn.expugnextras.expugn.TimeTrial.TimeTrial(plugin);
 		listtitles = new io.github.expugn.expugnextras.expugn.ListTitles.ListTitles(plugin);
 		itemdrop = new io.github.expugn.expugnextras.expugn.ItemDrop.ItemDrop(plugin);
@@ -559,15 +559,19 @@ public class ExpugnCommand implements CommandExecutor
 			case "general":
 				general.send(sender);
 				break;
+			case "warp":
 			case "warps":
 				warps.send(sender);
 				break;
+			case "timer":
 			case "timers":
 				timers.send(sender);
 				break;
+			case "trial":
 			case "trials":
 				trials.send(sender);
 				break;
+			case "item":
 			case "itemdrop":
 				itemdrop.send(sender);
 				break;

@@ -1,4 +1,4 @@
-package io.github.expugn.expugnextras.expugn.DungeonTimers;
+package io.github.expugn.expugnextras.expugn.Timers;
 
 import java.io.File;
 import java.io.IOException;
