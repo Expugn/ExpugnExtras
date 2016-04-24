@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -30,7 +29,7 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
  * <li> @<b>gomeow</b>  (Wrote the base {@code paginate} method: {@link #paginate})
  * </ul>
  * 
- * @version 2.1
+ * @version 2.1.1
  * @author Expugn  <i>(https://github.com/Expugn)</i>
  */
 public class ListTitles 
@@ -42,7 +41,7 @@ public class ListTitles
 
 	//-----------------------------------------------------------------------
 	/**
-	 * Constructor for the {@code ListTitles} class
+	 * Constructor for the ListTitles class
 	 * 
 	 * @param plugin  Main Class: {@link ExpugnExtras}
 	 */
@@ -58,27 +57,22 @@ public class ListTitles
 
 	//-----------------------------------------------------------------------
 	/**
-	 * {@code getTitles}: Display all titles a player has to the player.
+	 * Display all titles a player has to the player.
 	 * 
-	 * <ul>
-	 * <li> Links to a method 'paginate' on this class:
-	 * 		{@link io.github.expugn.expugnextras.expugn.ListTitles.ListTitles#paginate}.
-	 * </ul>
-	 * 
-	 * @param player  Player who sent the command
-	 * @param args  Arguments following 'listtitles'
+	 * @param player  Player who sent the command.
+	 * @param args  Arguments following 'listtitles'.
 	 */
 	public void getTitles(Player player, String[] args) 
 	{
 		if (!enabled) 
 		{
-			player.sendMessage(ChatColor.RED + "ListTitles is not enabled.");
+			player.sendMessage("§cListTitles is not enabled.");
 			return;
 		}
 
 		if (args.length > 2) 
 		{
-			player.sendMessage(ChatColor.RED + "Invalid parameters. /title [page #]");
+			player.sendMessage("§cInvalid parameters. §6/title [page #]");
 		}
 		int page = 1;
 		if (args.length > 0) 
@@ -108,10 +102,10 @@ public class ListTitles
 			String title = (String) titlelist.next();
 			if (ownPermissions.contains("titlemanager.title." + title)) 
 			{
-				FancyMessage fancyMess = new FancyMessage(ChatColor.ITALIC + title + ChatColor.RESET + " : " + (String) titles.get(title).replace('&', '§'))
-								.tooltip(ChatColor.RED + "Sample:\n" + 
-										 ((String)titles.get(title).replace('&', '§')) + ChatColor.RESET + ChatColor.WHITE + player.getName() + ChatColor.WHITE + " > Hello World!\n\n" +
-										 ChatColor.GRAY + ChatColor.ITALIC + "Click to apply this title.")
+				FancyMessage fancyMess = new FancyMessage("§o" + title + "§r" + " : " + (String) titles.get(title).replace('&', '§'))
+								.tooltip("§cSample:\n" 
+										+ ((String)titles.get(title).replace('&', '§')) + "§f§r" + player.getName() + " > Hello World!\n\n" 
+										+ "§7§o" + "Click to apply this title.")
 								.command("/title " + title);
 
 				playerTitles.put(titleCount, fancyMess);
@@ -124,39 +118,42 @@ public class ListTitles
 		
 		if (page <= 1 && 1 != maxPages) 
 		{
-			new FancyMessage(ChatColor.LIGHT_PURPLE + "[Next Page ->]")
-					.tooltip(ChatColor.GRAY + "Click to go forward one page.")
+			new FancyMessage("§d[Next Page ->]")
+					.tooltip("§7Click to go forward one page.")
 					.command("/expugnfree listtitles " + (page + 1)).send(player);
 		} 
 		else if (page < maxPages && 1 != maxPages) 
 		{
-			new FancyMessage(ChatColor.LIGHT_PURPLE + "[<- Previous Page]")
-					.tooltip(ChatColor.GRAY + "Click to go back one page.")
-					.command("/expugnfree listtitles " + (page - 1)).then("       ")
-					.then(ChatColor.LIGHT_PURPLE + "[Next Page ->]")
-					.tooltip(ChatColor.GRAY + "Click to go forward one page.")
-					.command("/expugnfree listtitles " + (page + 1)).send(player);
+			new FancyMessage("§d[<- Previous Page]")
+					.tooltip("§7Click to go back one page.")
+					.command("/expugnfree listtitles " + (page - 1))
+					.then("       ")
+					.then("§d[Next Page ->]")
+					.tooltip("§7Click to go forward one page.")
+					.command("/expugnfree listtitles " + (page + 1))
+					.send(player);
 		} 
 		else if (page <= maxPages && 1 != maxPages) 
 		{
-			new FancyMessage(ChatColor.LIGHT_PURPLE + "[<- Previous Page]")
-					.tooltip(ChatColor.GRAY + "Click to go back one page.")
+			new FancyMessage("§d[<- Previous Page]")
+					.tooltip("§7Click to go back one page.")
 					.command("/expugnfree listtitles " + (page - 1)).send(player);
 		}
-		player.sendMessage(ChatColor.YELLOW + "Use /title <titlename> to change your title. Ex: " + ChatColor.DARK_AQUA
-				+ "/title member\n" + ChatColor.YELLOW + "You may also click the title to apply it.");
+		player.sendMessage("§eUse §6/title <titlename> §eto change your title. Ex: §6/title member\n" 
+				+ "§eYou may also click the title to apply it.");
 	}
 
 	//-----------------------------------------------------------------------
 	/**
-	 * {@code LoadTitles}: Reloads "/plugins/TitleManager/config.yml"
+	 * Reloads "/plugins/TitleManager/config.yml"
 	 */
 	public void loadTitles() 
 	{
 		try 
 		{
 			titleFile.load("plugins/TitleManager/config.yml");
-		} catch (Exception e) 
+		} 
+		catch (Exception e) 
 		{
 			e.printStackTrace();
 		}
@@ -176,24 +173,21 @@ public class ListTitles
 
 	//-----------------------------------------------------------------------
 	/**
-	 * {@code paginate}: Takes a sorted map and makes it into a neat page system.
+	 * Takes a sorted map and makes it into a neat page system.
 	 * 
-	 * @param player  Player who sent the command
-	 * @param map  SortedMap with all the data to be displayed
-	 * @param page  Requested page
-	 * @param pageLength  How many entries per page
-	 * @return  integer of the max length of pages, not null
+	 * @param player  Player who sent the command.
+	 * @param map  SortedMap with all the data to be displayed.
+	 * @param page  Requested page.
+	 * @param pageLength  How many entries per page.
+	 * @return  integer of the max length of pages, not null.
 	 */
 	public int paginate(Player player, SortedMap<Integer, FancyMessage> map, int page, int pageLength) 
 	{
 		if (page > (((map.size() % pageLength) == 0) ? map.size() / pageLength : (map.size() / pageLength) + 1)) 
 			page = (((map.size() % pageLength) == 0) ? map.size() / pageLength : (map.size() / pageLength) + 1);
 		
-		player.sendMessage(ChatColor.GOLD + "Title List: " + ChatColor.YELLOW + "Page (" + ChatColor.GOLD
-				+ String.valueOf(page) + ChatColor.YELLOW + " of " + ChatColor.GOLD
-				+ (((map.size() % pageLength) == 0) ? map.size() / pageLength : (map.size() / pageLength) + 1)
-				+ ChatColor.YELLOW + ")" + ChatColor.YELLOW + " (" + ChatColor.RED + map.size() + ChatColor.YELLOW
-				+ " titles total.)");
+		player.sendMessage("§6Title List: " + "§ePage (§6" + String.valueOf(page) + " §eof §6" + (((map.size() % pageLength) == 0) ? map.size() / pageLength : (map.size() / pageLength) + 1) + "§e)" 
+				+ " §e(§c" + map.size() + "§e titles total.)");
 		
 		int i = 0, k = 0;
 		page--;
