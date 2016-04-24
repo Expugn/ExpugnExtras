@@ -17,7 +17,6 @@ import io.github.expugn.expugnextras.ExpugnExtras;
 public class MarriageCommand implements CommandExecutor 
 {
 	/* Private variables */
-	private final ExpugnExtras plugin;
 	private final io.github.expugn.expugnextras.Marriage.Marriage marriage;
 	private static final String prefix = ChatColor.BLACK + "[" + ChatColor.GOLD + "Marriage" + ChatColor.BLACK + "]"
 			+ ChatColor.DARK_GRAY + " - ";
@@ -27,7 +26,6 @@ public class MarriageCommand implements CommandExecutor
 	/* System messages and errors */
 	private static final String OPENING_MESSAGE = prefix + ChatColor.GREEN + "Use " + ChatColor.GOLD
 			+ " /marriage help " + ChatColor.GREEN + "to view all commands.";
-	private static final String MARRIAGE_NOT_ENABLED_ERROR = prefix + ChatColor.RED + "Marriage is not enabled.";
 	private static final String INVALID_COMMAND_ERROR = prefix + ChatColor.RED + "Invalid Command.\n" + miniPrefix
 			+ ChatColor.RED + "Use " + ChatColor.GOLD + "/marriage help" + ChatColor.RED + " for a help menu.";
 	private static final String ONLY_PLAYERS_ERROR = ChatColor.RED + "Only players can run this command.";
@@ -105,7 +103,6 @@ public class MarriageCommand implements CommandExecutor
 	 */
 	public MarriageCommand(ExpugnExtras plugin) 
 	{
-		this.plugin = plugin;
 		marriage = new io.github.expugn.expugnextras.Marriage.Marriage(plugin);
 	}
 
@@ -143,11 +140,6 @@ public class MarriageCommand implements CommandExecutor
 	 */
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) 
 	{
-		if (plugin.getConfig().getBoolean("commands.marriage") == false) 
-		{
-			sender.sendMessage(MARRIAGE_NOT_ENABLED_ERROR);
-			return true;
-		}
 		if (sender instanceof Player) 
 		{
 			Player player = (Player) sender;

@@ -46,6 +46,8 @@ public class ExpugnExtras extends JavaPlugin
 	{
 		if (expugnEnabled)
 			getCommand("expugn").setExecutor(new ExpugnCommand(this));
+		else
+			getCommand("expugn").setExecutor(new DisabledCommand());
 
 		if (marriageEnabled)
 		{
@@ -57,6 +59,8 @@ public class ExpugnExtras extends JavaPlugin
 				Bukkit.getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
 			}	
 		}
+		else
+			getCommand("marriage").setExecutor(new DisabledCommand());
 	}
 	
 	//-----------------------------------------------------------------------

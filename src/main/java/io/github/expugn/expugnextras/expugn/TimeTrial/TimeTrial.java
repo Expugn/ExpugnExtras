@@ -16,7 +16,9 @@ import io.github.expugn.expugnextras.ExpugnExtras;
 public class TimeTrial 
 {
 	private final io.github.expugn.expugnextras.Configs.TimeTrial config;
-	private final io.github.expugn.expugnextras.Configs.Warps warp_config;
+	private io.github.expugn.expugnextras.Configs.Warps warp_config;
+	
+	private final ExpugnExtras plugin;
 
 	//-----------------------------------------------------------------------
 	/**
@@ -28,6 +30,8 @@ public class TimeTrial
 	{
 		config = new io.github.expugn.expugnextras.Configs.TimeTrial(plugin);
 		warp_config = new io.github.expugn.expugnextras.Configs.Warps(plugin);
+		
+		this.plugin = plugin;
 	}
 
 	//-----------------------------------------------------------------------
@@ -463,13 +467,20 @@ public class TimeTrial
 	 */
 	public void warpHallOfGlory(Player player) 
 	{
+		warp_config = new io.github.expugn.expugnextras.Configs.Warps(plugin);
 		String playerUUID = player.getUniqueId() + "";
+		
+		if (!warp_config.checkWarp("HallOfGlory")) 
+		{
+			player.sendMessage("§cThe Hall of Glory is not setup.");
+			return;
+		}
 		
 		if (config.checkFirstPlace(playerUUID)) 
 		{
 			Location loc = warp_config.getWarp_Location("HallOfGlory");
 			player.teleport(loc);
-			player.sendMessage("§7Now entering the §6Hall of Glory §7.");
+			player.sendMessage("§7Now entering the §6Hall of Glory§7.");
 		} 
 		else 
 			player.sendMessage("§7This is the §6Hall of Glory§7.\n" 

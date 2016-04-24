@@ -370,7 +370,9 @@ public class ExpugnCommand implements CommandExecutor
 			}
 			if (subCommand.equalsIgnoreCase("rpc")) /* rpc */
 			{
-				if (isPlayer && args.length >= 1)
+				if (isPlayer && args.length >= 2)
+					rockPaperScissors(player, Integer.parseInt(args[1]));
+				else if (isPlayer && args.length >= 1)
 					rockPaperScissors(player);
 				else
 					sender.sendMessage(COMMAND_FAILURE);

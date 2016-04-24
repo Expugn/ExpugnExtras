@@ -32,7 +32,6 @@ public class Marriage
 	/* Private variables */
 	private File ymlFile;
 	private FileConfiguration config;
-	private boolean enabled;
 	private String playerPartner = "";
 	private long playerCooldown = 0L;
 	private static final ItemStack[] dateItems = { new ItemStack(Material.IRON_BLOCK),
@@ -74,7 +73,6 @@ public class Marriage
 	 */
 	public Marriage(ExpugnExtras plugin) 
 	{
-		enabled = plugin.getConfig().getBoolean("commands.marriage");
 		ymlFile = new File(plugin.getDataFolder() + "/marriage.yml");
 		config = YamlConfiguration.loadConfiguration(ymlFile);
 	}
@@ -719,43 +717,63 @@ public class Marriage
 	 */
 	public void onPlayerInteract(PlayerInteractEntityEvent event) 
 	{
-		if (enabled) 
+		config = YamlConfiguration.loadConfiguration(ymlFile);
+		Player player = event.getPlayer();
+		String playerUUID = player.getUniqueId().toString();
+		Player playerInteracted = (Player) event.getRightClicked();
+		String playerInteractedUUID = playerInteracted.getUniqueId().toString();
+		String playerPartnerUUID = null;
+		int playerLevel = 0;
+		long effectCooldown = 0L;
+
+		if (config.getString("players." + playerUUID + ".partner") != null
+				&& !config.getString("players." + playerUUID + ".partner").isEmpty()) 
 		{
-			config = YamlConfiguration.loadConfiguration(ymlFile);
-			Player player = event.getPlayer();
-			String playerUUID = player.getUniqueId().toString();
-			Player playerInteracted = (Player) event.getRightClicked();
-			String playerInteractedUUID = playerInteracted.getUniqueId().toString();
-			String playerPartnerUUID = null;
-			int playerLevel = 0;
-			long effectCooldown = 0L;
+			playerPartnerUUID = config.getString("players." + playerUUID + ".partner");
+			playerLevel = config.getInt("players." + playerUUID + ".level");
+			effectCooldown = config.getLong("players." + playerUUID + ".effectcooldown");
 
-			if (config.getString("players." + playerUUID + ".partner") != null
-					&& !config.getString("players." + playerUUID + ".partner").isEmpty()) 
+			if (playerLevel != 0 && playerPartnerUUID.equals(playerInteractedUUID)) 
 			{
-				playerPartnerUUID = config.getString("players." + playerUUID + ".partner");
-				playerLevel = config.getInt("players." + playerUUID + ".level");
-				effectCooldown = config.getLong("players." + playerUUID + ".effectcooldown");
-
-				if (playerLevel != 0 && playerPartnerUUID.equals(playerInteractedUUID)) 
+				if (System.currentTimeMillis() < effectCooldown) 
 				{
-					if (System.currentTimeMillis() < effectCooldown) 
-					{
-						int seconds = (int) (effectCooldown - System.currentTimeMillis()) / 1000;
-						player.sendMessage(
-								miniPrefix + ChatColor.LIGHT_PURPLE + "Please wait " + ChatColor.GOLD + seconds
-										+ ChatColor.LIGHT_PURPLE + " second(s) before interacting with your partner.");
-						return;
-					}
-					if (player.isSneaking() && playerLevel > 0) 
-					{
-						player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
-								+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " a kiss! " + ChatColor.DARK_RED
-								+ "❤");
-						playerInteracted.sendMessage(miniPrefix + ChatColor.GOLD + player.getName()
-								+ ChatColor.LIGHT_PURPLE + " gave you a kiss! " + ChatColor.DARK_RED + "❤");
+					int seconds = (int) (effectCooldown - System.currentTimeMillis()) / 1000;
+					player.sendMessage(
+							miniPrefix + ChatColor.LIGHT_PURPLE + "Please wait " + ChatColor.GOLD + seconds
+							+ ChatColor.LIGHT_PURPLE + " second(s) before interacting with your partner.");
+					return;
+				}
+				if (player.isSneaking() && playerLevel > 0) 
+				{
+					player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
+							+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " a kiss! " + ChatColor.DARK_RED
+							+ "❤");
+					playerInteracted.sendMessage(miniPrefix + ChatColor.GOLD + player.getName()
+					+ ChatColor.LIGHT_PURPLE + " gave you a kiss! " + ChatColor.DARK_RED + "❤");
 
-						playerInteracted.setHealth(20.0);
+					playerInteracted.setHealth(20.0);
+
+					ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
+							player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+					ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
+							playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+					setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
+				} 
+				else 
+				{
+					if (player.getItemInHand().equals(new ItemStack(Material.MUSHROOM_SOUP)) && playerLevel > 0) 
+					{
+						player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You fed " + ChatColor.GOLD
+								+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " some mushroom stew! "
+								+ ChatColor.DARK_RED + "❤");
+						playerInteracted
+						.sendMessage(miniPrefix + ChatColor.GOLD + player.getName() + ChatColor.LIGHT_PURPLE
+								+ " fed you some mushroom stew! " + ChatColor.DARK_RED + "❤");
+
+						playerInteracted.setFoodLevel(20);
+						playerInteracted.setSaturation(1.2F);
+						player.getInventory().removeItem(new ItemStack(Material.MUSHROOM_SOUP, 1));
+						player.getInventory().addItem(new ItemStack(Material.BOWL, 1));
 
 						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
 								player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
@@ -763,131 +781,108 @@ public class Marriage
 								playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
 						setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
 					} 
-					else 
+					else if (player.getItemInHand().equals(new ItemStack(Material.GOLD_PICKAXE))
+							&& playerLevel > 1) 
 					{
-						if (player.getItemInHand().equals(new ItemStack(Material.MUSHROOM_SOUP)) && playerLevel > 0) 
-						{
-							player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You fed " + ChatColor.GOLD
-									+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " some mushroom stew! "
-									+ ChatColor.DARK_RED + "❤");
-							playerInteracted
-									.sendMessage(miniPrefix + ChatColor.GOLD + player.getName() + ChatColor.LIGHT_PURPLE
-											+ " fed you some mushroom stew! " + ChatColor.DARK_RED + "❤");
+						player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
+								+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " a gold pickaxe! "
+								+ ChatColor.DARK_RED + "❤");
+						playerInteracted.sendMessage(miniPrefix + ChatColor.GOLD + player.getName()
+						+ ChatColor.LIGHT_PURPLE + " gave you a gold pickaxe! " + ChatColor.DARK_RED + "❤");
 
-							playerInteracted.setFoodLevel(20);
-							playerInteracted.setSaturation(1.2F);
-							player.getInventory().removeItem(new ItemStack(Material.MUSHROOM_SOUP, 1));
-							player.getInventory().addItem(new ItemStack(Material.BOWL, 1));
+						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0));
+						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 3600, 0));
+						player.getInventory().removeItem(new ItemStack(Material.GOLD_PICKAXE, 1));
 
-							ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-									player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-							ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-									playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-							setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
-						} 
-						else if (player.getItemInHand().equals(new ItemStack(Material.GOLD_PICKAXE))
-								&& playerLevel > 1) 
-						{
-							player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
-									+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " a gold pickaxe! "
-									+ ChatColor.DARK_RED + "❤");
-							playerInteracted.sendMessage(miniPrefix + ChatColor.GOLD + player.getName()
-									+ ChatColor.LIGHT_PURPLE + " gave you a gold pickaxe! " + ChatColor.DARK_RED + "❤");
+						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
+								player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
+								playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+						setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
+					} 
+					else if (player.getItemInHand().equals(new ItemStack(Material.GOLDEN_APPLE))
+							&& playerLevel > 1) 
+					{
+						player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
+								+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " a golden apple! "
+								+ ChatColor.DARK_RED + "❤");
+						playerInteracted.sendMessage(miniPrefix + ChatColor.GOLD + player.getName()
+						+ ChatColor.LIGHT_PURPLE + " gave you a golden apple! " + ChatColor.DARK_RED + "❤");
 
-							playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 0, 0));
-							playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 3600, 0));
-							player.getInventory().removeItem(new ItemStack(Material.GOLD_PICKAXE, 1));
+						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 0, 0));
+						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 3600, 0));
+						player.getInventory().removeItem(new ItemStack(Material.GOLDEN_APPLE, 1));
 
-							ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-									player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-							ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-									playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-							setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
-						} 
-						else if (player.getItemInHand().equals(new ItemStack(Material.GOLDEN_APPLE))
-								&& playerLevel > 1) 
-						{
-							player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
-									+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " a golden apple! "
-									+ ChatColor.DARK_RED + "❤");
-							playerInteracted.sendMessage(miniPrefix + ChatColor.GOLD + player.getName()
-									+ ChatColor.LIGHT_PURPLE + " gave you a golden apple! " + ChatColor.DARK_RED + "❤");
+						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
+								player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
+								playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+						setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
+					} 
+					else if (player.getItemInHand().equals(new ItemStack(Material.GOLD_CHESTPLATE))
+							&& playerLevel > 2) 
+					{
+						player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
+								+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " a gold chestplate! "
+								+ ChatColor.DARK_RED + "❤");
+						playerInteracted
+						.sendMessage(miniPrefix + ChatColor.GOLD + player.getName() + ChatColor.LIGHT_PURPLE
+								+ " gave you a gold chestplate! " + ChatColor.DARK_RED + "❤");
 
-							playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 0, 0));
-							playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 3600, 0));
-							player.getInventory().removeItem(new ItemStack(Material.GOLDEN_APPLE, 1));
+						playerInteracted
+						.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 0));
+						playerInteracted
+						.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 3600, 0));
+						player.getInventory().removeItem(new ItemStack(Material.GOLD_CHESTPLATE, 1));
 
-							ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-									player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-							ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-									playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-							setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
-						} 
-						else if (player.getItemInHand().equals(new ItemStack(Material.GOLD_CHESTPLATE))
-								&& playerLevel > 2) 
-						{
-							player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
-									+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " a gold chestplate! "
-									+ ChatColor.DARK_RED + "❤");
-							playerInteracted
-									.sendMessage(miniPrefix + ChatColor.GOLD + player.getName() + ChatColor.LIGHT_PURPLE
-											+ " gave you a gold chestplate! " + ChatColor.DARK_RED + "❤");
+						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
+								player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
+								playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+						setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
+					} 
+					else if (player.getItemInHand().equals(new ItemStack(Material.CAKE)) && playerLevel > 2) 
+					{
+						player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
+								+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " a cake! "
+								+ ChatColor.DARK_RED + "❤");
+						playerInteracted.sendMessage(miniPrefix + ChatColor.GOLD + player.getName()
+						+ ChatColor.LIGHT_PURPLE + " gave you a cake! " + ChatColor.DARK_RED + "❤");
 
-							playerInteracted
-									.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 0, 0));
-							playerInteracted
-									.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 3600, 0));
-							player.getInventory().removeItem(new ItemStack(Material.GOLD_CHESTPLATE, 1));
+						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 0, 0));
+						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 3600, 2));
+						player.getInventory().removeItem(new ItemStack(Material.CAKE, 1));
 
-							ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-									player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-							ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-									playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-							setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
-						} 
-						else if (player.getItemInHand().equals(new ItemStack(Material.CAKE)) && playerLevel > 2) 
-						{
-							player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
-									+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " a cake! "
-									+ ChatColor.DARK_RED + "❤");
-							playerInteracted.sendMessage(miniPrefix + ChatColor.GOLD + player.getName()
-									+ ChatColor.LIGHT_PURPLE + " gave you a cake! " + ChatColor.DARK_RED + "❤");
+						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
+								player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
+								playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+						setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
+					} 
+					else if (player.getItemInHand().equals(new ItemStack(Material.MILK_BUCKET)) && playerLevel > 2) 
+					{
+						player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
+								+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " some milk to drink! "
+								+ ChatColor.DARK_RED + "❤");
+						playerInteracted.sendMessage(miniPrefix + ChatColor.GOLD + player.getName() + ChatColor.LIGHT_PURPLE
+								+ " gave you some milk to drink! " + ChatColor.DARK_RED + "❤");
 
-							playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 0, 0));
-							playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 3600, 2));
-							player.getInventory().removeItem(new ItemStack(Material.CAKE, 1));
+						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 0, 0));
+						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 0, 0));
+						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 0, 0));
+						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 0, 0));
+						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 0, 0));
+						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 0, 0));
+						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 0, 0));
+						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 0, 0));
+						player.getInventory().removeItem(new ItemStack(Material.MILK_BUCKET, 1));
+						player.getInventory().addItem(new ItemStack(Material.BUCKET, 1));
 
-							ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-									player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-							ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-									playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-							setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
-						} 
-						else if (player.getItemInHand().equals(new ItemStack(Material.MILK_BUCKET)) && playerLevel > 2) 
-						{
-							player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
-									+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " some milk to drink! "
-									+ ChatColor.DARK_RED + "❤");
-							playerInteracted.sendMessage(miniPrefix + ChatColor.GOLD + player.getName() + ChatColor.LIGHT_PURPLE
-									+ " gave you some milk to drink! " + ChatColor.DARK_RED + "❤");
-
-							playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 0, 0));
-							playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 0, 0));
-							playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 0, 0));
-							playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 0, 0));
-							playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 0, 0));
-							playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 0, 0));
-							playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 0, 0));
-							playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 0, 0));
-							player.getInventory().removeItem(new ItemStack(Material.MILK_BUCKET, 1));
-							player.getInventory().addItem(new ItemStack(Material.BUCKET, 1));
-
-							ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-									player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-							ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-									playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-							setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
-						}
+						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
+								player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
+								playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+						setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
 					}
 				}
 			}
