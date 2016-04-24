@@ -1,16 +1,8 @@
 package io.github.expugn.expugnextras.expugn.TimeTrial;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import io.github.expugn.expugnextras.ExpugnExtras;
@@ -18,58 +10,24 @@ import io.github.expugn.expugnextras.ExpugnExtras;
 /**
  * <b>'TimeTrial' Function</b>
  * 
- * @version 1.2
+ * @version 1.2.1
  * @author Expugn <i>(https://github.com/Expugn)</i>
  */
 public class TimeTrial 
 {
-	File ymlFile;
-	FileConfiguration config;
-	FileConfiguration warpConfig;
-	ExpugnExtras plugin;
-	private static final int DEFAULT_MAX_TIME = 3600000;
-
-	/* System and error messages */
-	private static final String TIME_TRIAL_BEGIN_MESSAGE = ChatColor.GREEN + "Your time trial has begun. Good luck!";
-	private static final String STARTING_NEW_TRIAL_MESSAGE = ChatColor.GOLD
-			+ "You have an existing trial in progress for another location. Deleting that trial and creating a new one.";
-	private static final String RESET_TIMES_MESSAGE = ChatColor.GOLD + "Times have been reset.";
-	private static final String NEW_RECORD_MESSAGE = ChatColor.GOLD + "A new record! Congratulations!";
-	private static final String HALL_OF_GLORY_MESSAGE = ChatColor.GRAY + "This is the " + ChatColor.GOLD
-			+ "Hall of Glory" + ChatColor.GRAY + ".\n" + "Only players who have placed " + ChatColor.RED + "first "
-			+ ChatColor.GRAY + "in a time trial may enter.";
-	private static final String ENTER_HALL_OF_GLORY_MESSAGE = ChatColor.GRAY + "Now entering the " + ChatColor.GOLD
-			+ "Hall of Glory" + ChatColor.GRAY + ".";
-	private static final String INVALID_LOCATION_ERROR = ChatColor.RED
-			+ "This location does not exist. Use /expugn locationlist for a list of locations.";
-	private static final String ALREADY_IN_PROGRESS_ERROR = ChatColor.RED
-			+ "You already have a time trial in progress. Restarting your time.";
-	private static final String COMPLETE_WRONG_TRIAL_ERROR = ChatColor.RED
-			+ "You have a time trial in progress but it's for a different location.\n"
-			+ "Your time trial in progress will be removed.";
-	private static final String COMPLETE_NON_EXISTING_TRIAL_ERROR = ChatColor.RED
-			+ "You do not have a time trial in progress.\n" + "To start a time trial, please click the" + ChatColor.GOLD
-			+ " Gold Block " + ChatColor.RED + "at the entrance of the dungeon.";
-	private static final String UNKNOWN_ERROR = ChatColor.RED + "Oops. Something went wrong. Inform " + ChatColor.GOLD
-			+ "Expugn " + ChatColor.RED + "about the problem.";
+	private final io.github.expugn.expugnextras.Configs.TimeTrial config;
+	private final io.github.expugn.expugnextras.Configs.Warps warp_config;
 
 	//-----------------------------------------------------------------------
 	/**
-	 * Constructor for the {@code TimeTrial} class
-	 * 
-	 * <ul>
-	 * <li> Links to a method 'checkProgress' on this class:
-	 * 		{@link #checkProgress}.
-	 * </ul>
+	 * Constructor for the TimeTrial class
 	 * 
 	 * @param plugin  Main Class: {@link ExpugnExtras}
 	 */
 	public TimeTrial(ExpugnExtras plugin) 
 	{
-		ymlFile = new File(plugin.getDataFolder() + "/timetrial.yml");
-		config = YamlConfiguration.loadConfiguration(ymlFile);
-		warpConfig = plugin.readConfig("warps");
-		checkProgress();
+		config = new io.github.expugn.expugnextras.Configs.TimeTrial(plugin);
+		warp_config = new io.github.expugn.expugnextras.Configs.Warps(plugin);
 	}
 
 	//-----------------------------------------------------------------------
@@ -88,50 +46,13 @@ public class TimeTrial
 	 */
 	public void setLocation(Player player, String name) 
 	{
-		if (this.checkLocation(name) == false) 
+		if (config.checkLocation(name) == false) 
 		{
-			config.set("location." + name + ".times.key", null);
-			config.set("location." + name + ".rankinglist.1.playername", "null");
-			config.set("location." + name + ".rankinglist.1.playeruuid", "_");
-			config.set("location." + name + ".rankinglist.1.timestring", "99:99.999");
-			config.set("location." + name + ".rankinglist.1.minutes", 99);
-			config.set("location." + name + ".rankinglist.1.seconds", 99);
-			config.set("location." + name + ".rankinglist.1.milliseconds", 999);
-
-			config.set("location." + name + ".rankinglist.2.playername", "null");
-			config.set("location." + name + ".rankinglist.2.playeruuid", "_");
-			config.set("location." + name + ".rankinglist.2.timestring", "99:99.999");
-			config.set("location." + name + ".rankinglist.2.minutes", 99);
-			config.set("location." + name + ".rankinglist.2.seconds", 99);
-			config.set("location." + name + ".rankinglist.2.milliseconds", 999);
-
-			config.set("location." + name + ".rankinglist.3.playername", "null");
-			config.set("location." + name + ".rankinglist.3.playeruuid", "_");
-			config.set("location." + name + ".rankinglist.3.timestring", "99:99.999");
-			config.set("location." + name + ".rankinglist.3.minutes", 99);
-			config.set("location." + name + ".rankinglist.3.seconds", 99);
-			config.set("location." + name + ".rankinglist.3.milliseconds", 999);
-
-			config.set("location." + name + ".rankinglist.4.playername", "null");
-			config.set("location." + name + ".rankinglist.4.playeruuid", "_");
-			config.set("location." + name + ".rankinglist.4.timestring", "99:99.999");
-			config.set("location." + name + ".rankinglist.4.minutes", 99);
-			config.set("location." + name + ".rankinglist.4.seconds", 99);
-			config.set("location." + name + ".rankinglist.4.milliseconds", 999);
-
-			config.set("location." + name + ".rankinglist.5.playername", "null");
-			config.set("location." + name + ".rankinglist.5.playeruuid", "_");
-			config.set("location." + name + ".rankinglist.5.timestring", "99:99.999");
-			config.set("location." + name + ".rankinglist.5.minutes", 99);
-			config.set("location." + name + ".rankinglist.5.seconds", 99);
-			config.set("location." + name + ".rankinglist.5.milliseconds", 999);
-
-			saveConfig();
-			player.sendMessage(ChatColor.GREEN + "Created location " + ChatColor.GOLD + name);
+			config.createLocation(name);
+			player.sendMessage("§aCreated location §6" + name);
 		} 
 		else 
-			player.sendMessage(
-					ChatColor.RED + "Location " + ChatColor.GOLD + name + ChatColor.RED + " already exists.");
+			player.sendMessage("§cLocation §6" + name + " §calready exists.");
 	}
 
 	//-----------------------------------------------------------------------
@@ -148,33 +69,25 @@ public class TimeTrial
 	 */
 	public void delLocation(Player player, String name) 
 	{
-		if (this.checkLocation(name) == false) 
-			player.sendMessage(INVALID_LOCATION_ERROR);
+		if (config.checkLocation(name) == false) 
+			player.sendMessage("§cThis location does not exist. Use §6/expugn locationlist §cfor a list of locations.");
 		else 
 		{
 			config.set("location." + name, null);
-			saveConfig();
-
-			player.sendMessage(ChatColor.GREEN + "Location " + name + " has been removed.");
+			player.sendMessage("§aLocation §6" + name + " §ahas been removed.");
 		}
 	}
 
 	//-----------------------------------------------------------------------
 	/**
-	 * {@code LocationList}: Generates and tells a player the list of available
-	 * locations
-	 * 
-	 * <ul>
-	 * <li> Links to a method 'getLocationList' on this class:
-	 * 		{@link #getLocationList}.
-	 * </ul>
+	 * Generates and tells a player the list of available locations.
 	 * 
 	 * @param player  The player who sent the command.
 	 */
 	public void locationList(Player player) 
 	{
-		player.sendMessage(ChatColor.GOLD + "There are currently " + getLocationList().size() + " locations");
-		for (String s : getLocationList()) 
+		player.sendMessage("§6There are currently §c" + config.getLocationList().size() + "§6 locations");
+		for (String s : config.getLocationList()) 
 		{
 			player.sendMessage("- " + s);
 		}
@@ -182,89 +95,7 @@ public class TimeTrial
 
 	//-----------------------------------------------------------------------
 	/**
-	 * {@code checkLocation}: Checks to see if the location exists
-	 * 
-	 * <ul>
-	 * <li> Links to a method 'getLocationList' on this class:
-	 * 		{@link #getLocationList}.
-	 * </ul>
-	 * 
-	 * @param name  The name of the location.
-	 * @return 
-	 * 		<li> {@code true}  if location exists 
-	 * 		<li> {@code false}  if location does not exist
-	 */
-	public boolean checkLocation(String name) 
-	{
-		if (getLocationList().contains(name))
-			return true;
-		return false;
-	}
-
-	//-----------------------------------------------------------------------
-	/**
-	 * {@code checkProgress}: Checks the "inprogresslist" to see if there are any
-	 * trials pending that have exceeded the hour limit. trials that are above
-	 * the hour limit are deleted.
-	 * 
-	 * <ul>
-	 * <li> Links to a method 'saveConfig' on this class:
-	 * 		{@link #saveConfig}.
-	 * </ul>
-	 */
-	public void checkProgress() 
-	{
-		long playerTime;
-		long expiredPlayerTime;
-		List<String> inProgressList = config.getStringList("inprogresslist");
-		List<String> newInProgressList = config.getStringList("inprogresslist");
-
-		for (String playerUUID : inProgressList) 
-		{
-			playerTime = config.getLong("inprogress." + playerUUID + ".time");
-			expiredPlayerTime = playerTime + DEFAULT_MAX_TIME;
-			if (expiredPlayerTime <= System.currentTimeMillis()) 
-			{
-				config.set("inprogress." + playerUUID, null);
-				newInProgressList.remove(playerUUID);
-				config.set("inprogresslist", newInProgressList);
-				saveConfig();
-			}
-		}
-	}
-
-	//-----------------------------------------------------------------------
-	/**
-	 * {@code checkInProgress}: Checks the "inprogresslist" to see if a player has a
-	 * trial in progress
-	 * 
-	 * @param player  The player who sent the command.
-	 * @param playerUUID  The player who sent the command's UUID
-	 * @return  
-	 * 		<li> {@code true}  if in progress
-	 * 	 	<li> {@code false}  if not in progress
-	 */
-	public boolean checkInProgress(Player player, String playerUUID) 
-	{
-		List<String> inProgressList = config.getStringList("inprogresslist");
-		if (inProgressList.contains(playerUUID))
-			return true;
-		else
-			return false;
-	}
-
-	//-----------------------------------------------------------------------
-	/**
-	 * {@code startTrial}: Starts a time trial
-	 * 
-	 * <ul>
-	 * <li> Links to a method 'checkLocation' on this class:
-	 * 		{@link #checkLocation}.
-	 * <li> Links to a method 'saveConfig' on this class:
-	 * 		{@link #saveConfig}.
-	 * <li> Links to a method 'checkInProgress' on this class:
-	 * 		{@link #checkInProgress}.
-	 * </ul>
+	 * Starts a time trial
 	 * 
 	 * @param player  The player who sent the command.
 	 * @param name  The name of the location.
@@ -273,26 +104,25 @@ public class TimeTrial
 	{
 		String inProgressLocation;
 		String playerUUID = player.getUniqueId() + "";
+		
 		if (null == config.getString("inprogress." + playerUUID + ".location")) 
 			inProgressLocation = "null_object";
 		else 
 			inProgressLocation = config.getString("inprogress." + playerUUID + ".location");
 
-		if (!this.checkLocation(name)) 
-			player.sendMessage(INVALID_LOCATION_ERROR);
+		if (!config.checkLocation(name)) 
+			player.sendMessage("§cThis location does not exist. Use §6/expugn locationlist §cfor a list of locations.");
 		else if (inProgressLocation.equals(name)) 
 		{
-			player.sendMessage(ALREADY_IN_PROGRESS_ERROR);
+			player.sendMessage("§cYou already have a time trial in progress. Restarting your time.");
 			config.set("inprogress." + playerUUID + ".time", System.currentTimeMillis());
-			saveConfig();
 		}
-		else if (this.checkInProgress(player, playerUUID)) 
+		else if (config.checkInProgress(player, playerUUID)) 
 		{
-			player.sendMessage(STARTING_NEW_TRIAL_MESSAGE);
+			player.sendMessage("§6You have an existing trial in progress for another location. Deleting that trial and creating a new one.");
 			config.set("inprogress." + playerUUID + ".location", name);
 			config.set("inprogress." + playerUUID + ".time", System.currentTimeMillis());
-			player.sendMessage(TIME_TRIAL_BEGIN_MESSAGE);
-			saveConfig();
+			player.sendMessage("§aYour time trial has begun. Good luck!");
 		}
 		else 
 		{
@@ -301,38 +131,29 @@ public class TimeTrial
 			config.set("inprogresslist", inProgressList);
 			config.set("inprogress." + playerUUID + ".location", name);
 			config.set("inprogress." + playerUUID + ".time", System.currentTimeMillis());
-			player.sendMessage(TIME_TRIAL_BEGIN_MESSAGE);
-			saveConfig();
+			player.sendMessage("§aYour time trial has begun. Good luck!");
 		}
 	}
 
 	//-----------------------------------------------------------------------
 	/**
-	 * {@code endTrial}: Ends a time trial
+	 * Ends a time trial
 	 * 
-	 * <ul>
-	 * <li> Links to a method 'checkLocation' on this class:
-	 * 		{@link #checkLocation}.
-	 * <li> Links to a method 'saveConfig' on this class:
-	 * 		{@link #saveConfig}.
-	 * <li> Links to a method 'updateRanking' on this class:
-	 * 		{@link #updateRanking}.
-	 * </ul>
-	 * 
-	 * @param player  The player who sent the command
+	 * @param player  The player who sent the command.
 	 * @param name  The name of the location.
 	 */
 	public void endTrial(Player player, String name) 
 	{
 		String inProgressLocation;
 		String playerUUID = player.getUniqueId() + "";
+		
 		if (null == config.getString("inprogress." + playerUUID + ".location")) 
 			inProgressLocation = "null_object";
 		else 
 			inProgressLocation = config.getString("inprogress." + playerUUID + ".location");
 
-		if (!this.checkLocation(name))
-			player.sendMessage(INVALID_LOCATION_ERROR);
+		if (!config.checkLocation(name))
+			player.sendMessage("§cThis location does not exist. Use §6/expugn locationlist §cfor a list of locations.");
 		else if (inProgressLocation.equals(name)) 
 		{
 			long playerTime = System.currentTimeMillis() - config.getLong("inprogress." + playerUUID + ".time");
@@ -369,8 +190,8 @@ public class TimeTrial
 			else
 				millisecondString = "" + milliseconds;
 			timeString = minuteString + ":" + secondString + "." + millisecondString;
-			player.sendMessage(ChatColor.GOLD + "Time trial for " + ChatColor.DARK_PURPLE + name + ChatColor.GOLD
-					+ " complete!\n" + ChatColor.GREEN + "Your time: " + ChatColor.GRAY + timeString);
+			player.sendMessage("§6Time trial for §5" + name + " §6complete!\n" 
+			+ "§aYour Time: §8" + timeString);
 
 			int oldMinutes, oldSeconds, oldMilliseconds;
 			if (null == config.getString("location." + name + ".times." + playerUUID + ".minutes")
@@ -394,7 +215,7 @@ public class TimeTrial
 			if ((oldMinutes > minutes) || (oldMinutes == minutes && oldSeconds > seconds)
 					|| (oldMinutes == minutes && oldSeconds == seconds && oldMilliseconds > milliseconds)) 
 			{
-				player.sendMessage(NEW_RECORD_MESSAGE);
+				player.sendMessage("§6A new record! Congratulations!");
 
 				config.set("location." + name + ".times." + playerUUID + ".timestring", timeString);
 				config.set("location." + name + ".times." + playerUUID + ".minutes", minutes);
@@ -405,54 +226,38 @@ public class TimeTrial
 			List<String> inProgressList = config.getStringList("inprogresslist");
 			inProgressList.remove("" + playerUUID);
 			config.set("inprogresslist", inProgressList);
-			saveConfig();
 
 			updateRanking(player, playerUUID, name, timeString, minutes, seconds, milliseconds);
 		}
-		else if (this.checkInProgress(player, playerUUID)) 
+		else if (config.checkInProgress(player, playerUUID)) 
 		{
-			player.sendMessage(COMPLETE_WRONG_TRIAL_ERROR);
+			player.sendMessage("§cYou have a time trial in progress but it's for a different location.\n"
+					+ "Your time trial in progress will be removed.");
 			config.set("inprogress." + playerUUID, null);
 			List<String> inProgressList = config.getStringList("inprogresslist");
 			inProgressList.remove(playerUUID);
 			config.set("inprogresslist", inProgressList);
-			saveConfig();
 		}
-		else if (!this.checkInProgress(player, playerUUID)) 
-			player.sendMessage(COMPLETE_NON_EXISTING_TRIAL_ERROR);
+		else if (!config.checkInProgress(player, playerUUID)) 
+			player.sendMessage("§cYou do not have a time trial in progress.\n" 
+					+ "§cTo start a time trial, please walk over the §6Gold Pressure Plate §cat the entrance of the dungeon.");
 		else 
-			player.sendMessage(UNKNOWN_ERROR);
+			player.sendMessage("§cOops. Something went wrong. Inform a server administrator about the problem.");
 	}
 
 	//-----------------------------------------------------------------------
 	/**
-	 * {@code updateRanking}: Updates a location's ranking.
-	 * 
-	 * <ul>
-	 * <li> Links to a method 'saveConfig' on this class:
-	 * 		{@link #saveConfig}.
-	 * <li> Links to a method 'insertRank1' on this class:
-	 * 		{@link #insertRank1}.
-	 * <li> Links to a method 'insertRank2' on this class:
-	 * 		{@link #insertRank2}.
-	 * <li> Links to a method 'insertRank3' on this class:
-	 * 		{@link #insertRank3}.
-	 * <li> Links to a method 'insertRank4' on this class:
-	 * 		{@link #insertRank4}.
-	 * <li> Links to a method 'insertRank5' on this class:
-	 * 		{@link #insertRank5}.
-	 * </ul>
+	 * Updates a location's ranking.
 	 * 
 	 * @param player  The player who sent the command.
-	 * @param playerUUID  The player who sent the command's UUID
+	 * @param playerUUID  The player who sent the command's UUID.
 	 * @param name  The name of the location.
-	 * @param timeString  The time of the trial in string format
-	 * @param minutes  The minutes of the time trial results
-	 * @param seconds  The seconds of the time trial results
-	 * @param milliseconds  The milliseconds of the time trial results
+	 * @param timeString  The time of the trial in string format.
+	 * @param minutes  The minutes of the time trial results.
+	 * @param seconds  The seconds of the time trial results.
+	 * @param milliseconds  The milliseconds of the time trial results.
 	 */
-	public void updateRanking(Player player, String playerUUID, String name, String timeString, int minutes,
-			int seconds, int milliseconds) 
+	public void updateRanking(Player player, String playerUUID, String name, String timeString, int minutes, int seconds, int milliseconds) 
 	{
 		String rivalName;
 		int rivalMinutes = 0;
@@ -469,7 +274,6 @@ public class TimeTrial
 			config.set("location." + name + ".rankinglist.1.minutes", minutes);
 			config.set("location." + name + ".rankinglist.1.seconds", seconds);
 			config.set("location." + name + ".rankinglist.1.milliseconds", milliseconds);
-			saveConfig();
 			return;
 		} 
 		else 
@@ -482,7 +286,7 @@ public class TimeTrial
 			if ((rivalMinutes > minutes) || (rivalMinutes == minutes && rivalSeconds > seconds)
 					|| (rivalMinutes == minutes && rivalSeconds == seconds && rivalMilliseconds > milliseconds)) 
 			{
-				insertRank1(player, playerUUID, name, timeString, minutes, seconds, milliseconds);
+				config.insertRank1(player, playerUUID, name, timeString, minutes, seconds, milliseconds);
 				return;
 			}
 		}
@@ -497,7 +301,6 @@ public class TimeTrial
 			config.set("location." + name + ".rankinglist.2.minutes", minutes);
 			config.set("location." + name + ".rankinglist.2.seconds", seconds);
 			config.set("location." + name + ".rankinglist.2.milliseconds", milliseconds);
-			saveConfig();
 			return;
 		} 
 		else 
@@ -510,7 +313,7 @@ public class TimeTrial
 			if ((rivalMinutes > minutes) || (rivalMinutes == minutes && rivalSeconds > seconds)
 					|| (rivalMinutes == minutes && rivalSeconds == seconds && rivalMilliseconds > milliseconds)) 
 			{
-				insertRank2(player, playerUUID, name, timeString, minutes, seconds, milliseconds);
+				config.insertRank2(player, playerUUID, name, timeString, minutes, seconds, milliseconds);
 				return;
 			}
 		}
@@ -525,7 +328,6 @@ public class TimeTrial
 			config.set("location." + name + ".rankinglist.3.minutes", minutes);
 			config.set("location." + name + ".rankinglist.3.seconds", seconds);
 			config.set("location." + name + ".rankinglist.3.milliseconds", milliseconds);
-			saveConfig();
 			return;
 		} 
 		else 
@@ -538,7 +340,7 @@ public class TimeTrial
 			if ((rivalMinutes > minutes) || (rivalMinutes == minutes && rivalSeconds > seconds)
 					|| (rivalMinutes == minutes && rivalSeconds == seconds && rivalMilliseconds > milliseconds)) 
 			{
-				insertRank3(player, playerUUID, name, timeString, minutes, seconds, milliseconds);
+				config.insertRank3(player, playerUUID, name, timeString, minutes, seconds, milliseconds);
 				return;
 			}
 		}
@@ -553,7 +355,6 @@ public class TimeTrial
 			config.set("location." + name + ".rankinglist.4.minutes", minutes);
 			config.set("location." + name + ".rankinglist.4.seconds", seconds);
 			config.set("location." + name + ".rankinglist.4.milliseconds", milliseconds);
-			saveConfig();
 			return;
 		} 
 		else 
@@ -566,7 +367,7 @@ public class TimeTrial
 			if ((rivalMinutes > minutes) || (rivalMinutes == minutes && rivalSeconds > seconds)
 					|| (rivalMinutes == minutes && rivalSeconds == seconds && rivalMilliseconds > milliseconds)) 
 			{
-				insertRank4(player, playerUUID, name, timeString, minutes, seconds, milliseconds);
+				config.insertRank4(player, playerUUID, name, timeString, minutes, seconds, milliseconds);
 				return;
 			}
 		}
@@ -581,7 +382,6 @@ public class TimeTrial
 			config.set("location." + name + ".rankinglist.5.minutes", minutes);
 			config.set("location." + name + ".rankinglist.5.seconds", seconds);
 			config.set("location." + name + ".rankinglist.5.milliseconds", milliseconds);
-			saveConfig();
 			return;
 		} 
 		else 
@@ -594,7 +394,7 @@ public class TimeTrial
 			if ((rivalMinutes > minutes) || (rivalMinutes == minutes && rivalSeconds > seconds)
 					|| (rivalMinutes == minutes && rivalSeconds == seconds && rivalMilliseconds > milliseconds)) 
 			{
-				insertRank5(player, playerUUID, name, timeString, minutes, seconds, milliseconds);
+				config.insertRank5(player, playerUUID, name, timeString, minutes, seconds, milliseconds);
 				return;
 			}
 		}
@@ -602,477 +402,79 @@ public class TimeTrial
 
 	//-----------------------------------------------------------------------
 	/**
-	 * {@code insertRank1}: Inserts player data into the first place position of a location
-	 * and pushes older entries down.
-	 * 
-	 * <ul>
-	 * <li> Links to a method 'saveConfig' on this class:
-	 * 		{@link #saveConfig}.
-	 * </ul>
-	 * 
-	 * @param player  The player who sent the command
-	 * @param playerUUID  The player who sent the command's UUID
-	 * @param name  The name of the location
-	 * @param timeString  The time of the trial in string format
-	 * @param minutes  The amount of minutes of the trial
-	 * @param seconds  The amount of seconds of the trial
-	 * @param milliseconds  The amount of milliseconds of the trial
-	 */
-	public void insertRank1(Player player, String playerUUID, String name, String timeString, int minutes, int seconds,
-			int milliseconds) 
-	{
-		config.set("location." + name + ".rankinglist.5.playername",
-				config.getString("location." + name + ".rankinglist.4.playername"));
-		config.set("location." + name + ".rankinglist.5.playeruuid",
-				config.getString("location." + name + ".rankinglist.4.playeruuid"));
-		config.set("location." + name + ".rankinglist.5.timestring",
-				config.getString("location." + name + ".rankinglist.4.timestring"));
-		config.set("location." + name + ".rankinglist.5.minutes",
-				config.getInt("location." + name + ".rankinglist.4.minutes"));
-		config.set("location." + name + ".rankinglist.5.seconds",
-				config.getInt("location." + name + ".rankinglist.4.seconds"));
-		config.set("location." + name + ".rankinglist.5.milliseconds",
-				config.getInt("location." + name + ".rankinglist.4.milliseconds"));
-
-		config.set("location." + name + ".rankinglist.4.playername",
-				config.getString("location." + name + ".rankinglist.3.playername"));
-		config.set("location." + name + ".rankinglist.4.playeruuid",
-				config.getString("location." + name + ".rankinglist.3.playeruuid"));
-		config.set("location." + name + ".rankinglist.4.timestring",
-				config.getString("location." + name + ".rankinglist.3.timestring"));
-		config.set("location." + name + ".rankinglist.4.minutes",
-				config.getInt("location." + name + ".rankinglist.3.minutes"));
-		config.set("location." + name + ".rankinglist.4.seconds",
-				config.getInt("location." + name + ".rankinglist.3.seconds"));
-		config.set("location." + name + ".rankinglist.4.milliseconds",
-				config.getInt("location." + name + ".rankinglist.3.milliseconds"));
-
-		config.set("location." + name + ".rankinglist.3.playername",
-				config.getString("location." + name + ".rankinglist.2.playername"));
-		config.set("location." + name + ".rankinglist.3.playeruuid",
-				config.getString("location." + name + ".rankinglist.2.playeruuid"));
-		config.set("location." + name + ".rankinglist.3.timestring",
-				config.getString("location." + name + ".rankinglist.2.timestring"));
-		config.set("location." + name + ".rankinglist.3.minutes",
-				config.getInt("location." + name + ".rankinglist.2.minutes"));
-		config.set("location." + name + ".rankinglist.3.seconds",
-				config.getInt("location." + name + ".rankinglist.2.seconds"));
-		config.set("location." + name + ".rankinglist.3.milliseconds",
-				config.getInt("location." + name + ".rankinglist.2.milliseconds"));
-
-		config.set("location." + name + ".rankinglist.2.playername",
-				config.getString("location." + name + ".rankinglist.1.playername"));
-		config.set("location." + name + ".rankinglist.2.playeruuid",
-				config.getString("location." + name + ".rankinglist.1.playeruuid"));
-		config.set("location." + name + ".rankinglist.2.timestring",
-				config.getString("location." + name + ".rankinglist.1.timestring"));
-		config.set("location." + name + ".rankinglist.2.minutes",
-				config.getInt("location." + name + ".rankinglist.1.minutes"));
-		config.set("location." + name + ".rankinglist.2.seconds",
-				config.getInt("location." + name + ".rankinglist.1.seconds"));
-		config.set("location." + name + ".rankinglist.2.milliseconds",
-				config.getInt("location." + name + ".rankinglist.1.milliseconds"));
-
-		config.set("location." + name + ".rankinglist.1.playername", player.getName());
-		config.set("location." + name + ".rankinglist.1.playeruuid", playerUUID);
-		config.set("location." + name + ".rankinglist.1.timestring", timeString);
-		config.set("location." + name + ".rankinglist.1.minutes", minutes);
-		config.set("location." + name + ".rankinglist.1.seconds", seconds);
-		config.set("location." + name + ".rankinglist.1.milliseconds", milliseconds);
-
-		saveConfig();
-	}
-
-	//-----------------------------------------------------------------------
-	/**
-	 * {@code insertRank2}: Inserts player data into the second place position of a location
-	 * and pushes older entries down.
-	 * 
-	 * <ul>
-	 * <li> Links to a method 'saveConfig' on this class:
-	 * 		{@link #saveConfig}.
-	 * </ul>
-	 * 
-	 * @param player  The player who sent the command
-	 * @param playerUUID  The player who sent the command's UUID
-	 * @param name  The name of the location
-	 * @param timeString  The time of the trial in string format
-	 * @param minutes  The amount of minutes of the trial
-	 * @param seconds  The amount of seconds of the trial
-	 * @param milliseconds  The amount of milliseconds of the trial
-	 */
-	public void insertRank2(Player player, String playerUUID, String name, String timeString, int minutes, int seconds,
-			int milliseconds) 
-	{
-		config.set("location." + name + ".rankinglist.5.playername",
-				config.getString("location." + name + ".rankinglist.4.playername"));
-		config.set("location." + name + ".rankinglist.5.playeruuid",
-				config.getString("location." + name + ".rankinglist.4.playeruuid"));
-		config.set("location." + name + ".rankinglist.5.timestring",
-				config.getString("location." + name + ".rankinglist.4.timestring"));
-		config.set("location." + name + ".rankinglist.5.minutes",
-				config.getInt("location." + name + ".rankinglist.4.minutes"));
-		config.set("location." + name + ".rankinglist.5.seconds",
-				config.getInt("location." + name + ".rankinglist.4.seconds"));
-		config.set("location." + name + ".rankinglist.5.milliseconds",
-				config.getInt("location." + name + ".rankinglist.4.milliseconds"));
-
-		config.set("location." + name + ".rankinglist.4.playername",
-				config.getString("location." + name + ".rankinglist.3.playername"));
-		config.set("location." + name + ".rankinglist.4.playeruuid",
-				config.getString("location." + name + ".rankinglist.3.playeruuid"));
-		config.set("location." + name + ".rankinglist.4.timestring",
-				config.getString("location." + name + ".rankinglist.3.timestring"));
-		config.set("location." + name + ".rankinglist.4.minutes",
-				config.getInt("location." + name + ".rankinglist.3.minutes"));
-		config.set("location." + name + ".rankinglist.4.seconds",
-				config.getInt("location." + name + ".rankinglist.3.seconds"));
-		config.set("location." + name + ".rankinglist.4.milliseconds",
-				config.getInt("location." + name + ".rankinglist.3.milliseconds"));
-
-		config.set("location." + name + ".rankinglist.3.playername",
-				config.getString("location." + name + ".rankinglist.2.playername"));
-		config.set("location." + name + ".rankinglist.3.playeruuid",
-				config.getString("location." + name + ".rankinglist.2.playeruuid"));
-		config.set("location." + name + ".rankinglist.3.timestring",
-				config.getString("location." + name + ".rankinglist.2.timestring"));
-		config.set("location." + name + ".rankinglist.3.minutes",
-				config.getInt("location." + name + ".rankinglist.2.minutes"));
-		config.set("location." + name + ".rankinglist.3.seconds",
-				config.getInt("location." + name + ".rankinglist.2.seconds"));
-		config.set("location." + name + ".rankinglist.3.milliseconds",
-				config.getInt("location." + name + ".rankinglist.2.milliseconds"));
-
-		config.set("location." + name + ".rankinglist.2.playername", player.getName());
-		config.set("location." + name + ".rankinglist.2.playeruuid", playerUUID);
-		config.set("location." + name + ".rankinglist.2.timestring", timeString);
-		config.set("location." + name + ".rankinglist.2.minutes", minutes);
-		config.set("location." + name + ".rankinglist.2.seconds", seconds);
-		config.set("location." + name + ".rankinglist.2.milliseconds", milliseconds);
-
-		saveConfig();
-	}
-
-	//-----------------------------------------------------------------------
-	/**
-	 * {@code insertRank3}: Inserts player data into the third place position of a location
-	 * and pushes older entries down.
-	 * 
-	 * <ul>
-	 * <li> Links to a method 'saveConfig' on this class:
-	 * 		{@link #saveConfig}.
-	 * </ul>
-	 * 
-	 * @param player  The player who sent the command
-	 * @param playerUUID  The player who sent the command's UUID
-	 * @param name  The name of the location
-	 * @param timeString  The time of the trial in string format
-	 * @param minutes  The amount of minutes of the trial
-	 * @param seconds  The amount of seconds of the trial
-	 * @param milliseconds  The amount of milliseconds of the trial
-	 */
-	public void insertRank3(Player player, String playerUUID, String name, String timeString, int minutes, int seconds,
-			int milliseconds) 
-	{
-		config.set("location." + name + ".rankinglist.5.playername",
-				config.getString("location." + name + ".rankinglist.4.playername"));
-		config.set("location." + name + ".rankinglist.5.playeruuid",
-				config.getString("location." + name + ".rankinglist.4.playeruuid"));
-		config.set("location." + name + ".rankinglist.5.timestring",
-				config.getString("location." + name + ".rankinglist.4.timestring"));
-		config.set("location." + name + ".rankinglist.5.minutes",
-				config.getInt("location." + name + ".rankinglist.4.minutes"));
-		config.set("location." + name + ".rankinglist.5.seconds",
-				config.getInt("location." + name + ".rankinglist.4.seconds"));
-		config.set("location." + name + ".rankinglist.5.milliseconds",
-				config.getInt("location." + name + ".rankinglist.4.milliseconds"));
-
-		config.set("location." + name + ".rankinglist.4.playername",
-				config.getString("location." + name + ".rankinglist.3.playername"));
-		config.set("location." + name + ".rankinglist.4.playeruuid",
-				config.getString("location." + name + ".rankinglist.3.playeruuid"));
-		config.set("location." + name + ".rankinglist.4.timestring",
-				config.getString("location." + name + ".rankinglist.3.timestring"));
-		config.set("location." + name + ".rankinglist.4.minutes",
-				config.getInt("location." + name + ".rankinglist.3.minutes"));
-		config.set("location." + name + ".rankinglist.4.seconds",
-				config.getInt("location." + name + ".rankinglist.3.seconds"));
-		config.set("location." + name + ".rankinglist.4.milliseconds",
-				config.getInt("location." + name + ".rankinglist.3.milliseconds"));
-
-		config.set("location." + name + ".rankinglist.3.playername", player.getName());
-		config.set("location." + name + ".rankinglist.3.playeruuid", playerUUID);
-		config.set("location." + name + ".rankinglist.3.timestring", timeString);
-		config.set("location." + name + ".rankinglist.3.minutes", minutes);
-		config.set("location." + name + ".rankinglist.3.seconds", seconds);
-		config.set("location." + name + ".rankinglist.3.milliseconds", milliseconds);
-
-		saveConfig();
-	}
-
-	//-----------------------------------------------------------------------
-	/**
-	 * {@code insertRank4}: Inserts player data into the fourth place position of a location
-	 * and pushes older entries down.
-	 * 
-	 * <ul>
-	 * <li> Links to a method 'saveConfig' on this class:
-	 * 		{@link #saveConfig}.
-	 * </ul>
-	 * 
-	 * @param player  The player who sent the command
-	 * @param playerUUID  The player who sent the command's UUID
-	 * @param name  The name of the location
-	 * @param timeString  The time of the trial in string format
-	 * @param minutes  The amount of minutes of the trial
-	 * @param seconds  The amount of seconds of the trial
-	 * @param milliseconds  The amount of milliseconds of the trial
-	 */
-	public void insertRank4(Player player, String playerUUID, String name, String timeString, int minutes, int seconds,
-			int milliseconds) 
-	{
-		config.set("location." + name + ".rankinglist.5.playername",
-				config.getString("location." + name + ".rankinglist.4.playername"));
-		config.set("location." + name + ".rankinglist.5.playeruuid",
-				config.getString("location." + name + ".rankinglist.4.playeruuid"));
-		config.set("location." + name + ".rankinglist.5.timestring",
-				config.getString("location." + name + ".rankinglist.4.timestring"));
-		config.set("location." + name + ".rankinglist.5.minutes",
-				config.getInt("location." + name + ".rankinglist.4.minutes"));
-		config.set("location." + name + ".rankinglist.5.seconds",
-				config.getInt("location." + name + ".rankinglist.4.seconds"));
-		config.set("location." + name + ".rankinglist.5.milliseconds",
-				config.getInt("location." + name + ".rankinglist.4.milliseconds"));
-
-		config.set("location." + name + ".rankinglist.4.playername", player.getName());
-		config.set("location." + name + ".rankinglist.4.playeruuid", playerUUID);
-		config.set("location." + name + ".rankinglist.4.timestring", timeString);
-		config.set("location." + name + ".rankinglist.4.minutes", minutes);
-		config.set("location." + name + ".rankinglist.4.seconds", seconds);
-		config.set("location." + name + ".rankinglist.4.milliseconds", milliseconds);
-
-		saveConfig();
-	}
-
-	//-----------------------------------------------------------------------
-	/**
-	 * {@code insertRank5}: Inserts player data into the fifth place position of a location.
-	 * 
-	 * <ul>
-	 * <li> Links to a method 'saveConfig' on this class:
-	 * 		{@link #saveConfig}.
-	 * </ul>
-	 * 
-	 * @param player  The player who sent the command
-	 * @param playerUUID  The player who sent the command's UUID
-	 * @param name  The name of the location
-	 * @param timeString  The time of the trial in string format
-	 * @param minutes  The amount of minutes of the trial
-	 * @param seconds  The amount of seconds of the trial
-	 * @param milliseconds  The amount of milliseconds of the trial
-	 */
-	public void insertRank5(Player player, String playerUUID, String name, String timeString, int minutes, int seconds,
-			int milliseconds) 
-	{
-		config.set("location." + name + ".rankinglist.5.playername", player.getName());
-		config.set("location." + name + ".rankinglist.5.playeruuid", playerUUID);
-		config.set("location." + name + ".rankinglist.5.timestring", timeString);
-		config.set("location." + name + ".rankinglist.5.minutes", minutes);
-		config.set("location." + name + ".rankinglist.5.seconds", seconds);
-		config.set("location." + name + ".rankinglist.5.milliseconds", milliseconds);
-
-		saveConfig();
-	}
-
-	//-----------------------------------------------------------------------
-	/**
-	 * {@code getRankings}: Returns the rankings of a location
-	 * 
-	 * <ul>
-	 * <li> Links to a method 'checkLocation' on this class:
-	 * 		{@link #checkLocation}.
-	 * </ul>
+	 * Returns the rankings of a location.
 	 * 
 	 * @param player  The player who sent the command.
 	 * @param name  The name of the location.
 	 */
 	public void getRankings(Player player, String name) 
 	{
-		if (!this.checkLocation(name)) 
-			player.sendMessage(INVALID_LOCATION_ERROR);
+		if (!config.checkLocation(name)) 
+			player.sendMessage("§cThis location does not exist. Use §6/expugn locationlist §cfor a list of locations.");
 		else 
 		{
-			String rank1PlayerName = ChatColor.LIGHT_PURPLE
-					+ config.getString("location." + name + ".rankinglist.1" + ".playername");
-			String rank2PlayerName = ChatColor.LIGHT_PURPLE
-					+ config.getString("location." + name + ".rankinglist.2" + ".playername");
-			String rank3PlayerName = ChatColor.LIGHT_PURPLE
-					+ config.getString("location." + name + ".rankinglist.3" + ".playername");
-			String rank4PlayerName = ChatColor.LIGHT_PURPLE
-					+ config.getString("location." + name + ".rankinglist.4" + ".playername");
-			String rank5PlayerName = ChatColor.LIGHT_PURPLE
-					+ config.getString("location." + name + ".rankinglist.5" + ".playername");
+			String rank1PlayerName = "§d" + config.getString("location." + name + ".rankinglist.1" + ".playername");
+			String rank2PlayerName = "§d" + config.getString("location." + name + ".rankinglist.2" + ".playername");
+			String rank3PlayerName = "§d" + config.getString("location." + name + ".rankinglist.3" + ".playername");
+			String rank4PlayerName = "§d" + config.getString("location." + name + ".rankinglist.4" + ".playername");
+			String rank5PlayerName = "§d" + config.getString("location." + name + ".rankinglist.5" + ".playername");
 
-			String playerBestTimeString = ChatColor.GRAY
-					+ config.getString("location." + name + ".times." + player.getUniqueId() + ".timestring");
-			String rank1TimeString = ChatColor.GRAY
-					+ config.getString("location." + name + ".rankinglist.1" + ".timestring");
-			String rank2TimeString = ChatColor.GRAY
-					+ config.getString("location." + name + ".rankinglist.2" + ".timestring");
-			String rank3TimeString = ChatColor.GRAY
-					+ config.getString("location." + name + ".rankinglist.3" + ".timestring");
-			String rank4TimeString = ChatColor.GRAY
-					+ config.getString("location." + name + ".rankinglist.4" + ".timestring");
-			String rank5TimeString = ChatColor.GRAY
-					+ config.getString("location." + name + ".rankinglist.5" + ".timestring");
+			String playerBestTimeString = "§7" + config.getString("location." + name + ".times." + player.getUniqueId() + ".timestring");
+			String rank1TimeString = "§7" + config.getString("location." + name + ".rankinglist.1" + ".timestring");
+			String rank2TimeString = "§7" + config.getString("location." + name + ".rankinglist.2" + ".timestring");
+			String rank3TimeString = "§7" + config.getString("location." + name + ".rankinglist.3" + ".timestring");
+			String rank4TimeString = "§7" + config.getString("location." + name + ".rankinglist.4" + ".timestring");
+			String rank5TimeString = "§7" + config.getString("location." + name + ".rankinglist.5" + ".timestring");
 
-			player.sendMessage(ChatColor.GOLD + "Time trial rankings for " + ChatColor.DARK_PURPLE + name + "\n"
-					+ ChatColor.DARK_GRAY + "1) " + rank1PlayerName + ChatColor.DARK_GRAY + " - " + rank1TimeString
-					+ "\n" + ChatColor.DARK_GRAY + "2) " + rank2PlayerName + ChatColor.DARK_GRAY + " - "
-					+ rank2TimeString + "\n" + ChatColor.DARK_GRAY + "3) " + rank3PlayerName + ChatColor.DARK_GRAY
-					+ " - " + rank3TimeString + "\n" + ChatColor.DARK_GRAY + "4) " + rank4PlayerName
-					+ ChatColor.DARK_GRAY + " - " + rank4TimeString + "\n" + ChatColor.DARK_GRAY + "5) "
-					+ rank5PlayerName + ChatColor.DARK_GRAY + " - " + rank5TimeString + "\n" + ChatColor.GREEN
-					+ "Your personal best: " + ChatColor.DARK_GRAY + playerBestTimeString);
+			player.sendMessage("§6Time trial rankings for: §5" + name + "\n"
+					+ "§81) " + rank1PlayerName + " §8- " + rank1TimeString + "\n" 
+					+ "§82) " + rank2PlayerName + " §8- " + rank2TimeString + "\n" 
+					+ "§83) " + rank3PlayerName + " §8- " + rank3TimeString + "\n" 
+					+ "§84) " + rank4PlayerName + " §8- " + rank4TimeString + "\n" 
+					+ "§85) " + rank5PlayerName + " §8- " + rank5TimeString + "\n" 
+					+ "§aYour Personal Best: §8" + playerBestTimeString);
 		}
 	}
 
 	//-----------------------------------------------------------------------
 	/**
-	 * {@code resetTimes}: Erases all the time entries recorded in a location
+	 * Erases all the time entries recorded in a location.
 	 * 
-	 * <ul>
-	 * <li> Links to a method 'saveConfig' on this class:
-	 * 		{@link #saveConfig}.
-	 * </ul>
-	 * 
-	 * @param player  The player who sent the command
-	 * @param name  The name of the location
+	 * @param player  The player who sent the command.
+	 * @param name  The name of the location.
 	 */
 	public void resetTimes(Player player, String name) 
 	{
-		if (this.checkLocation(name)) 
+		if (config.checkLocation(name)) 
 		{
-			config.set("location." + name + ".times", null);
-			config.set("location." + name + ".times.key", null);
-			config.set("location." + name + ".rankinglist.1.playername", "null");
-			config.set("location." + name + ".rankinglist.1.playeruuid", "_");
-			config.set("location." + name + ".rankinglist.1.timestring", "99:99.999");
-			config.set("location." + name + ".rankinglist.1.minutes", 99);
-			config.set("location." + name + ".rankinglist.1.seconds", 99);
-			config.set("location." + name + ".rankinglist.1.milliseconds", 999);
-
-			config.set("location." + name + ".rankinglist.2.playername", "null");
-			config.set("location." + name + ".rankinglist.2.playeruuid", "_");
-			config.set("location." + name + ".rankinglist.2.timestring", "99:99.999");
-			config.set("location." + name + ".rankinglist.2.minutes", 99);
-			config.set("location." + name + ".rankinglist.2.seconds", 99);
-			config.set("location." + name + ".rankinglist.2.milliseconds", 999);
-
-			config.set("location." + name + ".rankinglist.3.playername", "null");
-			config.set("location." + name + ".rankinglist.3.playeruuid", "_");
-			config.set("location." + name + ".rankinglist.3.timestring", "99:99.999");
-			config.set("location." + name + ".rankinglist.3.minutes", 99);
-			config.set("location." + name + ".rankinglist.3.seconds", 99);
-			config.set("location." + name + ".rankinglist.3.milliseconds", 999);
-
-			config.set("location." + name + ".rankinglist.4.playername", "null");
-			config.set("location." + name + ".rankinglist.4.playeruuid", "_");
-			config.set("location." + name + ".rankinglist.4.timestring", "99:99.999");
-			config.set("location." + name + ".rankinglist.4.minutes", 99);
-			config.set("location." + name + ".rankinglist.4.seconds", 99);
-			config.set("location." + name + ".rankinglist.4.milliseconds", 999);
-
-			config.set("location." + name + ".rankinglist.5.playername", "null");
-			config.set("location." + name + ".rankinglist.5.playeruuid", "_");
-			config.set("location." + name + ".rankinglist.5.timestring", "99:99.999");
-			config.set("location." + name + ".rankinglist.5.minutes", 99);
-			config.set("location." + name + ".rankinglist.5.seconds", 99);
-			config.set("location." + name + ".rankinglist.5.milliseconds", 999);
-
-			saveConfig();
-
-			player.sendMessage(RESET_TIMES_MESSAGE);
+			config.resetRankings(name);
+			player.sendMessage("§6Times have been reset.");
 		} 
 		else 
-			player.sendMessage(INVALID_LOCATION_ERROR);
+			player.sendMessage("§cThis location does not exist. Use §6/expugn locationlist §cfor a list of locations.");
 	}
 
 	//-----------------------------------------------------------------------
 	/**
-	 * CheckFirstPlace - Checks all locations to see if the player has placed
-	 * first in any trial.
-	 * 
-	 * <ul>
-	 * <li> Links to a method 'getLocationList' on this class:
-	 * 		{@link #getLocationList}.
-	 * </ul>
-	 * 
-	 * @param playerUUID  The player who ran the command's UUID.
-	 * @return
-	 * 		<li> {@code true}  if the player has placed first in any location 
-	 * 		<li> {@code false}  if the player has not placed first.
-	 */
-	public boolean checkFirstPlaces(String playerUUID) 
-	{
-		for (String location : getLocationList()) 
-		{
-			if (config.getString("location." + location + ".rankinglist.1.playeruuid").equals(playerUUID))
-				return true;
-		}
-		return false;
-	}
-
-	//-----------------------------------------------------------------------
-	/**
-	 * {@code warpHallOfGlory}: Warps a player who placed first in a time trial to a
-	 * ExpugnExtras warp named HallOfGlory.
+	 * Warps a player who placed first in a time trial to a ExpugnExtras 
+	 * warp named 'HallOfGlory'.
 	 * 
 	 * @param player  The player who sent the command.
 	 */
 	public void warpHallOfGlory(Player player) 
 	{
 		String playerUUID = player.getUniqueId() + "";
-		if (checkFirstPlaces(playerUUID)) 
+		
+		if (config.checkFirstPlace(playerUUID)) 
 		{
-			World warpWorld = Bukkit.getWorld(warpConfig.getString("warps.HallOfGlory.world"));
-			double warpX = warpConfig.getDouble("warps.HallOfGlory.x");
-			double warpY = warpConfig.getDouble("warps.HallOfGlory.y");
-			double warpZ = warpConfig.getDouble("warps.HallOfGlory.z");
-			float warpYaw = (float) warpConfig.getDouble("warps.HallOfGlory.yaw");
-			float warpPitch = (float) warpConfig.getDouble("warps.HallOfGlory.pitch");
-			Location loc = new Location(warpWorld, warpX, warpY, warpZ, warpYaw, warpPitch);
+			Location loc = warp_config.getWarp_Location("HallOfGlory");
 			player.teleport(loc);
-			player.sendMessage(ENTER_HALL_OF_GLORY_MESSAGE);
+			player.sendMessage("§7Now entering the §6Hall of Glory §7.");
 		} 
 		else 
-			player.sendMessage(HALL_OF_GLORY_MESSAGE);
+			player.sendMessage("§7This is the §6Hall of Glory§7.\n" 
+					+ "§7Only players who have placed §cfirst §7in a time trial may enter.");
 	}
 	
-	//-----------------------------------------------------------------------
-	/**
-	 * {@code getLocationList}: Returns all list of all locations created.
-	 * 
-	 * @return  A set of all entries under 'location' in the config
-	 */
-	public Set<String> getLocationList()
-	{
-		return config.getConfigurationSection("location").getKeys(false);
-	}
 
-	//-----------------------------------------------------------------------
-	/**
-	 * Save Config: Saves the configuration file.
-	 */
-	public void saveConfig() 
-	{
-		try 
-		{
-			config.save(ymlFile);
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
-	}
 }

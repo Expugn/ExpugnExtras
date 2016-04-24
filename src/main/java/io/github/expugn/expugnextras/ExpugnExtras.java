@@ -1,10 +1,6 @@
 package io.github.expugn.expugnextras;
 
-import java.io.File;
-
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -81,18 +77,5 @@ public class ExpugnExtras extends JavaPlugin
 		
 		econ = rsp.getProvider();
 		return econ != null;
-	}
-	
-	//-----------------------------------------------------------------------
-	/**
-	 * Returns a read-only file data.
-	 * 
-	 * @param file  File name.
-	 * @return  File data from data folder.
-	 */
-	public FileConfiguration readConfig(String file)
-	{
-		File ymlFile = new File(getDataFolder() + "/" + file + ".yml");
-		return YamlConfiguration.loadConfiguration(ymlFile);
 	}
 }

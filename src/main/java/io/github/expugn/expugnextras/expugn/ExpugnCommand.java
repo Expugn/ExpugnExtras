@@ -161,7 +161,7 @@ public class ExpugnCommand implements CommandExecutor
 			}
 			if (subCommand.equalsIgnoreCase("checkcanwarp")) /* checkcanwarp */
 			{
-				if (isPlayerOp && args.length >= 2)
+				if (isPlayer && args.length >= 2)
 					warps.checkCanWarp(player, args[1]);
 				else
 					sender.sendMessage(COMMAND_FAILURE);
@@ -253,7 +253,7 @@ public class ExpugnCommand implements CommandExecutor
 			} 
 			if (subCommand.equalsIgnoreCase("getrankings")) /* getrankings */
 			{
-				if (isPlayerOp && args.length >= 2)
+				if (isPlayer && args.length >= 2)
 					trials.getRankings(player, args[1]);
 				else
 					sender.sendMessage(COMMAND_FAILURE);
@@ -787,9 +787,9 @@ public class ExpugnCommand implements CommandExecutor
 	 */
 	public void onExecute() 
 	{
-		new io.github.expugn.expugnextras.Configs.Warps(plugin).checkMidnight();
-		//trials.checkProgress();
-		//timers.cleanConfig();
+		new io.github.expugn.expugnextras.Configs.Warps(plugin);
+		new io.github.expugn.expugnextras.Configs.TimeTrial(plugin);
+		new io.github.expugn.expugnextras.Configs.Timers(plugin);
 	}
 
 }

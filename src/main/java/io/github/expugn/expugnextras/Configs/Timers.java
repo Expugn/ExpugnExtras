@@ -23,34 +23,79 @@ public class Timers extends ConfigurationFile
 	public Timers(ExpugnExtras plugin) 
 	{
 		super(plugin, "timers");
+		cleanConfig();
 	}
 
+	//-----------------------------------------------------------------------
+	/**
+	 * Creates a new dungeon instance in the configuration file.
+	 * 
+	 * @param dungeon_name  The name of the dungeon.
+	 * @param time  The time in milliseconds for the timer to end.
+	 */
 	public void createDungeon(String dungeon_name, long time)
 	{
 		set("dungeons." + dungeon_name + ".cooldown", time);
 		set("dungeons." + dungeon_name + ".players.key", null);
 	}
 	
+	//-----------------------------------------------------------------------
+	/**
+	 * Deletes a dungeon's data from the configuration file.
+	 * 
+	 * @param dungeon_name  The name of the dungeon.
+	 */
 	public void deleteDungeon(String dungeon_name)
 	{
 		set("dungeons." + dungeon_name, null);
 	}
 	
+	//-----------------------------------------------------------------------
+	/**
+	 * Changes the duration of the timer.
+	 * 
+	 * @param dungeon_name  The name of the dungeon.
+	 * @param time  The time in milliseconds for the timer to end.
+	 */
 	public void changeDungeonTime(String dungeon_name, long time)
 	{
 		set("dungeons." + dungeon_name + ".cooldown", time);
 	}
 	
+	//-----------------------------------------------------------------------
+	/**
+	 * Sets the amount of time before the timer will end.
+	 * 
+	 * @param dungeon_name  The name of the dungeon.
+	 * @param playerUUID  Player's UUID.
+	 * @param data  The long to be set.
+	 */
 	public void setPlayerTime(String dungeon_name, UUID playerUUID, Object data)
 	{
 		set("dungeons." + dungeon_name + ".players." + playerUUID, data);
 	}
 	
+	//-----------------------------------------------------------------------
+	/**
+	 * Returns the milliseconds the player's timer will end
+	 * 
+	 * @param dungeon_name  The name of the dungeon.
+	 * @param playerUUID  Player's UUID.
+	 * @return  long, 0L if empty.
+	 */
 	public long getPlayerTime(String dungeon_name, UUID playerUUID)
 	{
 		return getLong("dungeons." + dungeon_name + ".players." + playerUUID);
 	}
 	
+	//-----------------------------------------------------------------------
+	/**
+	 * Returns the specific amount of time a player has left until the timer ends in milliseconds.
+	 * 
+	 * @param dungeon_name  The name of the dungeon.
+	 * @param playerUUID  Player's UUID.
+	 * @return  long, 0L if empty.
+	 */
 	public long getPlayerTimeLeft(String dungeon_name, UUID playerUUID)
 	{
 		return getPlayerTime(dungeon_name, playerUUID) - System.currentTimeMillis();

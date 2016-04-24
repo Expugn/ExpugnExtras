@@ -30,6 +30,7 @@ public class Warps extends ConfigurationFile
 	public Warps(ExpugnExtras plugin) 
 	{
 		super(plugin, "warps");
+		checkMidnight();
 	}
 	
 	//-----------------------------------------------------------------------

@@ -7,7 +7,7 @@ import io.github.expugn.expugnextras.ExpugnExtras;
 /**
  * <b>'DungeonTimers' Function</b>
  * 
- * @version 1.3
+ * @version 1.2.1
  * @author Expugn <i>(https://github.com/Expugn)</i>
  */
 public class DungeonTimers 
