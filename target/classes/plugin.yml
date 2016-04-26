@@ -1,5 +1,5 @@
 name: ExpugnExtras
-version: 4.0
+version: 4.0.1
 description: 'A plugin with miscellaneous features.'
 
 author: Expugn
@@ -17,3 +17,6 @@ commands:
   marriage:
     description: Alias for Marriage.
     usage: '/marriage [parameter]'
+  titles:
+    description: Link from /expugn listtitles.
+    usage: '/titles <page #>'

@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import io.github.expugn.expugnextras.Marriage.MarriageCommand;
 import io.github.expugn.expugnextras.Marriage.PlayerInteractListener;
 import io.github.expugn.expugnextras.expugn.ExpugnCommand;
+import io.github.expugn.expugnextras.expugn.ListTitles.ListTitles;
 import net.milkbowl.vault.economy.Economy;
 
 /**
@@ -45,14 +46,20 @@ public class ExpugnExtras extends JavaPlugin
 	private void setupCommands()
 	{
 		if (expugnEnabled)
+		{
 			getCommand("expugn").setExecutor(new ExpugnCommand(this));
+			getCommand("titles").setExecutor(new ListTitles(this));
+		}
 		else
 			getCommand("expugn").setExecutor(new DisabledCommand());
 
 		if (marriageEnabled)
 		{
 			if (!setupEconomy()) 
+			{
 				getLogger().info("'/marriage' command failed to be enabled.");
+				getCommand("marriage").setExecutor(new DisabledCommand());
+			}
 			else 
 			{
 				getCommand("marriage").setExecutor(new MarriageCommand(this));

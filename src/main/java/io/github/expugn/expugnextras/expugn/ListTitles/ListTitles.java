@@ -9,6 +9,9 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -32,7 +35,7 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
  * @version 2.1.1
  * @author Expugn  <i>(https://github.com/Expugn)</i>
  */
-public class ListTitles 
+public class ListTitles implements CommandExecutor
 {
 	/* Private variables */
 	private static HashMap<String, String> titles = new HashMap<String, String>();
@@ -53,6 +56,24 @@ public class ListTitles
 			plugin.getLogger().info("Dependencies are missing. ListTitles will not work.");
 			enabled = false;
 		}
+	}
+	
+	//-----------------------------------------------------------------------
+	/**
+	 * Calls getTitles.
+	 */
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) 
+	{
+		if (sender instanceof Player)
+		{
+			Player player = (Player) sender;
+			getTitles(player, args);
+		}
+		else
+		{
+			sender.sendMessage("§cOnly players can use this command. Sorry!");
+		}
+		return true;
 	}
 
 	//-----------------------------------------------------------------------
@@ -120,24 +141,24 @@ public class ListTitles
 		{
 			new FancyMessage("§d[Next Page ->]")
 					.tooltip("§7Click to go forward one page.")
-					.command("/expugnfree listtitles " + (page + 1)).send(player);
+					.command("/expugn listtitles " + (page + 1)).send(player);
 		} 
 		else if (page < maxPages && 1 != maxPages) 
 		{
 			new FancyMessage("§d[<- Previous Page]")
 					.tooltip("§7Click to go back one page.")
-					.command("/expugnfree listtitles " + (page - 1))
+					.command("/expugn listtitles " + (page - 1))
 					.then("       ")
 					.then("§d[Next Page ->]")
 					.tooltip("§7Click to go forward one page.")
-					.command("/expugnfree listtitles " + (page + 1))
+					.command("/expugn listtitles " + (page + 1))
 					.send(player);
 		} 
 		else if (page <= maxPages && 1 != maxPages) 
 		{
 			new FancyMessage("§d[<- Previous Page]")
 					.tooltip("§7Click to go back one page.")
-					.command("/expugnfree listtitles " + (page - 1)).send(player);
+					.command("/expugn listtitles " + (page - 1)).send(player);
 		}
 		player.sendMessage("§eUse §6/title <titlename> §eto change your title. Ex: §6/title member\n" 
 				+ "§eYou may also click the title to apply it.");

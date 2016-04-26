@@ -539,7 +539,8 @@ public class ExpugnCommand implements CommandExecutor
 		FancyMessage misc = new FancyMessage("§2Miscellaneous Commands:\n")
 				.then("§6/expugn §7listtitles\n")
 				.tooltip("§d/expugn listtitles §5<Page_Number>\n"
-						+ "§7Lists every title you own in a fancy format.")
+						+ "§7Lists every title you own in a fancy format."
+						+ "§7Alternatively, you can use §d/titles§7.")
 				.suggest("/expugn listtitles")
 				.then("§6/expugn §7name\n")
 				.tooltip("§d/expugn name §5[PlayerName]\n"
@@ -629,6 +630,11 @@ public class ExpugnCommand implements CommandExecutor
 				.then("§6/expugn §7name\n")
 					.tooltip("§d/expugn name §5[PlayerName]\n"
 						+ "§7Compliment someone.")
+					.suggest("/expugn name")
+					.then("§6/expugn §7listtitles\n")
+					.tooltip("§d/expugn listtitles §5<Page #>\n"
+						+ "§7Lists all your titles in a fancy manner. "
+						+ "§7Alternatively, you can use §d/titles§7.")
 					.suggest("/expugn name")
 				.then("§6/expugn §7rpc")
 					.tooltip("§d/expugn rpc\n"
