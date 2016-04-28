@@ -72,15 +72,24 @@ The following are features and the commands associated to them to the plugin.
     - Two players can start a relationship and get benefits as they advance in their relationship.
     - Players can see how long they have been together
 
-####/expugnfree [args]
+####~~/expugnfree [args]~~
+  * /expugn name [playername]
+    - Give someone a compliment!
+    - Using /expugn name [playername] will generate a random phrase that a player will say if they click on the [Click Me.]
+    - Words are stored in extras.yml (See resources for a default configuration file)
+    - "[playername] is a [adverb] [adjective] [noun]"
+  * Rock, Paper, Scissors
+    - Simple Rock, Paper, Scissors game.
   * Removed as of v4.0
  
-####/gollem [args]
+####~~/gollem [args]~~
+  * Personal project, please ignore.
   * Removed as of v4.0
  
-####/expugnconsole [args]
+####~~/expugnconsole [args]~~
+  * A command that only the console can run.
   * Removed as of v4.0
 
 ### Permissions
-  * expugnextras.admin | Permission to use '/expugn', '/expugnconsole', '/gollem'
+  * expugnextras.admin | Permission to use '/expugn', ~~'/expugnconsole'~~, ~~'/gollem'~~
   * marriage.admin | Permission to use '/marriage dev'
