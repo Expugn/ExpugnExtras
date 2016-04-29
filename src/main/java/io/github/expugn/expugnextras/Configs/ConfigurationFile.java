@@ -224,6 +224,8 @@ public class ConfigurationFile
 			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
 			config.setDefaults(defConfig);
 		}
+		
+		saveConfig();
 	}
 	
 	//-----------------------------------------------------------------------

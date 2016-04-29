@@ -50,7 +50,7 @@ public class ListTitles implements CommandExecutor
 	 */
 	public ListTitles(ExpugnExtras plugin) 
 	{
-		if (plugin.getServer().getPluginManager().getPlugin("TitleManager") == null
+		if (plugin.getServer().getPluginManager().getPlugin("Titles") == null
 				&& plugin.getServer().getPluginManager().getPlugin("PermissionsEx") == null) 
 		{
 			plugin.getLogger().info("Dependencies are missing. ListTitles will not work.");
@@ -172,7 +172,7 @@ public class ListTitles implements CommandExecutor
 	{
 		try 
 		{
-			titleFile.load("plugins/TitleManager/config.yml");
+			titleFile.load("plugins/Titles/config.yml");
 		} 
 		catch (Exception e) 
 		{

@@ -3,7 +3,6 @@ package io.github.expugn.expugnextras.expugn;
 import java.util.List;
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -353,16 +352,7 @@ public class ExpugnCommand implements CommandExecutor
 			{
 				if (isPlayer && args.length >= 2)
 				{
-					Player[] onlinePlayers = Bukkit.getOnlinePlayers();
-					for (Player currentPlayer : onlinePlayers) 
-					{
-						if (currentPlayer.getName().equals(args[1]) || args[1].equals("Expugn"))
-						{
-							defaultMessage(args[1]).send(player);
-							return true;
-						}
-					}
-					player.sendMessage("§cThis player is not online on the server.");
+					defaultMessage(args[1]).send(player);
 				}
 				else
 					sender.sendMessage(COMMAND_FAILURE);
@@ -785,6 +775,7 @@ public class ExpugnCommand implements CommandExecutor
 		new io.github.expugn.expugnextras.Configs.TimeTrial(plugin).reloadConfig();
 		new io.github.expugn.expugnextras.Configs.Marriage(plugin).reloadConfig();
 		new io.github.expugn.expugnextras.Configs.ItemDrop(plugin).reloadConfig();
+		
 		
 		sender.sendMessage("§aAll configuration files reloaded.");
 	}
