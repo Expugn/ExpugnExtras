@@ -1,8 +1,10 @@
 package io.github.expugn.expugnextras.expugn;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -350,9 +352,18 @@ public class ExpugnCommand implements CommandExecutor
 			}
 			if (subCommand.equalsIgnoreCase("name")) /* name */
 			{
+				Bukkit.getServer().getOnlinePlayers();
 				if (isPlayer && args.length >= 2)
 				{
-					defaultMessage(args[1]).send(player);
+					Collection<? extends Player> onlinePlayers = Bukkit.getServer().getOnlinePlayers();
+					for (Player currentPlayer : onlinePlayers)
+					{
+						if (currentPlayer.getName().equals(args[1]) || args[1].equals("Expugn"))
+						{
+							defaultMessage(args[1]).send(player);
+							return true;
+						}
+					}
 				}
 				else
 					sender.sendMessage(COMMAND_FAILURE);
@@ -655,7 +666,7 @@ public class ExpugnCommand implements CommandExecutor
 				.then(" | ")
 				.then(getRandomColor() + "[Generate another?]")
 				.tooltip("Want another message?")
-				.command("/expugnfree name " + name);
+				.command("/expugn name " + name);
 	}
 		
 	//-----------------------------------------------------------------------
@@ -759,6 +770,7 @@ public class ExpugnCommand implements CommandExecutor
 			else if (rpc == 2)
 				player.sendMessage("§cScissors§7!... Looks like it's a tie.");
 		}
+		player.sendMessage("§f==============================");
 		rockPaperScissors(player);
 	}
 	

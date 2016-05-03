@@ -10,9 +10,9 @@ import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.inventivetalent.particle.ParticleEffect;
 
 import io.github.expugn.expugnextras.ExpugnExtras;
-import io.github.expugn.expugnextras.imports.ParticleEffect.ParticleEffect;
 
 /**
  * <b>'ItemDrop' Runnable</b>
@@ -56,7 +56,7 @@ public class ItemDropRunnable extends BukkitRunnable
 	public void run()
 	{
 		if (counter > 0)
-		{
+		{	
 			Random r = new Random();
 			int itemNum = r.nextInt(itemSet.size());
 			Item item = world.dropItem(loc, itemSet.get(itemNum));
@@ -67,9 +67,9 @@ public class ItemDropRunnable extends BukkitRunnable
 											? r.nextDouble() * 0.5 : -r.nextDouble() * 0.5);
 			item.setVelocity(velocity);
 			
-			ParticleEffect.CLOUD.display(0.0F, 0.0F, 0.0F, 0.1F, 25, loc, 40.0D);
-			ParticleEffect.SPELL_MOB.display(0.0F, 0.0F, 0.0F, 0.3F, 50, loc, 40.0D);
-			world.playSound(loc, Sound.FIREWORK_LAUNCH, 0.5F, 0.5F);
+			ParticleEffect.CLOUD.send(world.getPlayers(), loc, 0, 0, 0, 0.05, 25);
+			ParticleEffect.SPELL_MOB.send(world.getPlayers(), loc, 0, 0, 0, 0.05, 50);
+			world.playSound(loc, Sound.ENTITY_FIREWORK_LAUNCH, 0.5F, 0.5F);
 			
 			counter--;
 		}

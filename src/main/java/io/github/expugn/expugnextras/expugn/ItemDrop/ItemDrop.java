@@ -98,10 +98,10 @@ public class ItemDrop
 		
 		if(config.checkItemSet(itemSetName))
 		{
-			ItemStack item = player.getItemInHand().clone();
+			ItemStack item = player.getInventory().getItemInMainHand().clone();
 			
 			if (item == null || item.getType() == Material.AIR)
-				player.sendMessage("§cYour hand is empty.");
+				player.sendMessage("§cYour main hand is empty.");
 			else
 			{
 				player.sendMessage("§aAdding Item §6" + item.getType() + "§a to ItemSet: §6" + itemSetName);

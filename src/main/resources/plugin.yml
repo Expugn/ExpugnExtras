@@ -7,7 +7,7 @@ website: https://github.com/Expugn/ExpugnExtras
 
 main: io.github.expugn.expugnextras.ExpugnExtras
 database: false
-depend: [Titles, PermissionsEx]
+depend: [Titles, PermissionsEx, ParticleAPI]
 softdepend: [VariableTriggers, Vault]
 
 commands:

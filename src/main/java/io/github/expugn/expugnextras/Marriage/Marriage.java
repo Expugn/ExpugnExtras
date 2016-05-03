@@ -1968,9 +1968,10 @@ public class Marriage
 	 * 		<li>{@code true}  if the player is online</li>
 	 * 		<li>{@code false}  if the player is offline</li>
 	 */
+	@Deprecated
 	public boolean checkPlayerOnline(String playerName) 
 	{
-		Player[] onlinePlayers = Bukkit.getOnlinePlayers();
+		//Player[] onlinePlayers = Bukkit.getOnlinePlayers();
 
 		for (Player currentPlayer : onlinePlayers) 
 		{
@@ -1990,6 +1991,7 @@ public class Marriage
 	 * 		<li>{@code Player}  if the player is online</li>
 	 * 		<li>{@code null}  if the player is offline</li>
 	 */
+	@Deprecated
 	public Player getPlayer(String playerName) 
 	{
 		Player[] onlinePlayers = Bukkit.getOnlinePlayers();
