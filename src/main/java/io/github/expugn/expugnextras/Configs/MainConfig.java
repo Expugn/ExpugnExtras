@@ -15,7 +15,6 @@ public class MainConfig extends ConfigurationFile
 	 * Constructor for the MainConfig class.
 	 * 
 	 * @param plugin  Main Class: {@link ExpugnExtras}
-	 * @param configName  The name of the configuration file to be loaded.
 	 */
 	public MainConfig(ExpugnExtras plugin)
 	{

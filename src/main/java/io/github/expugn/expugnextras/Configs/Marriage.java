@@ -15,7 +15,6 @@ public class Marriage extends ConfigurationFile
 	 * Constructor for the Marriage class.
 	 * 
 	 * @param plugin  Main Class: {@link ExpugnExtras}
-	 * @param configName  The name of the configuration file to be loaded.
 	 */
 	public Marriage(ExpugnExtras plugin) 
 	{

@@ -307,7 +307,7 @@ public class ItemDrop
 			return;
 		
 		@SuppressWarnings("unused")
-		BukkitTask task = new ItemDropRunnable(plugin, count, world, loc, config.getItemList(itemSetName)).runTaskTimer(plugin, 5, 10);
+		BukkitTask task = new ItemDropRunnable(plugin, count, world, loc, config.getItemList(itemSetName)).runTaskTimer(plugin, 5, 10);	
 	}
 	
 	//-----------------------------------------------------------------------

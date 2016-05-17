@@ -27,6 +27,7 @@ public class ExpugnCommand implements CommandExecutor
 	private final io.github.expugn.expugnextras.expugn.TimeTrial.TimeTrial trials;
 	private final io.github.expugn.expugnextras.expugn.ListTitles.ListTitles listtitles;
 	private final io.github.expugn.expugnextras.expugn.ItemDrop.ItemDrop itemdrop;
+	private final io.github.expugn.expugnextras.expugn.Cash.Cash cash;
 	
 	/* Configuration Files */
 	private final io.github.expugn.expugnextras.Configs.Extras extras_config;
@@ -46,6 +47,7 @@ public class ExpugnCommand implements CommandExecutor
 		trials = new io.github.expugn.expugnextras.expugn.TimeTrial.TimeTrial(plugin);
 		listtitles = new io.github.expugn.expugnextras.expugn.ListTitles.ListTitles(plugin);
 		itemdrop = new io.github.expugn.expugnextras.expugn.ItemDrop.ItemDrop(plugin);
+		cash = new io.github.expugn.expugnextras.expugn.Cash.Cash(plugin);
 		
 		extras_config = new io.github.expugn.expugnextras.Configs.Extras(plugin);
 		
@@ -379,6 +381,47 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
+			if (subCommand.equalsIgnoreCase("joke")) /* rpc */
+			{
+				if (isPlayer && args.length >= 1)
+					joke(player, args);
+				else
+					sender.sendMessage(COMMAND_FAILURE);
+				return true;
+			}
+			if (subCommand.equalsIgnoreCase("cash")) /* cash */
+			{
+				if (isPlayer && args.length == 1)
+					cash.mainMenu(player);
+				else if (isPlayer && args.length >= 2)
+				{
+					if (args[1].equalsIgnoreCase("buy")) /* cash buy */
+						cash.buy(player, args);
+					if (args[1].equalsIgnoreCase("sell")) /* cash sell */
+						cash.sell(player, args);
+					//if (args[1].equalsIgnoreCase("shop")) /* cash shop */
+					//	cash.itemShop(player, args);
+					if (args[1].equalsIgnoreCase("list")) /* cash list */
+						cash.list(player, args);
+					if (args[1].equalsIgnoreCase("info")) /* cash info */
+						cash.info(player, args);
+					if (args[1].equalsIgnoreCase("help")) /* cash help */
+						cash.help(player, args);
+					if (isPlayerOp && args[1].equalsIgnoreCase("additem")) /* cash additem */
+						cash.addItem(player, args);
+					if (isPlayerOp && args[1].equalsIgnoreCase("removeitem")) /* cash removeitem */
+						return true;
+					if (isPlayerOp && args[1].equalsIgnoreCase("forceupdate")) /* cash forceupdate */
+						return true;
+					if (isPlayerOp && args[1].equalsIgnoreCase("addcash")) /* cash addcash */
+						return true;
+					if (isPlayerOp && args[1].equalsIgnoreCase("removecash")) /* cash removecash */
+						return true;
+				}
+				else
+					sender.sendMessage(COMMAND_FAILURE);
+				return true;
+			}
 			// End of Commands -----------------------------------------------------------------------
 			sender.sendMessage(INVALID_COMMAND);
 		}
@@ -547,10 +590,18 @@ public class ExpugnCommand implements CommandExecutor
 				.tooltip("§d/expugn name §5[PlayerName]\n"
 						+ "§7Compliment someone.")
 				.suggest("/expugn name")
-				.then("§6/expugn §7rpc")
+				.then("§6/expugn §7rpc\n")
 				.tooltip("§d/expugn rpc\n"
 						+ "§7Fancy a game of Rock, Paper, Scissors?")
-				.suggest("/expugn rpc");
+				.suggest("/expugn rpc")
+				.then("§6/expugn §7joke\n")
+				.tooltip("§d/expugn joke\n"
+						+ "§7Want to hear some hilarious jokes?")
+				.suggest("/expugn joke")
+				.then("§6/expugn §7cash")
+				.tooltip("§d/expugn cash\n"
+						+ "§7A marketing simulator.")
+				.suggest("/expugn cash");
 
 		if (args.length == 1)
 		{
@@ -637,10 +688,18 @@ public class ExpugnCommand implements CommandExecutor
 						+ "§7Lists all your titles in a fancy manner. "
 						+ "§7Alternatively, you can use §d/titles§7.")
 					.suggest("/expugn name")
-				.then("§6/expugn §7rpc")
+				.then("§6/expugn §7rpc\n")
 					.tooltip("§d/expugn rpc\n"
 						+ "§7Fancy a game of Rock, Paper, Scissors?")
 					.suggest("/expugn rpc")
+				.then("§6/expugn §7joke")
+					.tooltip("§d/expugn joke\n"
+						+ "§7Want to hear some hilarious jokes?")
+					.suggest("/expugn joke")
+				.then("§6/expugn §7cash")
+					.tooltip("§d/expugn cash\n"
+						+ "§7A marketing simulator")
+					.suggest("/expugn cash")
 				.send(sender);
 		}
 	}
@@ -774,6 +833,36 @@ public class ExpugnCommand implements CommandExecutor
 		rockPaperScissors(player);
 	}
 	
+	public void joke(Player player, String[] args)
+	{
+		if (args.length > 1)
+			if (args[1].equals("isTrash"))
+			{
+				new FancyMessage("§7I know.\n")
+					.then("§7Jokes Source: §f§oJokes for Minecrafters: Booby Traps, Bombs, §oBoo-Boos, and More\n")
+					.then("§r§6[Amazon.com Link]")
+						.tooltip("Click me to visit the book's Amazon page.")
+						.link("http://www.amazon.com/Jokes-Minecrafters-Booby-Traps-Boo-Boos/dp/151070633X/ref=pd_bxgy_14_img_2?ie=UTF8&refRID=1M22X8S4P2TPMZ3V30Y9")
+					.send(player);
+				return;
+			}
+		Random randomNum = new Random();
+		List<String> jokes = extras_config.getStringList("words.jokes");
+		int index = randomNum.nextInt(jokes.size());
+		
+		new FancyMessage("§6Joke #§c" + (index + 1) + "§6 out of §c" + jokes.size() + "§6:\n")
+			.then(jokes.get(index) + "\n")
+			.then("§7§oThey were destroyed!\n")
+			.then("§2[HaHaHa! Hilarious! Give me another!]\n")
+				.tooltip("§2Click me.")
+				.command("/expugn joke")
+			.then("§c[What the heck, man. That joke was garbage.]")
+				.tooltip("§cClick me.")
+				.command("/expugn joke isTrash")
+			.send(player);
+			
+	}
+	
 	//-----------------------------------------------------------------------
 	/**
 	 * Reloads all configuration files.
@@ -801,6 +890,7 @@ public class ExpugnCommand implements CommandExecutor
 		new io.github.expugn.expugnextras.Configs.Warps(plugin);
 		new io.github.expugn.expugnextras.Configs.TimeTrial(plugin);
 		new io.github.expugn.expugnextras.Configs.Timers(plugin);
+		new io.github.expugn.expugnextras.Configs.Cash(plugin);
 	}
 
 }

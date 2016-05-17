@@ -26,6 +26,7 @@ public class ItemDropRunnable extends BukkitRunnable
 	private World world;
 	private Location loc;
 	private List<ItemStack> itemSet;
+	//private List<Item> spawnedItems;
 	
 	/**
 	 * Constructor for the ItemDropRunnable class.
@@ -66,11 +67,19 @@ public class ItemDropRunnable extends BukkitRunnable
 										, r.nextInt() % 2 == 0 
 											? r.nextDouble() * 0.5 : -r.nextDouble() * 0.5);
 			item.setVelocity(velocity);
+			item.setPickupDelay(50);
 			
 			ParticleEffect.CLOUD.send(world.getPlayers(), loc, 0, 0, 0, 0.05, 25);
 			ParticleEffect.SPELL_MOB.send(world.getPlayers(), loc, 0, 0, 0, 0.05, 50);
 			world.playSound(loc, Sound.ENTITY_FIREWORK_LAUNCH, 0.5F, 0.5F);
 			
+			//spawnedItems.add(item);
+			//for(Item itemData : spawnedItems)
+			//{
+			//	Location itemLoc = itemData.getLocation();
+			//	ParticleEffect.CRIT.send(world.getPlayers(), itemLoc, 1, 1, 1, 0F, 6);
+			//}
+
 			counter--;
 		}
 		else

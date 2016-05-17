@@ -32,7 +32,7 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
  * <li> @<b>gomeow</b>  (Wrote the base {@code paginate} method: {@link #paginate})
  * </ul>
  * 
- * @version 2.1.1
+ * @version 2.1.2
  * @author Expugn  <i>(https://github.com/Expugn)</i>
  */
 public class ListTitles implements CommandExecutor
@@ -50,8 +50,10 @@ public class ListTitles implements CommandExecutor
 	 */
 	public ListTitles(ExpugnExtras plugin) 
 	{
-		if (plugin.getServer().getPluginManager().getPlugin("Titles") == null
-				&& plugin.getServer().getPluginManager().getPlugin("PermissionsEx") == null) 
+		boolean titlePlugin = plugin.getServer().getPluginManager().getPlugin("Titles") == null ? true : false;
+		boolean permissionsEx = plugin.getServer().getPluginManager().getPlugin("PermissionsEx") == null ? true : false;
+		
+		if (titlePlugin && permissionsEx) 
 		{
 			plugin.getLogger().info("Dependencies are missing. ListTitles will not work.");
 			enabled = false;
@@ -70,9 +72,7 @@ public class ListTitles implements CommandExecutor
 			getTitles(player, args);
 		}
 		else
-		{
 			sender.sendMessage("§cOnly players can use this command. Sorry!");
-		}
 		return true;
 	}
 
@@ -92,9 +92,7 @@ public class ListTitles implements CommandExecutor
 		}
 
 		if (args.length > 2) 
-		{
 			player.sendMessage("§cInvalid parameters. §6/title [page #]");
-		}
 		int page = 1;
 		if (args.length > 0) 
 		{

@@ -1,5 +1,7 @@
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/Configs/MainConfig.java
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/Configs/Timers.java
+/Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/expugn/Cash/ShopItem.java
+/Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/Configs/Cash.java
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/expugn/Timers/DungeonTimers.java
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/DisabledCommand.java
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/ExpugnExtras.java
@@ -25,4 +27,5 @@
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/Configs/ItemDrop.java
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/imports/Fanciful/JsonString.java
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/imports/Fanciful/FancyMessage.java
+/Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/expugn/Cash/Cash.java
 /Users/calvinye/Documents/Eclipse Projects/ExpugnExtras/src/main/java/io/github/expugn/expugnextras/expugn/ItemDrop/ItemDropRunnable.java

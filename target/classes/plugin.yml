@@ -1,5 +1,5 @@
 name: ExpugnExtras
-version: 4.0.3.1
+version: 4.1
 description: 'A plugin with miscellaneous features.'
 
 author: Expugn
@@ -7,7 +7,7 @@ website: https://github.com/Expugn/ExpugnExtras
 
 main: io.github.expugn.expugnextras.ExpugnExtras
 database: false
-depend: [Titles, PermissionsEx, ParticleAPI]
+depend: [Titles, PermissionsEx]
 softdepend: [VariableTriggers, Vault]
 
 commands:
