@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import io.github.expugn.expugnextras.ExpugnExtras;
-import io.github.expugn.expugnextras.imports.Fanciful.FancyMessage;
+import mkremins.fanciful.FancyMessage;
 
 /**
  * <b>'ItemDrop' Function</b>

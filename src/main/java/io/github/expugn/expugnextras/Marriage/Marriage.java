@@ -17,9 +17,9 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.inventivetalent.particle.ParticleEffect;
 
 import io.github.expugn.expugnextras.ExpugnExtras;
-import io.github.expugn.expugnextras.imports.ParticleEffect.ParticleEffect;
 
 /**
  * <b>'Marriage' Function</b>
@@ -753,15 +753,13 @@ public class Marriage
 
 					playerInteracted.setHealth(20.0);
 
-					ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-							player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-					ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-							playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+					ParticleEffect.HEART.send(player.getWorld().getPlayers(), player.getLocation().add(0.0D, 2.0D, 0.0D), 0, 0, 0, 1, 50);
+					ParticleEffect.HEART.send(playerInteracted.getWorld().getPlayers(), playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 0, 0, 0, 1, 50);
 					setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
 				} 
 				else 
 				{
-					if (player.getItemInHand().equals(new ItemStack(Material.MUSHROOM_SOUP)) && playerLevel > 0) 
+					if (player.getInventory().getItemInMainHand().equals(new ItemStack(Material.MUSHROOM_SOUP)) && playerLevel > 0) 
 					{
 						player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You fed " + ChatColor.GOLD
 								+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " some mushroom stew! "
@@ -775,13 +773,11 @@ public class Marriage
 						player.getInventory().removeItem(new ItemStack(Material.MUSHROOM_SOUP, 1));
 						player.getInventory().addItem(new ItemStack(Material.BOWL, 1));
 
-						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-								player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-								playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+						ParticleEffect.HEART.send(player.getWorld().getPlayers(), player.getLocation().add(0.0D, 2.0D, 0.0D), 0, 0, 0, 1, 50);
+						ParticleEffect.HEART.send(playerInteracted.getWorld().getPlayers(), playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 0, 0, 0, 1, 50);
 						setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
 					} 
-					else if (player.getItemInHand().equals(new ItemStack(Material.GOLD_PICKAXE))
+					else if (player.getInventory().getItemInMainHand().equals(new ItemStack(Material.GOLD_PICKAXE))
 							&& playerLevel > 1) 
 					{
 						player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
@@ -794,13 +790,11 @@ public class Marriage
 						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 3600, 0));
 						player.getInventory().removeItem(new ItemStack(Material.GOLD_PICKAXE, 1));
 
-						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-								player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-								playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+						ParticleEffect.HEART.send(player.getWorld().getPlayers(), player.getLocation().add(0.0D, 2.0D, 0.0D), 0, 0, 0, 1, 50);
+						ParticleEffect.HEART.send(playerInteracted.getWorld().getPlayers(), playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 0, 0, 0, 1, 50);
 						setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
 					} 
-					else if (player.getItemInHand().equals(new ItemStack(Material.GOLDEN_APPLE))
+					else if (player.getInventory().getItemInMainHand().equals(new ItemStack(Material.GOLDEN_APPLE))
 							&& playerLevel > 1) 
 					{
 						player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
@@ -813,13 +807,11 @@ public class Marriage
 						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 3600, 0));
 						player.getInventory().removeItem(new ItemStack(Material.GOLDEN_APPLE, 1));
 
-						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-								player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-								playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+						ParticleEffect.HEART.send(player.getWorld().getPlayers(), player.getLocation().add(0.0D, 2.0D, 0.0D), 0, 0, 0, 1, 50);
+						ParticleEffect.HEART.send(playerInteracted.getWorld().getPlayers(), playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 0, 0, 0, 1, 50);
 						setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
 					} 
-					else if (player.getItemInHand().equals(new ItemStack(Material.GOLD_CHESTPLATE))
+					else if (player.getInventory().getItemInMainHand().equals(new ItemStack(Material.GOLD_CHESTPLATE))
 							&& playerLevel > 2) 
 					{
 						player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
@@ -835,13 +827,11 @@ public class Marriage
 						.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 3600, 0));
 						player.getInventory().removeItem(new ItemStack(Material.GOLD_CHESTPLATE, 1));
 
-						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-								player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-								playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+						ParticleEffect.HEART.send(player.getWorld().getPlayers(), player.getLocation().add(0.0D, 2.0D, 0.0D), 0, 0, 0, 1, 50);
+						ParticleEffect.HEART.send(playerInteracted.getWorld().getPlayers(), playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 0, 0, 0, 1, 50);
 						setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
 					} 
-					else if (player.getItemInHand().equals(new ItemStack(Material.CAKE)) && playerLevel > 2) 
+					else if (player.getInventory().getItemInMainHand().equals(new ItemStack(Material.CAKE)) && playerLevel > 2) 
 					{
 						player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
 								+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " a cake! "
@@ -853,13 +843,11 @@ public class Marriage
 						playerInteracted.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 3600, 2));
 						player.getInventory().removeItem(new ItemStack(Material.CAKE, 1));
 
-						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-								player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-								playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+						ParticleEffect.HEART.send(player.getWorld().getPlayers(), player.getLocation().add(0.0D, 2.0D, 0.0D), 0, 0, 0, 1, 50);
+						ParticleEffect.HEART.send(playerInteracted.getWorld().getPlayers(), playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 0, 0, 0, 1, 50);
 						setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
 					} 
-					else if (player.getItemInHand().equals(new ItemStack(Material.MILK_BUCKET)) && playerLevel > 2) 
+					else if (player.getInventory().getItemInMainHand().equals(new ItemStack(Material.MILK_BUCKET)) && playerLevel > 2) 
 					{
 						player.sendMessage(miniPrefix + ChatColor.LIGHT_PURPLE + "You gave " + ChatColor.GOLD
 								+ playerInteracted.getName() + ChatColor.LIGHT_PURPLE + " some milk to drink! "
@@ -878,10 +866,8 @@ public class Marriage
 						player.getInventory().removeItem(new ItemStack(Material.MILK_BUCKET, 1));
 						player.getInventory().addItem(new ItemStack(Material.BUCKET, 1));
 
-						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-								player.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
-						ParticleEffect.HEART.display(0.0F, 0.0F, 0.0F, 1.0F, 1,
-								playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 50.0D);
+						ParticleEffect.HEART.send(player.getWorld().getPlayers(), player.getLocation().add(0.0D, 2.0D, 0.0D), 0, 0, 0, 1, 50);
+						ParticleEffect.HEART.send(playerInteracted.getWorld().getPlayers(), playerInteracted.getLocation().add(0.0D, 2.0D, 0.0D), 0, 0, 0, 1, 50);
 						setConfigData(player, "effectcooldown", (System.currentTimeMillis() + 60000L));
 					}
 				}
@@ -1968,11 +1954,10 @@ public class Marriage
 	 * 		<li>{@code true}  if the player is online</li>
 	 * 		<li>{@code false}  if the player is offline</li>
 	 */
-	@Deprecated
 	public boolean checkPlayerOnline(String playerName) 
 	{
-		//Player[] onlinePlayers = Bukkit.getOnlinePlayers();
-
+		Player[] onlinePlayers = Bukkit.getServer().getOnlinePlayers().toArray(null);
+		
 		for (Player currentPlayer : onlinePlayers) 
 		{
 			if (currentPlayer.getName().equals(playerName))
@@ -1991,10 +1976,9 @@ public class Marriage
 	 * 		<li>{@code Player}  if the player is online</li>
 	 * 		<li>{@code null}  if the player is offline</li>
 	 */
-	@Deprecated
 	public Player getPlayer(String playerName) 
 	{
-		Player[] onlinePlayers = Bukkit.getOnlinePlayers();
+		Player[] onlinePlayers = Bukkit.getServer().getOnlinePlayers().toArray(null);
 
 		for (Player currentPlayer : onlinePlayers) 
 		{

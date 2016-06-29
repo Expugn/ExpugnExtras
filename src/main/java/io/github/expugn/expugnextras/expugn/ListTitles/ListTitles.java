@@ -16,7 +16,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import io.github.expugn.expugnextras.ExpugnExtras;
-import io.github.expugn.expugnextras.imports.Fanciful.FancyMessage;
+import mkremins.fanciful.FancyMessage;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 

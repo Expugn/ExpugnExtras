@@ -3,8 +3,6 @@ package io.github.expugn.expugnextras.expugn.Cash;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -17,7 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import io.github.expugn.expugnextras.ExpugnExtras;
-import io.github.expugn.expugnextras.imports.Fanciful.FancyMessage;
+import mkremins.fanciful.FancyMessage;
 
 /**
  * <b>'Cash' Function</b>
@@ -30,8 +28,8 @@ public class Cash
 	/* Private variables */
 	private final io.github.expugn.expugnextras.Configs.Cash config;
 	
-	private final int DAILY_PURCHASE_LIMIT = 1000; // Default == 50
-	private final int DAILY_SELL_LIMIT = 1000; // Default == 100
+	private final int DAILY_PURCHASE_LIMIT = 50; // Default == 50
+	private final int DAILY_SELL_LIMIT = 100; // Default == 100
 	
 	public Cash(ExpugnExtras plugin)
 	{
@@ -58,7 +56,6 @@ public class Cash
 						+ "§7You can sell §6" + (DAILY_SELL_LIMIT - config.getPlayerTodaySold(player)) + " §7more §2ExpugnCash §7today.\n"
 						+ "§fClick §c[Sell ExpugnCash] §fto auto-type the command.")
 				.suggest("/expugn cash sell ")
-			/*
 			.then("§d[Buy Items]\n")
 				.tooltip("§6/expugn cash §dshop\n"
 						+ "§4WORK IN PROGRESS.\n\n"
@@ -67,7 +64,6 @@ public class Cash
 						+ "§7Shop will only be open if §2ExpugnCash §7is worth more than §2$§62§7.\n"
 						+ "§fClick §d[Buy Items] §fto auto-type the command.")
 				.suggest("/expugn cash shop")
-			*/
 			.then("§e[Player List]\n")
 				.tooltip("§6/expugn cash §dlist\n"
 						+ "§7Lists the §2ExpugnCash §7rankings.\n"
@@ -212,15 +208,17 @@ public class Cash
 	public void itemShop(Player player, String[] args)
 	{
 		double value = config.getValue();
-		List<Map<String, Object>> shopItems = config.getShopItems();
+		int[] shopItems = config.getShopItems();
+		ItemStack[] items = config.getItems();
+		int[] prices = config.getPrices();
 		int i = 0;
 		
-		if (value < 2.0)
+		if (value < 5.0)
 		{
-			player.sendMessage("§cThe shop is closed. §2ExpugnCash §cis worth less than §2$§62§c.");
+			player.sendMessage("§cThe shop is closed. §2ExpugnCash §cis worth less than §2$§65§c.");
 			return;
 		}
-		if (shopItems != null && !shopItems.isEmpty())
+		if (shopItems != null && shopItems.length > 0)
 		{
 			if (args.length > 2)
 			{
@@ -229,13 +227,14 @@ public class Cash
 			}
 			player.sendMessage("§2ExpugnCash §6Shop§7:\n"
 					+ "§eItems reset everyday midnight time!");
-			for (Map<String, Object> entry : shopItems)
+			for (int itemNum : shopItems)
 			{
 				//int itemPrice = e.getKey();
 				//ItemStack item = e.getValue();
 				
-				int itemPrice = (int) entry.get("price");
-				ItemStack itemData = (ItemStack) entry.get("item");
+				
+				int itemPrice = prices[itemNum];
+				ItemStack itemData = items[itemNum];
 				
 				new FancyMessage("- ")
 					.then("§6" + itemPrice + " §2ExpugnCash §8| ")
@@ -263,29 +262,33 @@ public class Cash
 	{
 		int playerBalance = config.getPlayerAmount(player);
 		//SortedMap<Integer, ItemStack> shopItems = config.getShopItems();
-		List<Map<String, Object>> shopItems = config.getShopItems();
-		Map<String, Object> item = shopItems.get(itemIndex);
+		int[] shopItems = config.getShopItems();
+		int[] prices = config.getPrices();
+		ItemStack[] items = config.getItems();
+		
+		ItemStack item = items[shopItems[itemIndex]];
+		int price = prices[shopItems[itemIndex]];
 		
 		//int itemPrice = (int) shopItems.keySet().toArray()[itemIndex];
 		//ItemStack item = (ItemStack) shopItems.values().toArray()[itemIndex];
 		
-		int itemPrice = (int) item.get("price");
-		ItemStack itemData = (ItemStack) item.get("item");
+		//int itemPrice = (int) item.get("price");
+		//ItemStack itemData = (ItemStack) item.get("item");
 		
-		if(itemPrice > playerBalance)
+		if(price > playerBalance)
 		{
 			player.sendMessage("§cYou do not have enough §2ExpugnCash §cto buy this item.");
 			return;
 		}
 		
-		config.addPlayerAmount(player, -itemPrice);
-		player.getInventory().addItem(itemData);
+		config.addPlayerAmount(player, -price);
+		player.getInventory().addItem(item);
 		
-		double moneyValue = Double.parseDouble(String.format("%.2g", (itemPrice * config.getValue())));
+		double moneyValue = Double.parseDouble(String.format("%.2g", (price * config.getValue())));
 		
-		player.sendMessage("§eYou have successfully bought a " + itemData.getItemMeta().getDisplayName() + "§e.\n"
-				+ "§6" + itemPrice + " §2ExpugnCash §ehas been removed from your account.\n"
-				+ "§6" + itemPrice + " §2ExpugnCash §eis worth §2$6" + moneyValue + "\n"
+		player.sendMessage("§eYou have successfully bought a " + item.getItemMeta().getDisplayName() + "§e.\n"
+				+ "§6" + price + " §2ExpugnCash §ehas been removed from your account.\n"
+				+ "§6" + price + " §2ExpugnCash §eis worth §2$6" + moneyValue + "\n"
 				+ "§eYou have §6" + config.getPlayerAmount(player) + " §2ExpugnCash §eleft.");
 	}
 	
@@ -413,7 +416,7 @@ public class Cash
 				.then("§a[Buying and Selling]\n")
 					.tooltip("§7Get help on what buying and selling is.")
 					.command("/expugn cash help buyandsell")
-				/*
+				/* TODO
 				.then("§b[Item Shop]")
 					.tooltip("§7Get help on what the item shop is.")
 					.command("/expugn cash help itemshop")
@@ -425,7 +428,7 @@ public class Cash
 				.then("§8- §fIf many players buy §2ExpugnCash§f, the value of §2ExpugnCash §fwill rise.\n")
 				.then("§8- §fIf many players sell §2ExpugnCash§f, the value of §2ExpugnCash §fwill decrease.\n")
 				.then("§8- §fIf you play your cards right, you can make a large profit off §2ExpugnCash§f.\n")
-				//.then("§8- §fThere is a special item shop that takes §2ExpugnCash §ffor payment. Click the §b[Item Shop] §fhelp option for more info.\n")
+				// TODO .then("§8- §fThere is a special item shop that takes §2ExpugnCash §ffor payment. Click the §b[Item Shop] §fhelp option for more info.\n")
 				.then("§2ExpugnCash §6Terms:\n")
 				.then("§8- §6'ExpugnCash'§8: §fThe currency name.\n")
 				.then("§8- §6'Expugn Balance'§8: §fThe amount of money the system has. Determines §2ExpugnCash§f value.\n")
@@ -478,14 +481,14 @@ public class Cash
 		int itemPrice = Integer.parseInt(args[2]);
 		ItemStack item = player.getInventory().getItemInMainHand().clone();
 		
-		ShopItem entry = new ShopItem(itemPrice, item);
+		//ShopItem entry = new ShopItem(itemPrice, item);
 
 		if (item == null || item.getType() == Material.AIR)
 			player.sendMessage("§cYour main hand is empty.");
 		else
 		{
 			player.sendMessage("§aAdding Item §6" + item.getType() + "§a to shopItems.");
-			config.addItem(entry);
+			config.addItem(item, itemPrice);
 		}
 	}
 	

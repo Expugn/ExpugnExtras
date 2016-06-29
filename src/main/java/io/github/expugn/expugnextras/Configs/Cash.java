@@ -2,18 +2,24 @@ package io.github.expugn.expugnextras.Configs;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.Map.Entry;
 
+import org.bukkit.Material;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.google.common.collect.Lists;
 
 import io.github.expugn.expugnextras.ExpugnExtras;
-import io.github.expugn.expugnextras.expugn.Cash.ShopItem;
 
 /**
  * <b>'Cash' Configuration File</b>
@@ -38,14 +44,17 @@ public class Cash extends ConfigurationFile
 		if (!getBoolean("cash.data.config_created"))
 		{
 			List<Map<String, Object>> emptyList = Lists.newArrayList();
+			int[] emptyIntArray = null;
+			ItemStack[] emptyItemStackArray = null;
 			
 			set("cash.data.config_created", true);
 			set("cash.data.midnighttime", 0L);
 			set("cash.data.current_cash", 1000.0);
 			set("cash.data.previous_cash", 1000.0);
 			set("cash.data.value", 1.0);
-			set("cash.data.daily_items", emptyList);
-			set("cash.data.items", emptyList);
+			set("cash.data.daily_items", emptyIntArray);
+			set("cash.data.items", emptyItemStackArray);
+			set("cash.data.prices", emptyIntArray);
 			set("cash.players", emptyList);
 		}
 		checkMidnight();
@@ -69,7 +78,7 @@ public class Cash extends ConfigurationFile
 
 			/* Update Data */
 			set("cash.data.previous_cash", getCurrentCash());
-			//refreshShop();
+			// TODO refreshShop();
 			resetDailyLimit();
 		}
 	}
@@ -121,33 +130,34 @@ public class Cash extends ConfigurationFile
 		return;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public List<Map<String, Object>> getShopItems()
+	public int[] getShopItems()
 	{
 		//SortedMap<Integer, ItemStack> shopItems = (SortedMap<Integer, ItemStack>) get("cash.data.daily_items");
-		List<Map<String, Object>> shopItems = (List<Map<String, Object>>) get("cash.data.daily_items");
+		//List<Map<String, Object>> shopItems = (List<Map<String, Object>>) get("cash.data.daily_items");
+		int[] shopItems = (int[]) get("cash.data.daily_items");
 		
-		if (shopItems != null && !shopItems.isEmpty())
+		//ItemStack[] items = getItems();
+		//int[] prices = getPrices();
+		
+		if (shopItems != null && shopItems.length > 0)
 			return shopItems;
 		else
 		{
-			List<Map<String, Object>> emptyList = Lists.newArrayList();
-			return emptyList;
+			int[] emptyArray = null;
+			return emptyArray;
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Map<String, Object>> getItems()
+	public ItemStack[] getItems()
 	{
-		List<Map<String, Object>> items = (List<Map<String, Object>>) get("cash.data.items");
-
-		if(items != null && !items.isEmpty())
-			return items;
-		else
-		{
-			List<Map<String, Object>> emptyList = Lists.newArrayList();
-			return emptyList;
-		}
+		List<HashMap<Map<String, Object>, Map<String, Object>>> items = (List<HashMap<Map<String, Object>, Map<String, Object>>>) get("cash.data.items");
+		return deserializeItemStackList(items);
+	}
+	
+	public int[] getPrices()
+	{
+		return (int[]) get("items.data.prices");
 	}
 	
 	public void resetDailyLimit()
@@ -177,22 +187,43 @@ public class Cash extends ConfigurationFile
 		return getDouble("cash.data.value");
 	}
 	
-	public void addItem(ShopItem entry)
+	public void addItem(ItemStack item, int itemPrice)
 	{
+		ItemStack[] items = getItems();
+		int[] prices = getPrices();
 		//List<ShopItem> items = getItems();
-		List<Map<String, Object>> items = getItems();
-
-		if (items != null && !items.isEmpty())
+		//List<Map<String, Object>> items = getItems();
+		
+		for (int i = 0 ; i < items.length ; i++)
 		{
-			items.add(entry.serialize());
+			if (items[i] == null)
+			{
+				items[i] = item;
+				prices[i] = itemPrice;
+				break;
+			}
+		}
+		set("cash.data.items", items);
+		set("cash.data.prices", prices);
+
+		/*
+		if (items != null && items.length > 0)
+		{
+			for (int i = 0 ; i < items.length ; i++)
+			{
+				if (items[i] == null)
+				{
+					items[i] = item;
+					break;
+				}
+			}
 			set("cash.data.items", items);
 		}
 		else
 		{
-			List<Map<String, Object>> emptyList = Lists.newArrayList();
-			emptyList.add(entry.serialize());
 			set("cash.data.items", items);
 		}
+		*/
 	}
 	
 	public void addCurrentCash(double amount)
@@ -305,5 +336,47 @@ public class Cash extends ConfigurationFile
 	public Set<String> getPlayerList()
 	{
 		return getConfigurationSectionKeys("cash.players");
+	}
+	
+	public final static List<HashMap<Map<String, Object>, Map<String, Object>>> serializeItemStackList(final ItemStack[] itemStackList)
+	{
+		final List <HashMap<Map<String, Object>, Map<String, Object>>> serializedItemStackList = new ArrayList<HashMap<Map<String, Object>, Map<String, Object>>>();
+		
+		for (ItemStack itemStack : itemStackList)
+		{
+			Map<String, Object> serializedItemStack, serializedItemMeta;
+			HashMap<Map<String, Object>, Map<String, Object>> serializedMap = new HashMap<Map<String, Object>, Map<String, Object>>();
+			
+			if (itemStack == null)
+				itemStack = new ItemStack(Material.AIR);
+			serializedItemMeta = (itemStack.hasItemMeta()) ? itemStack.getItemMeta().serialize() : null;
+			serializedItemStack = itemStack.serialize();
+			
+			serializedMap.put(serializedItemStack, serializedItemMeta);
+			serializedItemStackList.add(serializedMap);
+		}
+		return serializedItemStackList;
+		
+	}
+	
+	public final static ItemStack[] deserializeItemStackList(final List<HashMap<Map<String, Object>, Map<String, Object>>> serializedItemStackList) 
+	{
+		final ItemStack[] itemStackList = new ItemStack[serializedItemStackList.size()];
+		
+		int i = 0;
+		for (HashMap<Map<String, Object>, Map<String, Object>> serializedItemStackMap : serializedItemStackList) 
+		{
+			Entry<Map<String, Object>, Map<String, Object>> serializedItemStack = serializedItemStackMap.entrySet().iterator().next();
+			
+			ItemStack itemStack = ItemStack.deserialize(serializedItemStack.getKey());
+			if (serializedItemStack.getValue() != null) 
+			{
+				ItemMeta itemMeta = (ItemMeta)ConfigurationSerialization.deserializeObject(serializedItemStack.getValue(), ConfigurationSerialization.getClassByAlias("ItemMeta"));
+				itemStack.setItemMeta(itemMeta);
+			}
+			
+			itemStackList[i++] = itemStack;
+		}
+		return itemStackList;
 	}
 }

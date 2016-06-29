@@ -11,7 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import io.github.expugn.expugnextras.ExpugnExtras;
-import io.github.expugn.expugnextras.imports.Fanciful.FancyMessage;
+import mkremins.fanciful.FancyMessage;
 
 /**
  * <b>'Expugn' Command</b>
@@ -65,6 +65,7 @@ public class ExpugnCommand implements CommandExecutor
 	 * @param args  Arguments after "expugn".
 	 * @return  true.
 	 */
+	@SuppressWarnings("unused")
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) 
 	{
 		/* Initialize Variables */
@@ -97,7 +98,7 @@ public class ExpugnCommand implements CommandExecutor
 		else
 		{
 			// General Commands -----------------------------------------------------------------------
-			if (subCommand.equalsIgnoreCase("help")) /* help */
+			if (subCommand.equalsIgnoreCase("help") && true) /* help */
 			{
 				if (isPlayerOpOrConsole)
 					helpMenu(sender, args);
@@ -105,7 +106,7 @@ public class ExpugnCommand implements CommandExecutor
 					fakeHelpMenu(sender, args);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("reload")) /* reload */
+			if (subCommand.equalsIgnoreCase("reload") && false) /* reload */
 			{
 				if (isPlayerOpOrConsole)
 					reloadConfigs(sender);
@@ -114,7 +115,7 @@ public class ExpugnCommand implements CommandExecutor
 				return true;
 			}
 			// Warp Commands -----------------------------------------------------------------------
-			if (subCommand.equalsIgnoreCase("warp")) /* warp */
+			if (subCommand.equalsIgnoreCase("warp") && true) /* warp */
 			{
 				if (isPlayerOp && args.length >= 2)
 					warps.warp(player, args[1]);
@@ -122,7 +123,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("setwarp")) /* setwarp */
+			if (subCommand.equalsIgnoreCase("setwarp") && true) /* setwarp */
 			{
 				if (isPlayerOp && args.length >= 2)
 					warps.setWarp(player, args[1]);
@@ -130,7 +131,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("delwarp")) /* delwarp */
+			if (subCommand.equalsIgnoreCase("delwarp") && true) /* delwarp */
 			{
 				if (isPlayerOp && args.length >= 2)
 					warps.delWarp(player, args[1]);
@@ -138,7 +139,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("warplist")) /* warplist */
+			if (subCommand.equalsIgnoreCase("warplist") && true) /* warplist */
 			{
 				if (isPlayerOp && args.length >= 1)
 					warps.warpList(player);
@@ -146,7 +147,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("warpinfo")) /* warpinfo */
+			if (subCommand.equalsIgnoreCase("warpinfo") && true) /* warpinfo */
 			{
 				if (isPlayerOp && args.length >= 2)
 					warps.warpInfo(player, args[1]);
@@ -154,7 +155,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("warpsetting")) /* warpsetting */
+			if (subCommand.equalsIgnoreCase("warpsetting") && true) /* warpsetting */
 			{
 				if (isPlayerOp && args.length >= 3)
 					warps.warpSetting(player, args[1], args[2]);
@@ -162,7 +163,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("checkcanwarp")) /* checkcanwarp */
+			if (subCommand.equalsIgnoreCase("checkcanwarp") && true) /* checkcanwarp */
 			{
 				if (isPlayer && args.length >= 2)
 					warps.checkCanWarp(player, args[1]);
@@ -171,7 +172,7 @@ public class ExpugnCommand implements CommandExecutor
 				return true;
 			}
 			// Timer Commands -----------------------------------------------------------------------
-			if (subCommand.equalsIgnoreCase("setdungeon")) /* setdungeon */
+			if (subCommand.equalsIgnoreCase("setdungeon") && true) /* setdungeon */
 			{
 				if (isPlayerOp && args.length >= 3)
 					timers.setDungeon(player, args[1], Long.parseLong(args[2]));
@@ -181,7 +182,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("deldungeon")) /* deldungeon */
+			if (subCommand.equalsIgnoreCase("deldungeon") && true) /* deldungeon */
 			{
 				if (isPlayerOp && args.length >= 2)
 					timers.delDungeon(player, args[1]);
@@ -189,7 +190,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("settime")) /* settime */
+			if (subCommand.equalsIgnoreCase("settime") && true) /* settime */
 			{
 				if (isPlayer && args.length >= 2)
 					timers.setTime(player, args[1]);
@@ -197,7 +198,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("checktime")) /* checktime */
+			if (subCommand.equalsIgnoreCase("checktime") && true) /* checktime */
 			{
 				if (isPlayerOp && args.length >= 2)
 					timers.checkTime(player, args[1]);
@@ -205,7 +206,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("dungeonlist")) /* dungeonlist */
+			if (subCommand.equalsIgnoreCase("dungeonlist") && true) /* dungeonlist */
 			{
 				if (isPlayerOp && args.length >= 1)
 					timers.dungeonList(player);
@@ -214,7 +215,7 @@ public class ExpugnCommand implements CommandExecutor
 				return true;
 			}
 			// Time Trial Commands -----------------------------------------------------------------------
-			if (subCommand.equalsIgnoreCase("setlocation")) /* setlocation */
+			if (subCommand.equalsIgnoreCase("setlocation") && true) /* setlocation */
 			{
 				if (isPlayerOp && args.length >= 2)
 					trials.setLocation(player, args[1]);
@@ -222,7 +223,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("dellocation")) /* dellocation */
+			if (subCommand.equalsIgnoreCase("dellocation") && true) /* dellocation */
 			{
 				if (isPlayerOp && args.length >= 2)
 					trials.delLocation(player, args[1]);
@@ -230,7 +231,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			} 
-			if (subCommand.equalsIgnoreCase("locationlist")) /* locationlist */
+			if (subCommand.equalsIgnoreCase("locationlist") && true) /* locationlist */
 			{
 				if (isPlayerOp && args.length >= 1)
 					trials.locationList(player);
@@ -238,7 +239,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			} 
-			if (subCommand.equalsIgnoreCase("starttrial")) /* starttrial */
+			if (subCommand.equalsIgnoreCase("starttrial") && true) /* starttrial */
 			{
 				if (isPlayerOp && args.length >= 2)
 					trials.startTrial(player, args[1]);
@@ -246,7 +247,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			} 
-			if (subCommand.equalsIgnoreCase("endtrial")) /* endtrial */
+			if (subCommand.equalsIgnoreCase("endtrial") && true) /* endtrial */
 			{
 				if (isPlayerOp && args.length >= 2)
 					trials.endTrial(player, args[1]);
@@ -254,7 +255,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			} 
-			if (subCommand.equalsIgnoreCase("getrankings")) /* getrankings */
+			if (subCommand.equalsIgnoreCase("getrankings") && true) /* getrankings */
 			{
 				if (isPlayer && args.length >= 2)
 					trials.getRankings(player, args[1]);
@@ -262,7 +263,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			} 
-			if (subCommand.equalsIgnoreCase("resettimes")) /* resettimes */
+			if (subCommand.equalsIgnoreCase("resettimes") && true) /* resettimes */
 			{
 				if (isPlayerOp && args.length >= 2)
 					trials.resetTimes(player, args[1]);
@@ -270,7 +271,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			} 
-			if (subCommand.equalsIgnoreCase("hallofglory")) /* hallofglory */
+			if (subCommand.equalsIgnoreCase("hallofglory") && true) /* hallofglory */
 			{
 				if (isPlayer && args.length >= 1)
 					trials.warpHallOfGlory(player);
@@ -279,7 +280,7 @@ public class ExpugnCommand implements CommandExecutor
 				return true;
 			}
 			// ItemDrop Commands -----------------------------------------------------------------------
-			if (subCommand.equalsIgnoreCase("createitemset")) /* createitemset */
+			if (subCommand.equalsIgnoreCase("createitemset") && true) /* createitemset */
 			{
 				if (isPlayerOp && args.length >= 2)
 					itemdrop.create(player, args);
@@ -287,7 +288,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("deleteitemset")) /* deleteitemset */
+			if (subCommand.equalsIgnoreCase("deleteitemset") && true) /* deleteitemset */
 			{
 				if (isPlayerOp && args.length >= 2)
 					itemdrop.delete(player, args);
@@ -295,7 +296,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			} 
-			if (subCommand.equalsIgnoreCase("additem")) /* additem */
+			if (subCommand.equalsIgnoreCase("additem") && true) /* additem */
 			{
 				if (isPlayerOp && args.length >= 2)
 					itemdrop.addItem(player, args);
@@ -303,7 +304,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			} 
-			if (subCommand.equalsIgnoreCase("removeitem")) /* removeitem */
+			if (subCommand.equalsIgnoreCase("removeitem") && true) /* removeitem */
 			{
 				if (isPlayerOp && args.length >= 3)
 					itemdrop.removeItem(player, args);
@@ -311,7 +312,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			} 
-			if (subCommand.equalsIgnoreCase("giveitem")) /* giveitem */
+			if (subCommand.equalsIgnoreCase("giveitem") && true) /* giveitem */
 			{
 				if (isPlayerOp && args.length >= 3)
 					itemdrop.giveItem(player, args);
@@ -319,7 +320,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			} 
-			if (subCommand.equalsIgnoreCase("listitemset")) /* listitemset */
+			if (subCommand.equalsIgnoreCase("listitemset") && true) /* listitemset */
 			{
 				if (isPlayerOp && args.length >= 1)
 					itemdrop.list(player);
@@ -327,7 +328,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			} 
-			if (subCommand.equalsIgnoreCase("itemsetinfo")) /* itemsetinfo */
+			if (subCommand.equalsIgnoreCase("itemsetinfo") && true) /* itemsetinfo */
 			{
 				if (isPlayerOp && args.length >= 2)
 					itemdrop.info(player, args);
@@ -335,7 +336,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			} 
-			if (subCommand.equalsIgnoreCase("runitemdrop")) /* runitemdrop */
+			if (subCommand.equalsIgnoreCase("runitemdrop") && true) /* runitemdrop */
 			{
 				if (isPlayerOpOrConsole && args.length >= 3)
 					itemdrop.run(args);
@@ -344,7 +345,7 @@ public class ExpugnCommand implements CommandExecutor
 				return true;
 			} 
 			// Miscellaneous Commands -----------------------------------------------------------------------
-			if (subCommand.equalsIgnoreCase("listtitles")) /* listtitles */
+			if (subCommand.equalsIgnoreCase("listtitles") && true) /* listtitles */
 			{
 				if (isPlayer && args.length >= 1)
 					listtitles.getTitles(player, args);
@@ -352,26 +353,30 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("name")) /* name */
+			if (subCommand.equalsIgnoreCase("name") && true) /* name */
 			{
 				Bukkit.getServer().getOnlinePlayers();
 				if (isPlayer && args.length >= 2)
 				{
 					Collection<? extends Player> onlinePlayers = Bukkit.getServer().getOnlinePlayers();
+					
 					for (Player currentPlayer : onlinePlayers)
 					{
-						if (currentPlayer.getName().equals(args[1]) || args[1].equals("Expugn"))
+						if (currentPlayer.getName().equals(args[1]) 
+								|| args[1].equals("-" + currentPlayer.getName())
+								|| args[1].equals("Expugn"))
 						{
 							defaultMessage(args[1]).send(player);
 							return true;
 						}
 					}
+					player.sendMessage("§cThis player is not online at the moment.");
 				}
 				else
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("rpc")) /* rpc */
+			if (subCommand.equalsIgnoreCase("rpc") && true) /* rpc */
 			{
 				if (isPlayer && args.length >= 2)
 					rockPaperScissors(player, Integer.parseInt(args[1]));
@@ -381,7 +386,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("joke")) /* rpc */
+			if (subCommand.equalsIgnoreCase("joke") && true) /* joke */
 			{
 				if (isPlayer && args.length >= 1)
 					joke(player, args);
@@ -389,7 +394,7 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("cash")) /* cash */
+			if (subCommand.equalsIgnoreCase("cash") && false) /* cash */
 			{
 				if (isPlayer && args.length == 1)
 					cash.mainMenu(player);
@@ -399,7 +404,7 @@ public class ExpugnCommand implements CommandExecutor
 						cash.buy(player, args);
 					if (args[1].equalsIgnoreCase("sell")) /* cash sell */
 						cash.sell(player, args);
-					//if (args[1].equalsIgnoreCase("shop")) /* cash shop */
+					// TODO if (args[1].equalsIgnoreCase("shop")) /* cash shop */
 					//	cash.itemShop(player, args);
 					if (args[1].equalsIgnoreCase("list")) /* cash list */
 						cash.list(player, args);
@@ -658,7 +663,7 @@ public class ExpugnCommand implements CommandExecutor
 					+ "§6Google: §fwww.google.com\n"
 					+ "§6AllRecipes: §fwww.allrecipes.com\n"
 					+ "§6Minecraft Wiki: §fwww.minecraft.gamepedia.com\n"
-					+ "§6Server Forums: §fwww.ultimate-mc.net\n"
+					+ "§6Server Forums: §fwww.blockworlds.com\n"
 					+ "§7If you need more help then look it up on Google or something.\n")
 			.then("§3[But... This isn't the type of help I wanted..]")
 			.command("/expugn help me")
@@ -719,13 +724,43 @@ public class ExpugnCommand implements CommandExecutor
 	 */
 	public FancyMessage defaultMessage(String name)
 	{
-		return new FancyMessage(getRandomColor() + "[Click Me.]")
-				.tooltip("Give it a shot!")
-				.command(getMessage(name))
-				.then(" | ")
-				.then(getRandomColor() + "[Generate another?]")
-				.tooltip("Want another message?")
-				.command("/expugn name " + name);
+		if (name.equals("Fireteam22"))
+		{
+			return new FancyMessage(getRandomColor() + "[Click Me.]")
+					.tooltip("A secret message?...")
+					.command("I love Fire. :I");
+		}
+		else if (name.equals("GrimmKitty"))
+		{
+			return new FancyMessage(getRandomColor() + "[Click Me.]")
+					.tooltip("A secret message?...")
+					.command("GrimmKitty loves breaking things!");
+		}
+		else if (name.equals("Mirrusky"))
+		{
+			return new FancyMessage(getRandomColor() + "[Click Me.]")
+					.tooltip("A secret message?...")
+					.command("Mirr is well liked.");
+		}
+		else if (name.equals("Joapple"))
+		{
+			return new FancyMessage(getRandomColor() + "[Click Me.]")
+					.tooltip("A secret message?...")
+					.command("Joapple is watching you.");
+		}
+		else
+		{
+			if (name.substring(0, 1).equals("-"))
+				name = name.substring(1, name.length());
+			
+			return new FancyMessage(getRandomColor() + "[Click Me.]")
+					.tooltip("Give it a shot!")
+					.command(getMessage(name))
+					.then(" | ")
+					.then(getRandomColor() + "[Generate another?]")
+					.tooltip("Want another message?")
+					.command("/expugn name " + name);	
+		}
 	}
 		
 	//-----------------------------------------------------------------------
