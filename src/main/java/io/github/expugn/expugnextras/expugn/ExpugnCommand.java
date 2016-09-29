@@ -909,7 +909,6 @@ public class ExpugnCommand implements CommandExecutor
 		new io.github.expugn.expugnextras.Configs.Warps(plugin).reloadConfig();
 		new io.github.expugn.expugnextras.Configs.Timers(plugin).reloadConfig();
 		new io.github.expugn.expugnextras.Configs.TimeTrial(plugin).reloadConfig();
-		new io.github.expugn.expugnextras.Configs.Marriage(plugin).reloadConfig();
 		new io.github.expugn.expugnextras.Configs.ItemDrop(plugin).reloadConfig();
 		
 		

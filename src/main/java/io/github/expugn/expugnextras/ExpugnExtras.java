@@ -1,11 +1,8 @@
 package io.github.expugn.expugnextras;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import io.github.expugn.expugnextras.Marriage.MarriageCommand;
-import io.github.expugn.expugnextras.Marriage.PlayerInteractListener;
 import io.github.expugn.expugnextras.expugn.ExpugnCommand;
 import io.github.expugn.expugnextras.expugn.ListTitles.ListTitles;
 import net.milkbowl.vault.economy.Economy;
@@ -22,7 +19,6 @@ public class ExpugnExtras extends JavaPlugin
 	private io.github.expugn.expugnextras.Configs.MainConfig config;
 	
 	private boolean expugnEnabled = false;
-	private boolean marriageEnabled = false;
 
 	//-----------------------------------------------------------------------
 	/**
@@ -34,7 +30,6 @@ public class ExpugnExtras extends JavaPlugin
 		config = new io.github.expugn.expugnextras.Configs.MainConfig(this);
 		
 		expugnEnabled = config.getBoolean("expugn");
-		marriageEnabled = config.getBoolean("marriage");
 		
 		setupCommands();
 	}
@@ -53,24 +48,7 @@ public class ExpugnExtras extends JavaPlugin
 		else
 			getCommand("expugn").setExecutor(new DisabledCommand());
 
-		if (marriageEnabled)
-		{
-			if (!setupEconomy()) 
-			{
-				getLogger().info("'/marriage' command failed to be enabled.");
-				getCommand("marriage").setExecutor(new DisabledCommand());
-			}
-			else 
-			{
-				getCommand("marriage").setExecutor(new MarriageCommand(this));
-				Bukkit.getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
-			}	
-		}
-		else
-		{
-			getCommand("marriage").setExecutor(new DisabledCommand());
-			setupEconomy();
-		}
+		setupEconomy();
 	}
 	
 	//-----------------------------------------------------------------------
