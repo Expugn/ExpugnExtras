@@ -11,7 +11,7 @@ import net.milkbowl.vault.economy.Economy;
  * <b>ExpugnExtras</b>
  * 
  * @author Expugn  <i>(https://github.com/Expugn)</i>
- * @version 1.3
+ * @version 2.0
  */
 public class ExpugnExtras extends JavaPlugin 
 {

@@ -16,7 +16,7 @@ import mkremins.fanciful.FancyMessage;
 /**
  * <b>'Expugn' Command</b>
  * 
- * @version 3.0
+ * @version 4.0
  * @author Expugn  <i>(https://github.com/Expugn)</i>
  */
 public class ExpugnCommand implements CommandExecutor 
