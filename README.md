@@ -7,35 +7,19 @@ installed there so there may be compatability errors if attempted to be used in 
 These plugins are required to be on your server to use ExpugnExtras to the fullest extent.
 
 ####Warps:
-  * No dependencies to run
   * Soft depends on 'VariableTriggers' so players can run commands through ClickTriggers 
     or WalkTriggers using @CMDOP. Warp commands are not properly permissioned
 
 ####Timers:
-  * No dependencies to run
   * Soft depends on 'VariableTriggers' so people can run commands through ClickTriggers
     or WalkTriggers using @CMDOP. Timer commands are not properly permissioned.
 
 ####Time Trials:
-  * No dependencies to run
   * Soft depends on 'VariableTriggers' so people can run commands through ClickTriggers
     or WalkTriggers using @CMDOP. TimeTrial commands are not properly permissioned.
 
 ####Title List:
-  * Depends on 'TitleManager' and 'PermissionsEx' to run.
-  * No soft dependencies.
-
-####Marriage:
-  * Depends on 'Vault' to run.
-  * No soft dependencies.
-  
-####ItemDrop:
-  * No dependencies to run.
-  * No soft dependencies.
-  
-####expugn name:
-  * No dependencies to run.
-  * No soft dependencies.
+  * Depends on 'Titles' and 'PermissionsEx' to run.
 
 ### Features and Commands
 The following are features and the commands associated to them to the plugin.
@@ -61,16 +45,20 @@ The following are features and the commands associated to them to the plugin.
     - Using /expugn name [playername] will generate a random phrase that a player will say if they click on the [Click Me.]
     - Words are stored in extras.yml (See resources for a default configuration file)
     - "[playername] is a [adverb] [adjective] [noun]"
-    - Moved from ExpugnFree (Removed as of v4.0)
+    - Moved from ExpugnFree (**_Removed as of v4.0_**)
   * Rock, Paper, Scissors
     - Simple Rock, Paper, Scissors game.
-    - Moved from ExpugnFree (Removed as of v4.0)
+    - Moved from ExpugnFree (**_Removed as of v4.0_**)
+  * ~~ExpugnCash~~
+    - Stock Market Simulator.
+    - **_Removed as of v5.0_**
 
-####/marriage [args]
+####~~/marriage [args]~~
   * Marriage
     - A roleplay dating simulator.
     - Two players can start a relationship and get benefits as they advance in their relationship.
     - Players can see how long they have been together
+  * **_Removed as of v5.0_**
 
 ####~~/expugnfree [args]~~
   * /expugn name [playername]
@@ -80,16 +68,16 @@ The following are features and the commands associated to them to the plugin.
     - "[playername] is a [adverb] [adjective] [noun]"
   * Rock, Paper, Scissors
     - Simple Rock, Paper, Scissors game.
-  * Removed as of v4.0
+  * **_Removed as of v4.0_**
  
 ####~~/gollem [args]~~
   * Personal project, please ignore.
-  * Removed as of v4.0
+  * **_Removed as of v4.0_**
  
 ####~~/expugnconsole [args]~~
   * A command that only the console can run.
-  * Removed as of v4.0
+  * **_Removed as of v4.0_**
 
 ### Permissions
   * expugnextras.admin | Permission to use '/expugn', ~~'/expugnconsole'~~, ~~'/gollem'~~
-  * marriage.admin | Permission to use '/marriage dev'
+  * ~~marriage.admin | Permission to use '/marriage dev'~~ **_Unused as of v5.0_**
