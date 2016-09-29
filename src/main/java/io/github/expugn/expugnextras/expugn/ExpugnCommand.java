@@ -27,7 +27,6 @@ public class ExpugnCommand implements CommandExecutor
 	private final io.github.expugn.expugnextras.expugn.TimeTrial.TimeTrial trials;
 	private final io.github.expugn.expugnextras.expugn.ListTitles.ListTitles listtitles;
 	private final io.github.expugn.expugnextras.expugn.ItemDrop.ItemDrop itemdrop;
-	private final io.github.expugn.expugnextras.expugn.Cash.Cash cash;
 	
 	/* Configuration Files */
 	private final io.github.expugn.expugnextras.Configs.Extras extras_config;
@@ -47,7 +46,6 @@ public class ExpugnCommand implements CommandExecutor
 		trials = new io.github.expugn.expugnextras.expugn.TimeTrial.TimeTrial(plugin);
 		listtitles = new io.github.expugn.expugnextras.expugn.ListTitles.ListTitles(plugin);
 		itemdrop = new io.github.expugn.expugnextras.expugn.ItemDrop.ItemDrop(plugin);
-		cash = new io.github.expugn.expugnextras.expugn.Cash.Cash(plugin);
 		
 		extras_config = new io.github.expugn.expugnextras.Configs.Extras(plugin);
 		
@@ -394,39 +392,6 @@ public class ExpugnCommand implements CommandExecutor
 					sender.sendMessage(COMMAND_FAILURE);
 				return true;
 			}
-			if (subCommand.equalsIgnoreCase("cash") && false) /* cash */
-			{
-				if (isPlayer && args.length == 1)
-					cash.mainMenu(player);
-				else if (isPlayer && args.length >= 2)
-				{
-					if (args[1].equalsIgnoreCase("buy")) /* cash buy */
-						cash.buy(player, args);
-					if (args[1].equalsIgnoreCase("sell")) /* cash sell */
-						cash.sell(player, args);
-					// TODO if (args[1].equalsIgnoreCase("shop")) /* cash shop */
-					//	cash.itemShop(player, args);
-					if (args[1].equalsIgnoreCase("list")) /* cash list */
-						cash.list(player, args);
-					if (args[1].equalsIgnoreCase("info")) /* cash info */
-						cash.info(player, args);
-					if (args[1].equalsIgnoreCase("help")) /* cash help */
-						cash.help(player, args);
-					if (isPlayerOp && args[1].equalsIgnoreCase("additem")) /* cash additem */
-						cash.addItem(player, args);
-					if (isPlayerOp && args[1].equalsIgnoreCase("removeitem")) /* cash removeitem */
-						return true;
-					if (isPlayerOp && args[1].equalsIgnoreCase("forceupdate")) /* cash forceupdate */
-						return true;
-					if (isPlayerOp && args[1].equalsIgnoreCase("addcash")) /* cash addcash */
-						return true;
-					if (isPlayerOp && args[1].equalsIgnoreCase("removecash")) /* cash removecash */
-						return true;
-				}
-				else
-					sender.sendMessage(COMMAND_FAILURE);
-				return true;
-			}
 			// End of Commands -----------------------------------------------------------------------
 			sender.sendMessage(INVALID_COMMAND);
 		}
@@ -599,14 +564,10 @@ public class ExpugnCommand implements CommandExecutor
 				.tooltip("§d/expugn rpc\n"
 						+ "§7Fancy a game of Rock, Paper, Scissors?")
 				.suggest("/expugn rpc")
-				.then("§6/expugn §7joke\n")
+				.then("§6/expugn §7joke")
 				.tooltip("§d/expugn joke\n"
 						+ "§7Want to hear some hilarious jokes?")
-				.suggest("/expugn joke")
-				.then("§6/expugn §7cash")
-				.tooltip("§d/expugn cash\n"
-						+ "§7A marketing simulator.")
-				.suggest("/expugn cash");
+				.suggest("/expugn joke");
 
 		if (args.length == 1)
 		{
@@ -701,10 +662,6 @@ public class ExpugnCommand implements CommandExecutor
 					.tooltip("§d/expugn joke\n"
 						+ "§7Want to hear some hilarious jokes?")
 					.suggest("/expugn joke")
-				.then("§6/expugn §7cash")
-					.tooltip("§d/expugn cash\n"
-						+ "§7A marketing simulator")
-					.suggest("/expugn cash")
 				.send(sender);
 		}
 	}
@@ -924,7 +881,6 @@ public class ExpugnCommand implements CommandExecutor
 		new io.github.expugn.expugnextras.Configs.Warps(plugin);
 		new io.github.expugn.expugnextras.Configs.TimeTrial(plugin);
 		new io.github.expugn.expugnextras.Configs.Timers(plugin);
-		new io.github.expugn.expugnextras.Configs.Cash(plugin);
 	}
 
 }
