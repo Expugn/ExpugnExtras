@@ -84,7 +84,7 @@ public class ExpugnCommand implements CommandExecutor
 		if (args.length == 0) /* expugn */
 		{
 			if (isPlayerOpOrConsole)
-				sender.sendMessage("§6Welcome to ExpugnExtras. Use §c/expugn help §6for a help menu.");
+				sender.sendMessage("§6Welcome to ExpugnExtras v5 Snapshot. Use §c/expugn help §6for a help menu.");
 			else
 			{
 				new FancyMessage("§c[Click Me.]")
@@ -570,9 +570,7 @@ public class ExpugnCommand implements CommandExecutor
 				.suggest("/expugn joke");
 
 		if (args.length == 1)
-		{
 			general.send(sender);
-		}
 		else if (args.length >= 2)
 		{
 			switch (args[1].toLowerCase())
@@ -618,7 +616,7 @@ public class ExpugnCommand implements CommandExecutor
 	{
 		if (args.length == 1)
 		{
-			new FancyMessage("§7Huh? You want help? Well okay...\n"
+			FancyMessage fake = new FancyMessage("§7Huh? You want help? Well okay...\n"
 					+ "§6USA Suicide Hotline: §f1-800-784-2433\n"
 					+ "§6SparkNotes: §fwww.sparknotes.com\n"
 					+ "§6Google: §fwww.google.com\n"
@@ -628,12 +626,13 @@ public class ExpugnCommand implements CommandExecutor
 					+ "§7If you need more help then look it up on Google or something.\n")
 			.then("§3[But... This isn't the type of help I wanted..]")
 			.command("/expugn help me")
-			.tooltip("Click me.")
-			.send(sender);
+			.tooltip("Click me.");
+			
+			fake.send(sender);
 		}
 		else if (args.length >= 2)
 		{
-			new FancyMessage("§7Okay, okay... Here's a 'real' help menu.\n")
+			FancyMessage real = new FancyMessage("§7Okay, okay... Here's a 'real' help menu.\n")
 				.then("§2/expugn Help Menu:\n")
 				.then("§6/expugn\n")
 					.tooltip("§d/expugn §5<args>\n"
@@ -661,8 +660,9 @@ public class ExpugnCommand implements CommandExecutor
 				.then("§6/expugn §7joke")
 					.tooltip("§d/expugn joke\n"
 						+ "§7Want to hear some hilarious jokes?")
-					.suggest("/expugn joke")
-				.send(sender);
+					.suggest("/expugn joke");
+			
+			real.send(sender);
 		}
 	}
 	
@@ -691,7 +691,7 @@ public class ExpugnCommand implements CommandExecutor
 		{
 			return new FancyMessage(getRandomColor() + "[Click Me.]")
 					.tooltip("A secret message?...")
-					.command("GrimmKitty loves breaking things!");
+					.command("...");
 		}
 		else if (name.equals("Mirrusky"))
 		{

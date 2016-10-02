@@ -3,7 +3,6 @@ package io.github.expugn.expugnextras.expugn.ListTitles;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
@@ -14,11 +13,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 import io.github.expugn.expugnextras.ExpugnExtras;
+import net.milkbowl.vault.permission.Permission;
 import mkremins.fanciful.FancyMessage;
-import ru.tehkode.permissions.PermissionUser;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 /**
  * <b>'ListTitles' Function</b>
@@ -32,7 +31,7 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
  * <li> @<b>gomeow</b>  (Wrote the base {@code paginate} method: {@link #paginate})
  * </ul>
  * 
- * @version 2.1.2
+ * @version 3.0
  * @author Expugn  <i>(https://github.com/Expugn)</i>
  */
 public class ListTitles implements CommandExecutor
@@ -41,6 +40,7 @@ public class ListTitles implements CommandExecutor
 	private static HashMap<String, String> titles = new HashMap<String, String>();
 	private final YamlConfiguration titleFile = new YamlConfiguration();
 	private static boolean enabled = true;
+	public static Permission permission = null;
 
 	//-----------------------------------------------------------------------
 	/**
@@ -50,15 +50,29 @@ public class ListTitles implements CommandExecutor
 	 */
 	public ListTitles(ExpugnExtras plugin) 
 	{
+		setupPermissions(plugin);
 		boolean titlePlugin = plugin.getServer().getPluginManager().getPlugin("Titles") == null ? true : false;
-		boolean permissionsEx = plugin.getServer().getPluginManager().getPlugin("PermissionsEx") == null ? true : false;
 		
-		if (titlePlugin && permissionsEx) 
+		if (titlePlugin) 
 		{
 			plugin.getLogger().info("Dependencies are missing. ListTitles will not work.");
 			enabled = false;
 		}
 	}
+	
+	//-----------------------------------------------------------------------
+	/**
+	 * Sets up Vault permissions
+	 */
+	private boolean setupPermissions(ExpugnExtras plugin)
+    {
+		RegisteredServiceProvider<Permission> permissionProvider = plugin.getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+        if (permissionProvider != null) 
+        {
+            permission = permissionProvider.getProvider();
+        }
+        return (permission != null);
+    }
 	
 	//-----------------------------------------------------------------------
 	/**
@@ -111,15 +125,12 @@ public class ListTitles implements CommandExecutor
 		loadTitles();
 
 		Iterator<String> titlelist = titles.keySet().iterator();
-		PermissionUser user = PermissionsEx.getUser(player);
-		List<String> ownPermissions = user.getPermissions(player.getWorld().getName());
 		SortedMap<Integer, FancyMessage> playerTitles = new TreeMap<Integer, FancyMessage>(Collections.reverseOrder());
 		int titleCount = 1;
-		
 		while (titlelist.hasNext()) 
 		{
 			String title = (String) titlelist.next();
-			if (ownPermissions.contains("titlemanager.title." + title)) 
+			if (permission.has(player, "titlemanager.title." + title)) 
 			{
 				FancyMessage fancyMess = new FancyMessage("§o" + title + "§r" + " : " + (String) titles.get(title).replace('&', '§'))
 								.tooltip("§cSample:\n" 
